@@ -24,6 +24,7 @@ import StudentLayout from './pages/StudentLayout';
 import StudentHomepage from './pages/StudentHomepage';
 import StudentMyCourses from './pages/StudentMyCourses';
 import StudentMyFeedback from './pages/StudentMyFeedback';
+import StudentViewCourse from './pages/StudentViewCourse'
 
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
                 <Route path="/" element={<StudentLayout />} >
                     <Route path="/studenthome" element={<StudentHomepage />} />
                     <Route path="/studentmycourses" element={<StudentMyCourses />} />
+                    <Route path="/studentviewcourse" element={<StudentViewCourse />} />
                     <Route path="/studentmyfeedback" element={<StudentMyFeedback />} />
                 </Route>
             </Routes>

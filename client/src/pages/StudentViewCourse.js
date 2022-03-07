@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './homepage.css';
 import './mycourses.css';
 
-class ViewCourse extends Component {
+class StudentViewCourse extends Component {
 
   state = {
     courseTitle: '',
@@ -22,8 +22,8 @@ class ViewCourse extends Component {
 		  this.props.navigate("/login");
 		}
 
-		if (role == "student") {
-			this.props.navigate("/studenthome");
+		if (role == "teacher") {
+			this.props.navigate("/home");
 		}
 
     this.setState({courseTitle: sessionStorage.getItem("courseTitle").replaceAll('"','')});
@@ -38,8 +38,8 @@ class ViewCourse extends Component {
 		  this.props.navigate("/login");
 		}
 
-		if (role == "student") {
-			this.props.navigate("/studenthome");
+		if (role == "teacher") {
+			this.props.navigate("/home");
 		}
 
     if (role == "teacher") {
@@ -115,5 +115,5 @@ class ViewCourse extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
-	return <ViewCourse navigate={navigate} />;
+	return <StudentViewCourse navigate={navigate} />;
 }

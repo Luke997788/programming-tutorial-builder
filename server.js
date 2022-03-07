@@ -234,9 +234,8 @@ app.post('/api/getteacherclass', (req, res) => {
   });
 });
 
-app.post('/api/getclassstudents', (req, res) => {
+app.post('/api/getstudentclass', (req, res) => {
 
-  console.log(req.body);
   var mysql = require('mysql');
   var databaseConnection = mysql.createConnection ( {
     host : 'localhost',
@@ -247,29 +246,52 @@ app.post('/api/getclassstudents', (req, res) => {
 
   databaseConnection.connect(function(err) {
     if (err) throw err;
-    console.log("Connected");
+    console.log("Getting student class");
     console.log(req.body);
 
-    var id = req.body.className.toLowerCase();
-    databaseConnection.query("SELECT * FROM " + id + "_students", function(err,result,fields) {
+    databaseConnection.query("SELECT student_class FROM students WHERE username = '" + req.body.username + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        console.log(result);
+
+        res.send(result[0].student_class);
+      } else {
+        //res.send('failed');
+      }
+    });
+  });
+});
+
+app.post('/api/getstudentcourses', (req, res) => {
+
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Getting student courses");
+    console.log(req.body);
+    databaseConnection.query("SELECT course_id, course_title, course_description, target_class_id FROM course_information WHERE target_class_id = '" + req.body.targetClass + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
         console.log(result);
 
         var rows = new Array(result.length);
-        var test = {};
        
 
         for (let i=0; i < result.length; i++) {
-          console.log("TEST: " + result[i].student_id);
+          console.log("TEST: " + result[i].course_title);
 
-          var row = [result[i].student_id, result[i].first_name, result[i].last_name];
+          var row = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].target_class_id];
           rows[i] = row;
-        }
 
-        for (let i=0; i < result.length; i++) {
-          console.log(rows);
         }
 
         res.send(rows);
@@ -447,7 +469,7 @@ app.post('/api/getallcoursetutorialcontent', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT content_title, content_type, content, content_order_position FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT content_title, content_type, content, content_order_position FROM tutorial_content WHERE course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
