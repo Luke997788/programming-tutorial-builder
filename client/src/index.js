@@ -19,6 +19,7 @@ import ViewClass from './pages/ViewClass';
 import Tiny from './pages/Tiny';
 import AddTextImageContent from './pages/AddTextImageContent';
 import EditTextImageContent from './pages/EditTextImageContent';
+import AddVideoContent from './pages/AddVideoContent';
 
 import StudentLayout from './pages/StudentLayout';
 import StudentHomepage from './pages/StudentHomepage';
@@ -73,6 +74,7 @@ function App() {
                     <Route path="/tiny" element={<Tiny />} />
                     <Route path="/editcourse/addtextimage" element={<AddTextImageContent />} />
                     <Route path="/editcourse/edittextimage" element={<EditTextImageContent />} />
+                    <Route path="/editcourse/addvideo" element={<AddVideoContent />} />
                     <Route path="/mystudents" element={<MyStudents />} />
                     <Route path="/mystudents/viewclass" element={<ViewClass />} />
                 </Route>

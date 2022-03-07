@@ -44,6 +44,9 @@ class SelectContentType extends Component {
     setOnClickFunctions() {
         var textImageButton = document.getElementById("text-image-content-button");
         textImageButton.onclick = () => {this.props.navigate("/editcourse/addtextimage");};
+
+		var videoButton = document.getElementById("video-content-button");
+        videoButton.onclick = () => {this.props.navigate("/editcourse/addvideo");};
     }
 
 	render() {
@@ -53,7 +56,7 @@ class SelectContentType extends Component {
             <>
             <h2>Select content to add to {this.state.title}</h2>
             <button id="text-image-content-button">Text and Images</button>
-            <button>Video</button>
+            <button id="video-content-button">Video</button>
             <button>Slideshow Presentation</button>
             <button>Exercise</button>
             </>
