@@ -1,0 +1,24 @@
+{
+  "name": "example-create-react-app-express",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd client && yarn start",
+    "server": "nodemon server.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+  },
+  "dependencies": {
+    "@tinymce/tinymce-react": "^3.13.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "form-data": "^4.0.0",
+    "history": "^5.2.0",
+    "mongodb": "^4.2.2",
+    "mysql": "^2.18.1",
+    "tinymce": "^5.10.3",
+    "yarn": "^1.22.17"
+  },
+  "devDependencies": {
+    "concurrently": "^4.0.1",
+    "react-router-dom": "^6.2.1"
+  }
+}
