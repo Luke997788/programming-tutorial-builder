@@ -71,9 +71,11 @@ class ViewCourse extends Component {
 
         var tutorialTitle = document.getElementById("tutorial-title");
         var tutorialContent = document.getElementById("tutorial-content");
+        var resultMessage = document.getElementById("result-message");
 
         tutorialTitle.innerHTML = "" + data[this.state.currentTutorial][1];
         tutorialContent.innerHTML = "" + data[this.state.currentTutorial][3];
+        resultMessage.innerHTML = "";
 
         if (data[this.state.currentTutorial][2] == 'exercise') {
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
