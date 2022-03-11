@@ -20,6 +20,9 @@ import Tiny from './pages/Tiny';
 import AddTextImageContent from './pages/AddTextImageContent';
 import EditTextImageContent from './pages/EditTextImageContent';
 import AddVideoContent from './pages/AddVideoContent';
+import EditVideoContent from './pages/EditVideoContent';
+import AddExerciseContent from './pages/AddExerciseContent';
+import EditExerciseContent from './pages/EditExerciseContent';
 
 import StudentLayout from './pages/StudentLayout';
 import StudentHomepage from './pages/StudentHomepage';
@@ -75,6 +78,9 @@ function App() {
                     <Route path="/editcourse/addtextimage" element={<AddTextImageContent />} />
                     <Route path="/editcourse/edittextimage" element={<EditTextImageContent />} />
                     <Route path="/editcourse/addvideo" element={<AddVideoContent />} />
+                    <Route path="/editcourse/editvideo" element={<EditVideoContent />} />
+                    <Route path="/editcourse/addexercise" element={<AddExerciseContent />} />
+                    <Route path="/editcourse/editexercise" element={<EditExerciseContent />} />
                     <Route path="/mystudents" element={<MyStudents />} />
                     <Route path="/mystudents/viewclass" element={<ViewClass />} />
                 </Route>

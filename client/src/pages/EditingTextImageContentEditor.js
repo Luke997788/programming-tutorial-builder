@@ -67,8 +67,6 @@ class EditingTextImageContentEditor extends React.Component {
   handleSubmit = async e => {
 		e.preventDefault();
 
-    localStorage.setItem("content", this.state.textAreaContents);
-
     var contentToSubmit = '';
 
     if (this.state.content == '') {

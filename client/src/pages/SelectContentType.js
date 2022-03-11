@@ -47,6 +47,9 @@ class SelectContentType extends Component {
 
 		var videoButton = document.getElementById("video-content-button");
         videoButton.onclick = () => {this.props.navigate("/editcourse/addvideo");};
+
+		var exerciseButton = document.getElementById("exercise-content-button");
+        exerciseButton.onclick = () => {this.props.navigate("/editcourse/addexercise");};
     }
 
 	render() {
@@ -58,7 +61,7 @@ class SelectContentType extends Component {
             <button id="text-image-content-button">Text and Images</button>
             <button id="video-content-button">Video</button>
             <button>Slideshow Presentation</button>
-            <button>Exercise</button>
+            <button id="exercise-content-button">Exercise</button>
             </>
 		);
 	}

@@ -138,10 +138,14 @@ class EditCourse extends Component {
       var btn = document.createElement("button");
       btn.setAttribute("class", "contentEditButton");
       btn.innerHTML = "Edit Content";
-      btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/edittextimage")};
-      //btn.onclick = () => {global.courseId = courseId; global.courseTitle = courseTitle; global.courseDescription = courseDescription; this.props.navigate("/editcourse")};
-      //btn.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/editcourse")};
 
+      if (contentType == 'text/image') {
+        btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/edittextimage")};
+      } else if (contentType == 'video') {
+        btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editvideo")};
+      } else if (contentType == 'exercise') {
+        btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editexercise")};
+      }
       cell4.appendChild(btn);
 
       rowCount += 1;

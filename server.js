@@ -325,6 +325,29 @@ app.post('/api/uploadtutorialcontent', (req, res) => {
   });
 });
 
+app.post('/api/uploadexercisecontent', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+
+    databaseConnection.query("INSERT INTO multiple_choice_exercises (content_id, course_id, course_creator, content_type, exercise_task, answer_1, answer_2, answer_3, answer_4, correct_answer) VALUES ('" + req.body.contentId + "', '" + req.body.courseId + "', '" + req.body.creator + "', '" + req.body.type + "', '" + req.body.task + "', '" + req.body.answer1 + "', '" + req.body.answer2 + "', '" + req.body.answer3 + "', '" + req.body.answer4 + "', '" + req.body.correct + "')", function(err,result,fields) {
+      if (err) throw err;
+      res.send("successful insertion");
+    });
+  });
+});
+
 app.post('/api/createcontentfile', (req, res) => {
 
   console.log(req.body);
@@ -381,6 +404,7 @@ app.post('/api/retrievecontentid', (req, res) => {
     databaseConnection.query("SELECT content_id FROM tutorial_content WHERE course_id = '" + req.body.idToGet + "' AND content_title = '" + req.body.title + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
+        console.log("WHYYYYYYYYYYYYYYYYYYY");
         console.log(result);
         var id = result[0].content_id;
         res.send(id + "");
@@ -408,6 +432,29 @@ app.post('/api/updatetutorialcontent', (req, res) => {
     console.log(req.body);
 
     databaseConnection.query("UPDATE tutorial_content SET content_title = '" + req.body.title + "',  content = '" + req.body.content + "' WHERE course_id = '" + req.body.id + "' AND content_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      res.send("successful update");
+    });
+  });
+});
+
+app.post('/api/updateexerciseanswers', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+
+    databaseConnection.query("UPDATE multiple_choice_exercises SET exercise_task = '" + req.body.task + "',  answer_1 = '" + req.body.answer1 + "', answer_2 = '" + req.body.answer2 + "',  answer_3 = '" + req.body.answer3 + "',  answer_4 = '" + req.body.answer4 + "' WHERE course_id = '" + req.body.id + "' AND content_id = '" + req.body.contentId + "'", function(err,result,fields) {
       if (err) throw err;
       res.send("successful update");
     });
@@ -469,7 +516,7 @@ app.post('/api/getallcoursetutorialcontent', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT content_title, content_type, content, content_order_position FROM tutorial_content WHERE course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT content_id, content_title, content_type, content, content_order_position FROM tutorial_content WHERE course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
@@ -485,10 +532,39 @@ app.post('/api/getallcoursetutorialcontent', (req, res) => {
         var data = [[result[0].content_order_position, result[0].content_title, result[0].content_type, result[0].content]];
 
         for (let i=1; i < result.length; i++) {
-          var row = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].content];
+          var row = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].content, result[i].content_id];
           data.push(row);
         }
 
+    
+        res.send(data);
+      } else {
+        //res.send('failed');
+      }
+    });
+  });
+});
+
+app.post('/api/getexerciseanswers', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+    databaseConnection.query("SELECT answer_1, answer_2, answer_3, answer_4, correct_answer FROM multiple_choice_exercises WHERE content_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        var data = [result[0].answer_1, result[0].answer_2, result[0].answer_3, result[0].answer_4, result[0].correct_answer];
     
         res.send(data);
       } else {

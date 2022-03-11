@@ -110,47 +110,6 @@ class MyCourses extends Component {
 
       rowCount += 1;
     }
-
-    /*for(let i=0; i < this.state.tableData.length; i += 5) {
-      var courseId = this.state.tableData[i];
-      var creator = this.state.tableData[i+1];
-      var title = this.state.tableData[i+2]
-      var description = this.state.tableData[i+3]
-      var className = this.state.tableData[i+4]
-
-      var row = table.insertRow(rowCount);
-      var cell1 = row.insertCell(0);
-      var cell2 = row.insertCell(1);
-      var cell3 = row.insertCell(2);
-      var cell4 = row.insertCell(3);
-      var cell5 = row.insertCell(4);
-      var cell6 = row.insertCell(5);
-
-      cell1.innerHTML = courseId;
-      cell2.innerHTML = creator;
-      cell3.innerHTML = title;
-      cell4.innerHTML = description;
-      cell5.innerHTML = className;
-
-      var submitForm = document.createElement("form");
-      submitForm.setAttribute("onSubmit", function() {
-        alert("FUCKING WORK PLEASE");
-      });
-
-      var hiddenInput = document.createElement("input");
-      hiddenInput.setAttribute("type", "hidden");
-      hiddenInput.setAttribute("value", courseId);
-
-      var submitButton = document.createElement("input");
-      submitButton.setAttribute("type", "submit");
-      submitButton.setAttribute("value", "Edit Course");
-
-      submitForm.appendChild(hiddenInput);
-      submitForm.appendChild(submitButton);
-      cell6.appendChild(submitForm);
-
-      rowCount += 1;
-    }*/
   }
 
   render () {

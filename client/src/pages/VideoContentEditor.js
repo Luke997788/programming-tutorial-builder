@@ -9,7 +9,7 @@ class VideoContentEditor extends React.Component {
   state = {
     creator: '',
     courseId: '',
-    contentType: 'text/image',
+    contentType: 'video',
     contentTitle: '',
     textAreaContents: '',
     responseToPostRequest: '',
@@ -33,34 +33,36 @@ class VideoContentEditor extends React.Component {
   }
 
   handleSubmit = async e => {
-		e.preventDefault();
+      e.preventDefault();
 
-    localStorage.setItem("content", this.state.textAreaContents);
+      if (this.state.contentTitle < 1) {
+        alert("Please enter a title for the tutorial")
+      } else {
+	    // starts a request, passes URL and configuration object
+	    const response = await fetch('/api/uploadtutorialcontent', {
+		    method: 'POST',
+		    headers: {
+			    'Content-Type': 'application/json',
+		    },
+		    body: JSON.stringify({ id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.textAreaContents}),
+	    });
 
-		// starts a request, passes URL and configuration object
-		const response = await fetch('/api/uploadtutorialcontent', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.textAreaContents}),
-		});
+	    const body = await response.text();
 
-		const body = await response.text();
-
-		if (body === 'successful insertion') {
-			this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
-      this.props.navigate("/editcourse");
-		} else {
-			this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+	    if (body === 'successful insertion') {
+		    this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
+            this.props.navigate("/editcourse");
+        } else {
+		    this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
 		}
+      }
 	};
 
   render() {
     return (
       <>
       <label for="content-title">Content Title: </label>
-      <input id ="content-title" type="text" placeholder="Enter content title" value={this.state.contentTitle} onChange={e => this.setState({ contentTitle: e.target.value })}/>
+      <input id ="content-title" type="text" placeholder="Enter content title" value={this.state.contentTitle} onChange={e => this.setState({ contentTitle: e.target.value })} required />
       <Editor
         //tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
         apiKey='6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o'
@@ -108,7 +110,6 @@ class VideoContentEditor extends React.Component {
       />
         
         <button id="save-button" onClick={this.handleSubmit}>Save</button>
-        <p>ID IS {this.state.contentId}</p>
       </>
     );
   }
