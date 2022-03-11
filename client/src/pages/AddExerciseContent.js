@@ -88,6 +88,7 @@ class AddExerciseContent extends Component {
         const body = await response.text();
 
         this.setState({contentId: body});
+        alert(this.state.contentId);
 
 	};
 
