@@ -1,4 +1,5 @@
 import { Outlet, Link, useNavigate } from "react-router-dom"
+import './homepage.css';
 
 function Layout() {
     const navigate = useNavigate();

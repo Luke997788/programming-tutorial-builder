@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './homepage.css';
+//import '.src/pages/teacher/homepage.css';
 import './mystudents.css';
 
 class MyStudents extends Component {
@@ -46,7 +46,7 @@ class MyStudents extends Component {
 
   async test() {
     // starts a request, passes URL and configuration object
-    const response = await fetch('/api/getteacherclass', {
+    const response = await fetch('/api/getteacherclasses', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ class MyStudents extends Component {
         let viewButton = document.createElement("button");
         viewButton.setAttribute("class", "viewButton");
         viewButton.innerHTML = "View Students";
-        viewButton.onclick = () => {global.classId = classId; this.props.navigate("/mystudents/viewclass")};
+        viewButton.onclick = () => {sessionStorage.setItem("classId", classId); this.props.navigate("/mystudents/viewclass")};
 
         let lineBreak = document.createElement("br");
 

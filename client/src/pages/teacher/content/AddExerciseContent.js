@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
-import './homepage.css';
+//import './homepage.css';
 import './addcontent.css';
 
 class AddExerciseContent extends Component {
@@ -63,14 +63,22 @@ class AddExerciseContent extends Component {
             body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
         });
 
-        const body = await response.text();
+        await response.text().then(responseData => {
+            if (responseData == 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information added' });
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+            }
+        });
+
+        /*const body = await response.text();
 
         if (body === 'successful insertion') {
             this.setState({ responseToPostRequest: 'Tutorial information added' });
             //this.props.navigate("/editcourse");
         } else {
             this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-        }
+        }*/
 
 	};
 
@@ -85,10 +93,13 @@ class AddExerciseContent extends Component {
             body: JSON.stringify({idToGet: this.state.courseId, title: this.state.contentTitle}),
         });
 
-        const body = await response.text();
+        await response.text().then(responseData => {
+            this.setState({contentId: responseData}); 
+        });
 
-        this.setState({contentId: body});
-        alert(this.state.contentId);
+        /*const body = await response.text();
+
+        this.setState({contentId: body});*/
 
 	};
 
@@ -103,14 +114,23 @@ class AddExerciseContent extends Component {
             body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), creator: this.state.creator, type: this.state.contentType, task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
         });
 
-        const body = await response.text();
+        await response.text().then(responseData => {
+            if (responseData == 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information added' });
+                this.props.navigate("/editcourse");
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+            }
+        });
+
+        /*const body = await response.text();
 
         if (body === 'successful insertion') {
             this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
             //this.props.navigate("/editcourse");
         } else {
             this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-        }
+        }*/
 
 	};
 
@@ -122,7 +142,33 @@ class AddExerciseContent extends Component {
             })
         });
 
-        this.props.navigate("/editcourse");
+        /*let [res1, res2, res3] = await Promise.all([
+            fetch('/api/uploadtutorialcontent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
+            }).then(response => response.json()),
+
+            fetch('/api/retrievecontentid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({idToGet: this.state.courseId, title: this.state.contentTitle}),
+            }).then(response => {
+                this.setState({contenId: response.text()});
+            }),
+
+            fetch('/api/uploadexercisecontent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), creator: this.state.creator, type: this.state.contentType, task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
+            }).then(response => response.json()),
+        ]);*/
     };
 
 	render() {

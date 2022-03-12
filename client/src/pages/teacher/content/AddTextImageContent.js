@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from "react-router-dom"
-import './homepage.css';
+//import './homepage.css';
 import './addcontent.css';
-import EditingTextImageContentEditor from './EditingTextImageContentEditor';
+import TextImageContentEditor from './TextImageContentEditor';
 
-class EditTextImageContent extends Component {
+class AddTextImageContent extends Component {
 
 	state = {
+		textBoxContents: '',
 		creator: sessionStorage.getItem("username"),
-		courseTitle: '',
-		contentTitle: sessionStorage.getItem("contentTitle"),
+		title: '',
 	};
 
 	componentDidMount = () => {		
-		this.setState({courseTitle: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
 	}
 
 	componentDidUpdate() {
@@ -37,9 +37,9 @@ class EditTextImageContent extends Component {
 		return (
 			<>
 			<div id="create-a-course-container">
-			  <h1>Edit Text/Image Content for {this.state.title}</h1>
+			  <h1>Add Text/Image Content to {this.state.title}</h1>
 
-				<EditingTextImageContentEditor titleOfContent={this.state.contentTitle}/>
+				<TextImageContentEditor />
 
 		  </div>
 		  </>
@@ -50,6 +50,6 @@ class EditTextImageContent extends Component {
 export default function(props) {
 	const navigate = useNavigate();
   
-	return <EditTextImageContent navigate={navigate} />;
+	return <AddTextImageContent navigate={navigate} />;
   
 }

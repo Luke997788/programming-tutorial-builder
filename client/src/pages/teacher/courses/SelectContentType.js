@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate } from "react-router-dom"
-import './homepage.css';
-import './addcontent.css';
+//import './homepage.css';
 
 class SelectContentType extends Component {
 

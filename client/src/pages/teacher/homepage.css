@@ -1,0 +1,43 @@
+#nav-bar {
+    list-style-type: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #993399;
+  }
+  
+  .nav-bar-link {
+      float: left;
+  }
+  
+  .nav-bar-link a {
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+  }
+  
+  .nav-bar-link:hover {
+    background-color: #FFFFFF;
+    color: black;
+  }
+
+  #sessionInfoContainer {
+    text-align: center;
+    float: right;
+  }
+
+  #userSignedIn {
+    padding: 0;
+    margin-right:20px;
+    float: right;
+  }
+
+  #logoutButton {
+    padding: 0;
+    margin-right:20px;
+    float: center;
+  }

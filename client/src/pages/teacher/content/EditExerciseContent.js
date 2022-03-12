@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { useNavigate } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
-import './homepage.css';
+//import './homepage.css';
 import './addcontent.css';
 
 class EditExerciseContent extends Component {
@@ -15,6 +14,7 @@ class EditExerciseContent extends Component {
         contentTitle: sessionStorage.getItem("contentTitle"),
         contentType: 'exercise',
         task: ``,
+        content: ``,
         answer1: '',
         answer2: '',
         answer3: '',
@@ -59,10 +59,33 @@ class EditExerciseContent extends Component {
           body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: sessionStorage.getItem("contentTitle")}),
         });
     
-        const body = await response.text()
-    
-        this.setState({ task: body });
+        await response.text().then(data => {
+            this.setState({task: data});
+        });
+
+        //const body = await response.text()
+        //this.setState({ task: body });
     }
+
+    async retrieveContentId() {
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/retrievecontentid', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({idToGet: this.state.courseId, title: this.state.contentTitle}),
+        });
+
+        await response.text().then(data => {
+            this.setState({contentId: data});
+        });
+
+        //const body = await response.text();
+        //this.setState({contentId: body});
+
+	};
 
     async retrieveExerciseAnswers() {
         // starts a request, passes URL and configuration object
@@ -83,16 +106,14 @@ class EditExerciseContent extends Component {
         });
     }
 
-    handleEditorChange = (e) => {
-        console.log(
-          'Content was updated:',
-          e.target.getContent()
-        );
-    
-        this.setState({task: e.target.getContent()});
-    }
-
     async updateTutorialInformation() {
+        var contentToSubmit = '';
+
+        if (this.state.content == '') {
+          contentToSubmit = this.state.task;
+        } else {
+          contentToSubmit = this.state.content;
+        }
 
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/updatetutorialcontent', {
@@ -100,38 +121,36 @@ class EditExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
+            body: JSON.stringify({courseId: this.state.courseId, contentId: this.state.contentId, title: this.state.contentTitle, content: contentToSubmit}),
         });
 
-        const body = await response.text();
+        await response.text().then(data => {
+            if (data === 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information updated' });
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
+            }
+        });
+
+        /*const body = await response.text();
 
         if (body === 'successful insertion') {
             this.setState({ responseToPostRequest: 'Tutorial information updated' });
             //this.props.navigate("/editcourse");
         } else {
             this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
-        }
-
-	};
-
-    async retrieveContentId() {
-
-        // starts a request, passes URL and configuration object
-        const response = await fetch('/api/retrievecontentid', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({idToGet: this.state.courseId, title: this.state.contentTitle}),
-        });
-
-        const body = await response.text();
-
-        this.setState({contentId: body});
+        }*/
 
 	};
 
     async updateExerciseAnswers() {
+        var contentToSubmit = '';
+
+        if (this.state.content == '') {
+          contentToSubmit = this.state.task;
+        } else {
+          contentToSubmit = this.state.content;
+        }
 
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/updateexerciseanswers', {
@@ -139,26 +158,42 @@ class EditExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
+            body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), task: contentToSubmit, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correctAnswer: this.state.correctAnswer}),
         });
 
-        const body = await response.text();
+        await response.text().then(data => {
+            if (data === 'successful update') {
+                this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
+                this.props.navigate("/editcourse");
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
+            }
+        });
+
+        /*const body = await response.text();
 
         if (body === 'successful update') {
             this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
             //this.props.navigate("/editcourse");
         } else {
             this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
-        }
+        }*/
 
 	};
+
+    handleEditorChange = (e) => {
+        console.log(
+          'Content was updated:',
+          e.target.getContent()
+        );
+    
+        this.setState({content: e.target.getContent()});
+    }
 
     handleSubmit = async e => {
         e.preventDefault();
         this.updateTutorialInformation().then(data => {
-            this.updateExerciseAnswers().then(item => {
-                this.props.navigate("/editcourse");
-            })
+            this.updateExerciseAnswers();
         });
     };
 
@@ -247,10 +282,10 @@ class EditExerciseContent extends Component {
                     <div>
                         <label for="correct-answer-select">Which option is the correct answer?</label>
                         <select id="correct-answer-select" value={this.state.correctAnswer} onChange={e => this.setState({ correctAnswer: e.target.value })}>
-					        <option value="answer1">Answer 1</option>
-					        <option value="answer2">Answer 2</option>
-					        <option value="answer3">Answer 3</option>
-					        <option value="answer4">Answer 4</option>
+					        <option value="1">Answer 1</option>
+					        <option value="2">Answer 2</option>
+					        <option value="3">Answer 3</option>
+					        <option value="4">Answer 4</option>
 				        </select>
                     </div>
 

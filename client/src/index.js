@@ -1,66 +1,38 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
-import Layout from './pages/Layout';
-import LoginForm from './pages/LoginForm';
-import MainPage from './pages/MainPage';
-import Homepage from './pages/Homepage';
-import CreateCourse from './pages/CreateCourse';
-import MyCourses from './pages/MyCourses';
-import EditCourse from './pages/EditCourse';
-import EditCourseDetails from './pages/EditCourseDetails';
-import SelectContentType from './pages/SelectContentType';
-import AddContent from './pages/AddContent';
-import ViewCourse from './pages/ViewCourse'
-import MyStudents from './pages/MyStudents';
-import ViewClass from './pages/ViewClass';
 
-import Tiny from './pages/Tiny';
-import AddTextImageContent from './pages/AddTextImageContent';
-import EditTextImageContent from './pages/EditTextImageContent';
-import AddVideoContent from './pages/AddVideoContent';
-import EditVideoContent from './pages/EditVideoContent';
-import AddExerciseContent from './pages/AddExerciseContent';
-import EditExerciseContent from './pages/EditExerciseContent';
+import Layout from './pages/teacher/Layout';
+import LoginForm from './pages/login/LoginForm';
+import MainPage from './pages/login/MainPage';
+import Homepage from './pages/teacher/home/Homepage';
+import CreateCourse from './pages/teacher/createcourse/CreateCourse';
+import MyCourses from './pages/teacher/courses/MyCourses';
+import EditCourse from './pages/teacher/courses/EditCourse';
+import EditCourseDetails from './pages/teacher/courses/EditCourseDetails';
+import SelectContentType from './pages/teacher/courses/SelectContentType';
+import ViewCourse from './pages/teacher/courses/ViewCourse'
+import MyStudents from './pages/teacher/mystudents/MyStudents';
+import ViewClass from './pages/teacher/mystudents/ViewClass';
+import AddTextImageContent from './pages/teacher/content/AddTextImageContent';
+import EditTextImageContent from './pages/teacher/content/EditTextImageContent';
+import AddVideoContent from './pages/teacher/content/AddVideoContent';
+import EditVideoContent from './pages/teacher/content/EditVideoContent';
+import AddExerciseContent from './pages/teacher/content/AddExerciseContent';
+import EditExerciseContent from './pages/teacher/content/EditExerciseContent';
 
-import StudentLayout from './pages/StudentLayout';
-import StudentHomepage from './pages/StudentHomepage';
-import StudentMyCourses from './pages/StudentMyCourses';
-import StudentMyFeedback from './pages/StudentMyFeedback';
-import StudentViewCourse from './pages/StudentViewCourse'
+import StudentLayout from './pages/student/StudentLayout';
+import StudentHomepage from './pages/student/StudentHomepage';
+import StudentMyCourses from './pages/student/StudentMyCourses';
+import StudentMyFeedback from './pages/student/StudentMyFeedback';
+import StudentViewCourse from './pages/student/StudentViewCourse'
 
 
 function App() {
 
     return (
         <>
-        {/*<BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Layout />} >
-                    <Route index element={<LoginForm /> } />
-                    <Route path="home" element={<Homepage />} />
-                    <Route path="createacourse" element={<CreateCourse />} />
-                    <Route path="mycourses" element={<MyCourses />} />
-                    <Route path="mystudents" element={<MyStudents />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>*/}
-
-        {/*<BrowserRouter>
-            <Routes>
-                <Route index element={<LoginForm /> } />
-                <Route path="/" element={<Layout />} >
-                    <Route path="login" element={<LoginForm />} />
-                    <Route path="home" element={<Homepage />} />
-                    <Route path="createacourse" element={<CreateCourse />} />
-                    <Route path="mycourses" element={<MyCourses />} />
-                    <Route path="mystudents" element={<MyStudents />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>*/}
-
-
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<MainPage />} />
@@ -73,8 +45,7 @@ function App() {
                     <Route path="/editcourse" element={<EditCourse />} />
                     <Route path="/editcoursedetails" element={<EditCourseDetails />} />
                     <Route path="/editcourse/selectcontent" element={<SelectContentType />} />
-                    <Route path="/editcourse/addcontent" element={<AddContent />} />
-                    <Route path="/tiny" element={<Tiny />} />
+
                     <Route path="/editcourse/addtextimage" element={<AddTextImageContent />} />
                     <Route path="/editcourse/edittextimage" element={<EditTextImageContent />} />
                     <Route path="/editcourse/addvideo" element={<AddVideoContent />} />
@@ -92,26 +63,10 @@ function App() {
                 </Route>
             </Routes>
         </BrowserRouter>        
-
-        {/*<BrowserRouter>
-            <Routes>
-                <Route path="/" element={<MainPage />} />
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/" element={<Layout />} >
-                    <Route path="/home" element={<Homepage />} />
-                    <Route path="/createacourse" element={<CreateCourse />} />
-                    <Route path="/mycourses" element={<MyCourses />} />
-                    <Route path="/mystudents" element={<MyStudents />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>*/}
         </>
-
-        
     );
 }
 
 export default App;
 
 ReactDOM.render(<App />, document.getElementById('root'));
-//ReactDOM.render(<LoginForm />, document.getElementById('root'));

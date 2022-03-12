@@ -1,19 +1,20 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from "react-router-dom"
-import './homepage.css';
+//import './homepage.css';
 import './addcontent.css';
-import Tiny from './Tiny';
+import EditingTextImageContentEditor from './EditingTextImageContentEditor';
 
-class AddContent extends Component {
+class EditVideoContent extends Component {
 
 	state = {
-		textBoxContents: '',
 		creator: sessionStorage.getItem("username"),
+		courseTitle: '',
+		contentTitle: sessionStorage.getItem("contentTitle"),
 	};
 
 	componentDidMount = () => {		
-		
+		this.setState({courseTitle: sessionStorage.getItem("courseTitle").replaceAll('"','')});
 	}
 
 	componentDidUpdate() {
@@ -36,9 +37,9 @@ class AddContent extends Component {
 		return (
 			<>
 			<div id="create-a-course-container">
-			  <h1>Add Content</h1>
+			  <h1>Edit Video Content for {this.state.title}</h1>
 
-				<Tiny />
+				<EditingTextImageContentEditor titleOfContent={this.state.contentTitle}/>
 
 		  </div>
 		  </>
@@ -49,6 +50,6 @@ class AddContent extends Component {
 export default function(props) {
 	const navigate = useNavigate();
   
-	return <AddContent navigate={navigate} />;
+	return <EditVideoContent navigate={navigate} />;
   
 }

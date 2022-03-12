@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './homepage.css';
+//import './homepage.css';
 import './mycourses.css';
 
 class MyCourses extends Component {

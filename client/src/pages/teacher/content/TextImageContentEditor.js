@@ -1,32 +1,26 @@
-
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
-//import tinymce from "tinymce";
 import tinymce from "https://cdn.tiny.cloud/1/6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o/tinymce/5/tinymce.min.js";
 import './tutorial-page.css';
 
-class Tiny extends React.Component {
+class TextImageContentEditor extends React.Component {
 
   state = {
+    creator: '',
+    courseId: '',
+    contentType: 'text/image',
+    contentTitle: '',
     textAreaContents: '',
+    responseToPostRequest: '',
+    initialContents: '<p>Enter content here</p>',
+    content: '',
+    contentId: '',
   };
 
   componentDidMount = () => {		
-		this.setButtonFunctions();
-	}
-
-  setButtonFunctions() {
-		var saveButton = document.getElementById("save-button");
-		var loadButton = document.getElementById("load-button");
-
-		//saveButton.onclick = () => {localStorage.setItem("content", tinymce.get("text-area").getContent())};
-		//loadButton.onclick = () => {tinymce.get("text-area").setContent(localStorage.getItem("content"))};
-
-    //saveButton.onclick = () => {this.setState({textAreaContents: tinymce.get("text-area").getContent()})};
-    //saveButton.onclick = () => {alert(get("text-area").getContent())};
-    //saveButton.onclick = () => {this.handleSave};
-
-    document.getElementById("tutorial-content").innerHTML = localStorage.getItem("content");
+    this.setState({creator: sessionStorage.getItem("username")});
+    this.setState({courseId: sessionStorage.getItem("courseId")});
 	}
 
   handleEditorChange = (e) => {
@@ -38,28 +32,41 @@ class Tiny extends React.Component {
     this.setState({textAreaContents: e.target.getContent()});
   }
 
-  handleSave = (e) => {
-    alert(this.state.textAreaContents);
-    localStorage.setItem("content", this.state.textAreaContents);
-  }
+  handleSubmit = async e => {
+		e.preventDefault();
 
-  handleLoad = (e) => {
-    alert(localStorage.getItem("content"));
-  }
+    if (this.state.contentTitle.length < 1) {
+      alert("Please enter a title for the tutorial")
+    } else {
+      // starts a request, passes URL and configuration object
+      const response = await fetch('/api/uploadtutorialcontent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.textAreaContents}),
+      });
 
-  generateHTML() {
-    //var tinyParser = new tinymce.html.DomParser({validate: true});
-    //var root = tinyParser.parse('<h1>content</h1>');
-    //body.appendChild(root);
-  }
+      const body = await response.text();
+
+      if (body === 'successful insertion') {
+        this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
+        this.props.navigate("/editcourse");
+      } else {
+        this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+      }
+    }
+	};
 
   render() {
     return (
       <>
+      <label for="content-title">Content Title: </label>
+      <input id ="content-title" type="text" placeholder="Enter content title" value={this.state.contentTitle} onChange={e => this.setState({ contentTitle: e.target.value })} required />
       <Editor
         //tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
         apiKey='6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o'
-        initialValue="<p>Enter content here</p>"
+        initialValue= {this.state.initialContents}
         init={{
           selector: 'text-area',
           height: 500,
@@ -104,16 +111,15 @@ class Tiny extends React.Component {
         onChange={this.handleEditorChange}
       />
         
-        <button id="save-button" onClick={this.handleSave}>Save</button>
-				<button id="load-button" onClick={this.handleLoad}>Load</button>
-
-      <p>{this.state.textAreaContents}</p>
-      <div id="tutorial-content">
-        
-      </div>
+        <button id="save-button" onClick={this.handleSubmit}>Save</button>
       </>
     );
   }
 }
 
-export default Tiny;
+export default function(props) {
+	const navigate = useNavigate();
+  
+	return <TextImageContentEditor navigate={navigate} />;
+  
+}

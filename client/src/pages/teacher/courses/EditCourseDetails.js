@@ -1,24 +1,34 @@
 import React, { Component } from 'react';
 import { useNavigate } from "react-router-dom"
-import './homepage.css';
+//import './homepage.css';
 
-class CreateCourse extends Component {
+class EditCourseDetails extends Component {
 
 	state = {
-		response: '',
-		responseToPost: '',
+		responseToSubmission: '',
 		title: '',
 		description: '',
 		targetClass: '',
 		order: '',
 		hide: '',
 		creator: sessionStorage.getItem("username"),
+        tableData: '',
 	};
 
 	componentDidMount = () => {
-		this.callApi()
-			.then(res => this.setState({ response: res.express }))
-			.catch(err => console.log(err));
+		const status = sessionStorage.getItem('username');
+	
+		if (!status) {
+		  this.props.navigate("/login");
+		}
+
+		const role = sessionStorage.getItem('role');
+
+		if (role == "student") {
+			this.props.navigate("/studenthome");
+		}
+
+        this.retrieveCourseDetails();
 	}
 
 	componentDidUpdate() {
@@ -35,35 +45,42 @@ class CreateCourse extends Component {
 		}
 	}
 
-	callApi = async () => {
-		// starts a request
-		const response = await fetch('/api/status');
-		// extract JSON object from the response
-		const body = await response.json();
-		if (response.status !== 200) throw Error(body.message);
-  
-			return body;
-	};
+    async retrieveCourseDetails() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/getspecificcourseinfo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId")}),
+        });
+
+		await response.json().then(data => {
+			this.setState({title: data[2]})
+			this.setState({description: data[3]})
+			this.setState({targetClass: data[4]})
+		})
+    }
 
 	handleSubmit = async e => {
 		e.preventDefault();
 
 		// starts a request, passes URL and configuration object
-		const response = await fetch('/api/submitcourseinfo', {
+		const response = await fetch('/api/updatecourseinfo', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.order, hide: this.state.hide}),
+			body: JSON.stringify({ idToGet: sessionStorage.getItem("courseId"), creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.order, hide: this.state.hide}),
 		});
 
 		const body = await response.text();
 
-		if (body === 'successful insertion') {
-			this.setState({ responseToPost: 'Course successfully created' });
-    
+		if (body === 'successful update') {
+			this.setState({ responseToSubmission: 'Course details successfully updated' });
+            this.props.navigate("/editcourse")
 		} else {
-			this.setState({ responseToPost: 'ERROR: failed to create course' });
+			this.setState({ responseToSubmission: 'ERROR: Failed to update course details' });
 		}
 	};
 
@@ -71,10 +88,10 @@ class CreateCourse extends Component {
 		const {navigate} = this.props;
 
 		return (
-			<div id="create-a-course-container">
-			  <h1>Create a Course</h1>
+			<div id="edit-course-container">
+			  <h1>Edit Course Details</h1>
 
-			  <form id="create-course-form" onSubmit={this.handleSubmit}>
+			  <form id="edit-course-form" onSubmit={this.handleSubmit}>
 				<div id="title-input-container">
 				  <label for="title">Course Title</label>
 				  <input type="text" id="title" value={this.state.title} onChange={e => this.setState({ title: e.target.value })}/>
@@ -106,10 +123,11 @@ class CreateCourse extends Component {
 				</div>
 
 				<div id="submit-button-container">
-				  <input type="submit" id="submit-button" value="Create Course"/>
+				  <input type="submit" id="submit-button" value="Save"/>
 				</div>
 			  </form>
-			  <p>{this.state.responseToPost}</p>
+
+			  <p>{this.state.responseToSubmission}</p>
 		  </div>
 		);
 	}
@@ -118,6 +136,6 @@ class CreateCourse extends Component {
 export default function(props) {
 	const navigate = useNavigate();
   
-	return <CreateCourse navigate={navigate} />;
+	return <EditCourseDetails navigate={navigate} />;
   
 }

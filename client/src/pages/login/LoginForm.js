@@ -1,23 +1,21 @@
-import React, { Component, useState } from 'react';
-import ReactDOM from 'react-dom';
-import { Navigate, useNavigate, Link } from "react-router-dom"
+import React, { Component } from 'react';
+import { useNavigate } from "react-router-dom"
 import './LoginForm.css';
-import Homepage from './Homepage';
 
 class LoginForm extends Component {
   
   state = {
-    response: '',
     username: '',
     password: '',
-    responseToPost: '',
-    loggedIn: 'false',
+    responseToLoginRequest: '',
   };
 
   componentDidMount() {
-    this.callApi()
-      .then(res => this.setState({ response: res.express }))
-      .catch(err => console.log(err));
+    const status = sessionStorage.getItem('username');
+
+    if (status) {
+      this.props.navigate("/home");
+    }
   }
 
   componentDidUpdate() {
@@ -28,43 +26,35 @@ class LoginForm extends Component {
     }
   }
   
-  callApi = async () => {
-    // starts a request
-    const response = await fetch('/api/status');
-    // extract JSON object from the response
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    
-    return body;
-  };
-  
   handleSubmit = async e => {
     e.preventDefault();
-    
-    // starts a request, passes URL and configuration object
-    const response = await fetch('/api/info', {
+  
+    const response = await fetch('/api/verifylogindetails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ username: this.state.username, password: this.state.password }),
     });
+
     const body = await response.text();
 
     if (body === 'teacher') {
-      this.setState({ responseToPost: body, loggedIn: 'true' });
+      this.setState({responseToLoginRequest: "Login Success"});
       sessionStorage.setItem("loggedIn", true);
       sessionStorage.setItem("username", this.state.username);
       sessionStorage.setItem("role", "teacher");
       this.props.navigate("/home");
+
     } else if (body === 'student') {
-      this.setState({ responseToPost: body, loggedIn: 'true' });
+      this.setState({responseToLoginRequest: "Login Success"});
       sessionStorage.setItem("loggedIn", true);
       sessionStorage.setItem("username", this.state.username);
       sessionStorage.setItem("role", "student");
       this.props.navigate("/studenthome");
+
     } else {
-      this.setState({ responseToPost: 'ERROR: login failed' });
+      this.setState({ responseToLoginRequest: 'Login failed. Please try again' });
     }
   };
   
@@ -73,7 +63,7 @@ render() {
 
     return (
       <div id="login-container">
-        <p>{this.state.response}</p>
+
         <form id="login-form" onSubmit={this.handleSubmit}>
 
           <div id="username-input-container">
@@ -91,9 +81,8 @@ render() {
           </div>
 
         </form>
-        <p>{this.state.responseToPost}</p>
-        <p>{this.state.loggedIn}</p>
-        <button onClick={() => navigate("/home")}>test</button>
+
+        <p>{this.state.responseToLoginRequest}</p>
       </div>
     );
   }
@@ -106,4 +95,3 @@ export default function(props) {
 
 }
 
-//export default LoginForm;
