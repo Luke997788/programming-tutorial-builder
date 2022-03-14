@@ -9,12 +9,12 @@ class EditVideoContent extends Component {
 
 	state = {
 		creator: sessionStorage.getItem("username"),
-		courseTitle: '',
+		title: '',
 		contentTitle: sessionStorage.getItem("contentTitle"),
 	};
 
 	componentDidMount = () => {		
-		this.setState({courseTitle: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
 	}
 
 	componentDidUpdate() {

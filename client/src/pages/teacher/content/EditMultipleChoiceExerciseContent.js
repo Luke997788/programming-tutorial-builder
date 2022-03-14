@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import { useNavigate } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
 //import './homepage.css';
 import './addcontent.css';
 
-class AddExerciseContent extends Component {
+class EditMultipleChoiceExerciseContent extends Component {
 
 	state = {
         title: '',
 		creator: '',
         courseId: '',
         contentId: '',
-        contentTitle: '',
+        contentTitle: sessionStorage.getItem("contentTitle"),
         contentType: 'exercise',
         task: ``,
+        content: ``,
         answer1: '',
         answer2: '',
         answer3: '',
@@ -27,6 +27,12 @@ class AddExerciseContent extends Component {
         this.setState({creator: sessionStorage.getItem("username")});
         this.setState({courseId: sessionStorage.getItem("courseId")});		
 		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+        
+        this.retrieveExerciseTask().then(data => {
+            this.retrieveContentId().then(item => {
+                this.retrieveExerciseAnswers();
+            })
+        });
 	}
 
 	componentDidUpdate() {
@@ -43,44 +49,23 @@ class AddExerciseContent extends Component {
 		}
 	}
 
-    handleEditorChange = (e) => {
-        console.log(
-          'Content was updated:',
-          e.target.getContent()
-        );
-    
-        this.setState({task: e.target.getContent()});
-    }
-
-    async submitTutorialInformation() {
-
+    async retrieveExerciseTask() {
         // starts a request, passes URL and configuration object
-        const response = await fetch('/api/uploadtutorialcontent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
+        const response = await fetch('/api/getspecifictutorialcontent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: sessionStorage.getItem("contentTitle")}),
+        });
+    
+        await response.text().then(data => {
+            this.setState({task: data});
         });
 
-        await response.text().then(responseData => {
-            if (responseData == 'successful insertion') {
-                this.setState({ responseToPostRequest: 'Tutorial information added' });
-            } else {
-                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-            }
-        });
-
-        /*const body = await response.text();
-
-        if (body === 'successful insertion') {
-            this.setState({ responseToPostRequest: 'Tutorial information added' });
-            //this.props.navigate("/editcourse");
-        } else {
-            this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-        }*/
-
-	};
+        //const body = await response.text()
+        //this.setState({ task: body });
+    }
 
     async retrieveContentId() {
 
@@ -93,82 +78,123 @@ class AddExerciseContent extends Component {
             body: JSON.stringify({idToGet: this.state.courseId, title: this.state.contentTitle}),
         });
 
-        await response.text().then(responseData => {
-            this.setState({contentId: responseData}); 
+        await response.text().then(data => {
+            this.setState({contentId: data});
         });
 
-        /*const body = await response.text();
-
-        this.setState({contentId: body});*/
+        //const body = await response.text();
+        //this.setState({contentId: body});
 
 	};
 
-    async submitExerciseAnswers() {
+    async retrieveExerciseAnswers() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/getexerciseanswers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ contentId: this.state.contentId }),
+        });
+    
+        await response.json().then(data => {
+            this.setState({answer1: data[0]});
+            this.setState({answer2: data[1]});
+            this.setState({answer3: data[2]});
+            this.setState({answer4: data[3]});
+            this.setState({correctAnswer: data[4]});
+        });
+    }
+
+    async updateTutorialInformation() {
+        var contentToSubmit = '';
+
+        if (this.state.content == '') {
+          contentToSubmit = this.state.task;
+        } else {
+          contentToSubmit = this.state.content;
+        }
 
         // starts a request, passes URL and configuration object
-        const response = await fetch('/api/uploadexercisecontent', {
+        const response = await fetch('/api/updatetutorialcontent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), creator: this.state.creator, type: this.state.contentType, task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
+            body: JSON.stringify({courseId: this.state.courseId, contentId: this.state.contentId, title: this.state.contentTitle, content: contentToSubmit}),
         });
 
-        await response.text().then(responseData => {
-            if (responseData == 'successful insertion') {
-                this.setState({ responseToPostRequest: 'Tutorial information added' });
-                this.props.navigate("/editcourse");
+        await response.text().then(data => {
+            if (data === 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information updated' });
             } else {
-                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
             }
         });
 
         /*const body = await response.text();
 
         if (body === 'successful insertion') {
-            this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
+            this.setState({ responseToPostRequest: 'Tutorial information updated' });
             //this.props.navigate("/editcourse");
         } else {
-            this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+            this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
         }*/
 
 	};
 
-    handleSubmit = async e => {
-        e.preventDefault();
-        this.submitTutorialInformation().then(data => {
-            this.retrieveContentId().then(item => {
-                this.submitExerciseAnswers();
-            })
+    async updateExerciseAnswers() {
+        var contentToSubmit = '';
+
+        if (this.state.content == '') {
+          contentToSubmit = this.state.task;
+        } else {
+          contentToSubmit = this.state.content;
+        }
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/updateexerciseanswers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), task: contentToSubmit, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correctAnswer: this.state.correctAnswer}),
         });
 
-        /*let [res1, res2, res3] = await Promise.all([
-            fetch('/api/uploadtutorialcontent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
-            }).then(response => response.json()),
+        await response.text().then(data => {
+            if (data === 'successful update') {
+                this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
+                this.props.navigate("/editcourse");
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
+            }
+        });
 
-            fetch('/api/retrievecontentid', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({idToGet: this.state.courseId, title: this.state.contentTitle}),
-            }).then(response => {
-                this.setState({contenId: response.text()});
-            }),
+        /*const body = await response.text();
 
-            fetch('/api/uploadexercisecontent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), creator: this.state.creator, type: this.state.contentType, task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
-            }).then(response => response.json()),
-        ]);*/
+        if (body === 'successful update') {
+            this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
+            //this.props.navigate("/editcourse");
+        } else {
+            this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
+        }*/
+
+	};
+
+    handleEditorChange = (e) => {
+        console.log(
+          'Content was updated:',
+          e.target.getContent()
+        );
+    
+        this.setState({content: e.target.getContent()});
+    }
+
+    handleSubmit = async e => {
+        e.preventDefault();
+        this.updateTutorialInformation().then(data => {
+            this.updateExerciseAnswers();
+        });
     };
 
 	render() {
@@ -177,7 +203,7 @@ class AddExerciseContent extends Component {
 		return (
 			<>
 			<div id="exercise-information-container">
-			    <h1>Add an exercise to {this.state.title}</h1>
+			    <h1>Edit multiple choice exercise for {this.state.title}</h1>
 
                 <div>
                     <label for="content-title">Enter a title for the exercise</label>
@@ -188,7 +214,7 @@ class AddExerciseContent extends Component {
                     <Editor
                             //tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
                             apiKey='6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o'
-                            initialValue= {this.state.initialContents}
+                            initialValue= {this.state.task}
                             init={{
                             selector: 'text-area',
                             height: 500,
@@ -264,7 +290,7 @@ class AddExerciseContent extends Component {
                     </div>
 
                     <div id="submit-button-container">
-				       <button onClick={this.handleSubmit}>Create Exercise</button>
+				       <button onClick={this.handleSubmit}>Save Exercise</button>
 				    </div>
 
 		  </div>
@@ -279,6 +305,6 @@ class AddExerciseContent extends Component {
 export default function(props) {
 	const navigate = useNavigate();
   
-	return <AddExerciseContent navigate={navigate} />;
+	return <EditMultipleChoiceExerciseContent navigate={navigate} />;
   
 }

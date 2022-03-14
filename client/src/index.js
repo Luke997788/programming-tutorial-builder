@@ -19,8 +19,12 @@ import AddTextImageContent from './pages/teacher/content/AddTextImageContent';
 import EditTextImageContent from './pages/teacher/content/EditTextImageContent';
 import AddVideoContent from './pages/teacher/content/AddVideoContent';
 import EditVideoContent from './pages/teacher/content/EditVideoContent';
-import AddExerciseContent from './pages/teacher/content/AddExerciseContent';
-import EditExerciseContent from './pages/teacher/content/EditExerciseContent';
+import AddMultipleChoiceExerciseContent from './pages/teacher/content/AddMultipleChoiceExerciseContent';
+import EditMultipleChoiceExerciseContent from './pages/teacher/content/EditMultipleChoiceExerciseContent';
+import AddFillInGapExerciseContent from './pages/teacher/content/AddFillInGapExerciseContent';
+import EditFillInGapExerciseContent from './pages/teacher/content/EditFillInGapExerciseContent';
+import AddAssignment from './pages/teacher/content/AddAssignment';
+import EditAssignment from './pages/teacher/content/EditAssignment';
 
 import StudentLayout from './pages/student/StudentLayout';
 import StudentHomepage from './pages/student/StudentHomepage';
@@ -50,8 +54,12 @@ function App() {
                     <Route path="/editcourse/edittextimage" element={<EditTextImageContent />} />
                     <Route path="/editcourse/addvideo" element={<AddVideoContent />} />
                     <Route path="/editcourse/editvideo" element={<EditVideoContent />} />
-                    <Route path="/editcourse/addexercise" element={<AddExerciseContent />} />
-                    <Route path="/editcourse/editexercise" element={<EditExerciseContent />} />
+                    <Route path="/editcourse/addchoiceexercise" element={<AddMultipleChoiceExerciseContent />} />
+                    <Route path="/editcourse/editchoiceexercise" element={<EditMultipleChoiceExerciseContent />} />
+                    <Route path="/editcourse/addgapexercise" element={<AddFillInGapExerciseContent />} />
+                    <Route path="/editcourse/editgapexercise" element={<EditFillInGapExerciseContent />} />
+                    <Route path="/editcourse/addassignment" element={<AddAssignment />} />
+                    <Route path="/editcourse/editassignment" element={<EditAssignment />} />
                     <Route path="/mystudents" element={<MyStudents />} />
                     <Route path="/mystudents/viewclass" element={<ViewClass />} />
                 </Route>

@@ -14,8 +14,6 @@ class EditCourse extends Component {
     information: '',
   };
 
-  x;
-
   componentDidMount() {
 		const status = sessionStorage.getItem('username');
     const role = sessionStorage.getItem('role');
@@ -143,8 +141,12 @@ class EditCourse extends Component {
         btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/edittextimage")};
       } else if (contentType == 'video') {
         btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editvideo")};
-      } else if (contentType == 'exercise') {
-        btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editexercise")};
+      } else if (contentType == 'Multiple Choice Exercise') {
+        btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editchoiceexercise")};
+      } else if (contentType == 'Fill in the Gap Exercise') {
+        btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editgapexercise")};
+      } else if (contentType == 'Assignment') {
+        btn.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editassignment")};
       }
       cell4.appendChild(btn);
 

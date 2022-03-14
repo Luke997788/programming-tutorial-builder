@@ -460,7 +460,7 @@ app.post('/api/getallcoursetutorialcontent', (req, res) => {
   });
 });
 
-// gets the answers for a piece of exercise content
+// gets the answers for a piece of multiple choice exercise content
 app.post('/api/getexerciseanswers', (req, res) => {
 
   console.log(req.body);
@@ -483,6 +483,36 @@ app.post('/api/getexerciseanswers', (req, res) => {
         var data = [result[0].answer_1, result[0].answer_2, result[0].answer_3, result[0].answer_4, result[0].correct_answer];
     
         res.send(data);
+      } else {
+        //res.send('failed');
+      }
+    });
+  });
+});
+
+// gets the answers for a piece of fill in the gap exercise content
+app.post('/api/getgapexerciseanswers', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+    databaseConnection.query("SELECT answer_1, correct_answer FROM multiple_choice_exercises WHERE content_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        //var data = [result[0].answer_1, result[0].correct_answer];
+        console.log(result[0].correct_answer);
+        res.send(result[0].correct_answer);
       } else {
         //res.send('failed');
       }

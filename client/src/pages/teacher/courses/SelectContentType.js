@@ -48,7 +48,13 @@ class SelectContentType extends Component {
         videoButton.onclick = () => {this.props.navigate("/editcourse/addvideo");};
 
 		var exerciseButton = document.getElementById("exercise-content-button");
-        exerciseButton.onclick = () => {this.props.navigate("/editcourse/addexercise");};
+        exerciseButton.onclick = () => {this.props.navigate("/editcourse/addchoiceexercise");};
+
+		var fillInTheGapButton = document.getElementById("fill-in-gap-exercise-content-button");
+        fillInTheGapButton.onclick = () => {this.props.navigate("/editcourse/addgapexercise");};
+
+		var assignmentButton = document.getElementById("assignment-content-button");
+        assignmentButton.onclick = () => {this.props.navigate("/editcourse/addassignment");};
     }
 
 	render() {
@@ -60,8 +66,10 @@ class SelectContentType extends Component {
             <button id="text-image-content-button">Text and Images</button>
             <button id="video-content-button">Video</button>
             <button>Slideshow Presentation</button>
-            <button id="exercise-content-button">Exercise</button>
-            </>
+            <button id="exercise-content-button">Multiple Choice Exercise</button>
+			<button id="fill-in-gap-exercise-content-button">Fill in the Gap Exercise</button>
+            <button id="assignment-content-button">Assignment</button>
+			</>
 		);
 	}
 }
