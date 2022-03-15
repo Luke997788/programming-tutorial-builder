@@ -83,14 +83,14 @@ app.post('/api/getcourseinfo', (req, res) => {
       if (result.length != 0) {
         console.log(result);
 
-        var rows = new Array(result.length);
-      
-        for (let i=0; i < result.length; i++) {
-          var row = [result[i].course_id, result[i].course_creator, result[i].course_title, result[i].course_description, result[i].target_class_id];
-          rows[i] = row;
+        var coursesInformation = [[result[0].course_id, result[0].course_title, result[0].course_description, result[0].target_class_id]];
+
+        for (let i=1; i < result.length; i++) {
+          var information = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].target_class_id];
+          coursesInformation[i] = information;
         }
 
-        res.send(rows);
+        res.send(coursesInformation);
       } else {
         res.send('failed');
       }
@@ -114,10 +114,10 @@ app.post('/api/getspecificcourseinfo', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT * FROM course_information WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT course_title, course_description FROM course_information WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {       
-        var courseInformation = [result[0].course_id, result[0].course_creator, result[0].course_title, result[0].course_description, result[0].target_class_id];
+        var courseInformation = [result[0].course_title, result[0].course_description];
 
         res.send(courseInformation);
       } else {
@@ -415,6 +415,30 @@ app.post('/api/updateexerciseanswers', (req, res) => {
   });
 });
 
+// inserts information about an assignment into the database
+app.post('/api/uploadassignmentsubmission', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+
+    databaseConnection.query("INSERT INTO assignment_submissions (student_id, first_name, last_name, username, course_id, assignment_content_id, assignment_submission) VALUES ('" + req.body.studentId + "', '" + req.body.firstName + "', '" + req.body.lastName + "', '" + req.body.username + "', '" + req.body.courseId + "', '" + req.body.contentId + "', '" + req.body.submission + "')", function(err,result,fields) {
+      if (err) throw err;
+      res.send("successful insertion");
+    });
+  });
+});
+
 // gets all of the tutorial content that is part of a specific course
 app.post('/api/getallcoursetutorialcontent', (req, res) => {
 
@@ -583,16 +607,14 @@ app.post('/api/getcoursecontentinfo', (req, res) => {
 
         console.log(result);
 
-        var rows = new Array(result.length);
-        var test = {};
-       
+        var contentInformation = [[result[0].content_order_position, result[0].content_title, result[0].content_type]];
 
-        for (let i=0; i < result.length; i++) {
-          var row = [result[i].content_order_position, result[i].content_title, result[i].content_type];
-          rows[i] = row;
+        for (let i=1; i < result.length; i++) {
+          var information = [result[i].content_order_position, result[i].content_title, result[i].content_type];
+          contentInformation[i] = information;
         }
 
-        res.send(rows);
+        res.send(contentInformation);
       } else {
         //res.send('failed');
       }

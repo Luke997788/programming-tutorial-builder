@@ -74,14 +74,14 @@ class EditCourseDetails extends Component {
 			body: JSON.stringify({ idToGet: sessionStorage.getItem("courseId"), creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.order, hide: this.state.hide}),
 		});
 
-		const body = await response.text();
-
-		if (body === 'successful update') {
-			this.setState({ responseToSubmission: 'Course details successfully updated' });
-            this.props.navigate("/editcourse")
-		} else {
-			this.setState({ responseToSubmission: 'ERROR: Failed to update course details' });
-		}
+		await response.text().then(data => {
+			if (data === 'successful update') {
+				this.setState({ responseToSubmission: 'Course details successfully updated' });
+				this.props.navigate("/editcourse")
+			} else {
+				this.setState({ responseToSubmission: 'ERROR: Failed to update course details' });
+			}
+		});
 	};
 
 	render() {

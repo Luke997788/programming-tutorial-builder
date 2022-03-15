@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { useNavigate } from "react-router-dom"
-//import './homepage.css';
 
 class CreateCourse extends Component {
 
 	state = {
 		title: '',
 		description: '',
-		targetClass: '',
+		targetClass: 'CS1001',
 		order: '',
 		hide: '',
 		creator: sessionStorage.getItem("username"),
@@ -54,15 +53,15 @@ class CreateCourse extends Component {
 			body: JSON.stringify({ creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.order, hide: this.state.hide}),
 		});
 
-		const body = await response.text();
-
-		if (body === 'successful insertion') {
-			this.setState({ responseToSubmission: 'Course successfully created' });
-			this.props.navigate("/mycourses");
-    
-		} else {
-			this.setState({ responseToSubmission: 'ERROR: Failed to create course' });
-		}
+		await response.text().then(data => {
+			if (data === 'successful insertion') {
+				this.setState({ responseToSubmission: 'Course successfully created' });
+				this.props.navigate("/mycourses");
+		
+			} else {
+				this.setState({ responseToSubmission: 'ERROR: Failed to create course' });
+			}
+		});
 	};
 
 	render() {
@@ -70,7 +69,7 @@ class CreateCourse extends Component {
 
 		return (
 			<div id="create-a-course-container">
-			  <h1>Create a Course</h1>
+			  <h1>Create a New Course</h1>
 
 			  <form id="create-course-form" onSubmit={this.handleSubmit}>
 				<div id="title-input-container">

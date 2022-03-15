@@ -67,12 +67,12 @@ render() {
         <form id="login-form" onSubmit={this.handleSubmit}>
 
           <div id="username-input-container">
-            <label for="username">Username</label>
+            <label id="username-label" for="username">Username</label>
             <input type="text" id="username" value={this.state.username} onChange={e => this.setState({ username: e.target.value })}/>
           </div>
 
           <div id="password-input-container">
-            <label for="password">Password</label>
+            <label id="password-label" for="password">Password</label>
             <input type="password" id="password" value={this.state.password} onChange={e => this.setState({ password: e.target.value })}/><br></br>
           </div>
 

@@ -1,14 +1,8 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
-//import './homepage.css';
 import './mycourses.css';
 
 class MyCourses extends Component {
-
-  state = {
-    responseToPost: '',
-    tableData: '',
-  };
 
   componentDidMount() {
 		const status = sessionStorage.getItem('username');
@@ -22,7 +16,7 @@ class MyCourses extends Component {
 			this.props.navigate("/studenthome");
 		}
 
-    this.test();
+    this.displayCourses();
 	}
 
   componentDidUpdate() {
@@ -42,7 +36,7 @@ class MyCourses extends Component {
     }
 	}
 
-  async test() {
+  async displayCourses() {
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getcourseinfo', {
       method: 'POST',
@@ -52,64 +46,45 @@ class MyCourses extends Component {
       body: JSON.stringify({ creator: sessionStorage.getItem("username")}),
     });
 
-    const body = await response.text()
-
-    this.setState({ responseToPost: body });
-
-    var dataForTable = body.split("[").join(']').split(']').join(',').split(',');
-    this.setState({responseToPost: dataForTable });
-
-    var arr = [];
-    var index = 0;
-    for(let i=0; i < this.state.responseToPost.length; i++) {
-      if ((this.state.responseToPost[i] !== undefined) && (this.state.responseToPost[i] !== null) && (this.state.responseToPost[i] !== '')) {
-        arr[index] = this.state.responseToPost[i];
-        index += 1;
+    await response.json().then(data => {      
+      var table = document.getElementById("course-info-table");
+      var rowCount = 1;
+  
+      for(let i=0; i < data.length; i++) {
+        let courseId = data[i][0];
+        let courseTitle = data[i][1];
+        let courseDescription = data[i][2];
+        let targetClass = data[i][3];
+  
+        var row = table.insertRow(rowCount);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+  
+        cell1.innerHTML = courseTitle;
+        cell2.innerHTML = courseDescription;
+        cell3.innerHTML = targetClass;
+  
+        var editButton = document.createElement("button");
+        editButton.setAttribute("class", "courseEditButton");
+        editButton.setAttribute("value", courseId);
+        editButton.innerHTML = "Edit";
+        editButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/editcourse")};
+  
+        var viewButton = document.createElement("button");
+        viewButton.setAttribute("class", "courseViewButton");
+        viewButton.setAttribute("value", courseId);
+        viewButton.innerHTML = "View";
+        viewButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/viewcourse")};
+  
+        cell4.appendChild(viewButton);
+        cell5.appendChild(editButton);
+  
+        rowCount += 1;
       }
-    }
-
-    this.setState({tableData: arr});
-      
-    var table = document.getElementById("course-info-table");
-    var rowCount = 1;
-
-    for(let i=0; i < this.state.tableData.length; i += 5) {
-      let courseId = this.state.tableData[i];
-      let courseTitle = this.state.tableData[i+2];
-      let courseDescription = this.state.tableData[i+3];
-
-      var row = table.insertRow(rowCount);
-      var cell1 = row.insertCell(0);
-      var cell2 = row.insertCell(1);
-      var cell3 = row.insertCell(2);
-      var cell4 = row.insertCell(3);
-      var cell5 = row.insertCell(4);
-      var cell6 = row.insertCell(5);
-      var cell7 = row.insertCell(6);
-
-      cell1.innerHTML = courseId.replaceAll('"','');;
-      cell2.innerHTML = this.state.tableData[i+1].replaceAll('"','');
-      cell3.innerHTML = this.state.tableData[i+2].replaceAll('"','');;
-      cell4.innerHTML = this.state.tableData[i+3].replaceAll('"','');;
-      cell5.innerHTML = this.state.tableData[i+4].replaceAll('"','');;
-
-      var editButton = document.createElement("button");
-      editButton.setAttribute("class", "courseEditButton");
-      editButton.setAttribute("value", courseId);
-      editButton.innerHTML = "Edit";
-      editButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/editcourse")};
-
-      var viewButton = document.createElement("button");
-      viewButton.setAttribute("class", "courseViewButton");
-      viewButton.setAttribute("value", courseId);
-      viewButton.innerHTML = "View";
-      viewButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/viewcourse")};
-
-      cell6.appendChild(viewButton);
-      cell7.appendChild(editButton);
-
-      rowCount += 1;
-    }
+    });
   }
 
   render () {
@@ -117,15 +92,11 @@ class MyCourses extends Component {
 
     return (
       <>
-      <p>My Courses</p> 
-      {/*<button onClick={this.test}>Test</button>*/}
-      <p>{this.state.tt}</p>
+      <h1>My Courses</h1> 
 
       <div id="course_info_table">
         <table id="course-info-table">
           <tr>
-            <th>Course Id</th>
-            <th>Course Creator</th>
             <th>Course Title</th>
             <th>Course Description</th>
             <th>Class</th>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
-//import './homepage.css';
 import './mycourses.css';
 
 class ViewCourse extends Component {
@@ -67,7 +66,6 @@ class ViewCourse extends Component {
     await response.json().then(data => {
         this.state.numberOfTutorials = data.length - 1;
 
-        var assignmentUpload = document.getElementById("assignment-upload").style.display = 'none';
         var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
         
         var tutorialTitle = document.getElementById("tutorial-title");
@@ -94,9 +92,7 @@ class ViewCourse extends Component {
           this.gapTask = "" + data[this.state.currentTutorial][3];
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveGapExerciseAnswers();
-        } else if (data[this.state.currentTutorial][2] == 'Assignment') {
-          var assignmentUpload = document.getElementById("assignment-upload").style.display = 'block';
-        }
+        } 
     })
   }
 
@@ -253,8 +249,6 @@ async submitGapAnswer() {
       <div id="tutorial-container">
         <h1 id="tutorial-title"></h1>
         <div id="tutorial-content"></div>
-
-        <input type="file" id="assignment-upload" />
 
         <div id="answer-options">
           <p id="answer-1-option"></p>
