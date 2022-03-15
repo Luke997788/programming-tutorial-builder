@@ -459,23 +459,13 @@ app.post('/api/getallcoursetutorialcontent', (req, res) => {
       if (err) throw err;
       if (result.length != 0) {
 
-        /*console.log(result);
-        var rows = new Array(result.length);
-        //var data = new Array();
-        for (let i=0; i < result.length; i++) {
-          var row = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].content];
-          rows[i] = row;
-          //data.push(result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].content);
-        }*/
-
         var data = [[result[0].content_order_position, result[0].content_title, result[0].content_type, result[0].content]];
 
         for (let i=1; i < result.length; i++) {
           var row = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].content, result[i].content_id];
           data.push(row);
         }
-
-    
+        
         res.send(data);
       } else {
         //res.send('failed');

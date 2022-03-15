@@ -19,7 +19,6 @@ class ViewCourse extends Component {
   gapInputValues = [];
   gapTask = ``;
 
-
   componentDidMount() {
 	const status = sessionStorage.getItem('username');
     const role = sessionStorage.getItem('role');
@@ -60,7 +59,7 @@ class ViewCourse extends Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId")}),
+      body: JSON.stringify({idToGet: sessionStorage.getItem("courseId")}),
     });
 
     await response.json().then(data => {

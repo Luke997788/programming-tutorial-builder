@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './homepage.css';
 import './mycourses.css';
 
 class StudentViewCourse extends Component {
@@ -8,7 +7,6 @@ class StudentViewCourse extends Component {
   state = {
     courseTitle: '',
     responseData: '',
-    courseTutorialInformation: [[]],
     currentTutorial: 0,
     numberOfTutorials: 0,
     contentIdToRetrieve: 0,
@@ -17,6 +15,9 @@ class StudentViewCourse extends Component {
     answerSelected: 0,
   };
 
+  gapAnswers = [];
+  gapInputValues = [];
+  gapTask = ``;
 
   componentDidMount() {
 	const status = sessionStorage.getItem('username');
@@ -58,17 +59,14 @@ class StudentViewCourse extends Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId")}),
+      body: JSON.stringify({idToGet: sessionStorage.getItem("courseId")}),
     });
-
-    //const body = await response.text()
-    //this.setState({responseData: body});
-
-    //this.setState({courseTutorialInformation: this.state.responseData.split('"NEXT_RECORD",')});
 
     await response.json().then(data => {
         this.state.numberOfTutorials = data.length - 1;
 
+        var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
+        
         var tutorialTitle = document.getElementById("tutorial-title");
         var tutorialContent = document.getElementById("tutorial-content");
         var resultMessage = document.getElementById("result-message");
@@ -77,10 +75,23 @@ class StudentViewCourse extends Component {
         tutorialContent.innerHTML = "" + data[this.state.currentTutorial][3];
         resultMessage.innerHTML = "";
 
-        if (data[this.state.currentTutorial][2] == 'exercise') {
+        if ((data[this.state.currentTutorial][2] == 'text/image') || (data[this.state.currentTutorial][2] == 'video')) {
+          var answer1 = document.getElementById("answer-1-option").innerHTML = '';
+          var answer2 = document.getElementById("answer-2-option").innerHTML = '';
+          var answer3 = document.getElementById("answer-3-option").innerHTML = '';
+          var answer4 = document.getElementById("answer-4-option").innerHTML = '';
+          var checkbox1 = document.getElementById("answer-1-checkbox").innerHTML = '';
+          var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
+          var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
+          var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
+        } else if (data[this.state.currentTutorial][2] == 'Multiple Choice Exercise') {
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveExerciseAnswers();
-        }
+        } else if (data[this.state.currentTutorial][2] == 'Fill in the Gap Exercise') {
+          this.gapTask = "" + data[this.state.currentTutorial][3];
+          this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
+          this.retrieveGapExerciseAnswers();
+        } 
     })
   }
 
@@ -119,11 +130,53 @@ class StudentViewCourse extends Component {
         checkbox4.onclick = () => {this.setState({answerSelected: 4}); this.selectAnswer()};
 
         var submitAnswerButton = document.getElementById("submit-answer-button");
-        submitAnswerButton.innerHTML = "Submit Answer"
+        submitAnswerButton.style.display = 'block';
         submitAnswerButton.hidden = false;
         submitAnswerButton.onclick = () => {this.submitAnswer()};
     });
 }
+
+
+async retrieveGapExerciseAnswers() {
+  var tutorialContent = document.getElementById("tutorial-content");
+  var answer1 = document.getElementById("answer-1-option");
+  var answer2 = document.getElementById("answer-2-option");
+  var answer3 = document.getElementById("answer-3-option");
+  var answer4 = document.getElementById("answer-4-option");
+
+  // starts a request, passes URL and configuration object
+  const response = await fetch('/api/getgapexerciseanswers', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ contentId: this.state.contentIdToRetrieve }),
+  });
+
+  await response.text().then(data => {
+      var answers = data.split(',');
+
+      answer1.innerHTML = '';
+      answer2.innerHTML = '';
+      answer3.innerHTML = '';
+      answer4.innerHTML = '';
+
+      for (let i=0; i < answers.length; i++) {
+        this.gapAnswers.push(answers[i]);
+        this.gapInputValues.push('');
+      }
+
+      for (let i=1; i <= this.gapAnswers.length; i++) {
+        this.gapTask = this.gapTask.replaceAll('[' + i + ']', `<input type='text' id="gap-answer-` + i + `" value='' />`);
+        tutorialContent.innerHTML = this.gapTask;
+      }
+  
+      var submitAnswerButton = document.getElementById("submit-answer-button");
+      submitAnswerButton.style.display = 'block';
+      submitAnswerButton.onclick = () => {this.submitGapAnswer()};
+  });
+}
+
 
 async selectAnswer() {
   for (let i = 1; i <= 4; i++)
@@ -139,6 +192,28 @@ async submitAnswer() {
     resultMessage.innerHTML = "Correct!";
   } else {
     resultMessage.innerHTML = "Incorrect. The correct answer is " + this.state.correctAnswerText;
+  }
+}
+
+async submitGapAnswer() {
+  var resultMessage = document.getElementById("result-message");
+  var correctAnswers = [];
+  var numberCorrect = 0;
+
+  for (let i=0; i < this.gapAnswers.length; i++) {
+    var input = document.getElementById("gap-answer-" + (i+1) + "");
+    if (input.value == this.gapAnswers[i]) {
+      correctAnswers.push(true);
+      numberCorrect += 1;
+    } else {
+      correctAnswers.push(false);
+    }
+  }
+
+  if (numberCorrect == this.gapAnswers.length) {
+    resultMessage.innerHTML = "All answers correct";
+  } else {
+    resultMessage.innerHTML = "Incorrect";
   }
 }
 
@@ -179,7 +254,7 @@ async submitAnswer() {
           <p id="answer-2-option"></p>
           <p id="answer-3-option"></p>
           <p id="answer-4-option"></p>
-          <button id="submit-answer-button" hidden></button>
+          <button id="submit-answer-button" hidden>Submit Answer</button>
         </div>
 
         <p id="result-message"></p>
