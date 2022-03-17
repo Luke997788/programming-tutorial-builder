@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
-//import '.src/pages/teacher/homepage.css';
 import './mystudents.css';
 
 class MyStudents extends Component {
@@ -9,8 +8,6 @@ class MyStudents extends Component {
     responseToPost: '',
     tableData: '',
   };
-
-  x;
 
   componentDidMount() {
 		const status = sessionStorage.getItem('username');

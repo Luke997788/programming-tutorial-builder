@@ -15,6 +15,8 @@ import SelectContentType from './pages/teacher/courses/SelectContentType';
 import ViewCourse from './pages/teacher/courses/ViewCourse'
 import MyStudents from './pages/teacher/mystudents/MyStudents';
 import ViewClass from './pages/teacher/mystudents/ViewClass';
+import ViewAssignments from './pages/teacher/mystudents/ViewAssignments';
+import ViewSubmission from './pages/teacher/mystudents/ViewSubmission';
 import AddTextImageContent from './pages/teacher/content/AddTextImageContent';
 import EditTextImageContent from './pages/teacher/content/EditTextImageContent';
 import AddVideoContent from './pages/teacher/content/AddVideoContent';
@@ -62,6 +64,8 @@ function App() {
                     <Route path="/editcourse/editassignment" element={<EditAssignment />} />
                     <Route path="/mystudents" element={<MyStudents />} />
                     <Route path="/mystudents/viewclass" element={<ViewClass />} />
+                    <Route path="/mystudents/viewassignments" element={<ViewAssignments />} />
+                    <Route path="/mystudents/viewassignments/viewsubmission" element={<ViewSubmission />} />
                 </Route>
                 <Route path="/" element={<StudentLayout />} >
                     <Route path="/studenthome" element={<StudentHomepage />} />

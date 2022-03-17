@@ -50,7 +50,7 @@ class EditCourse extends Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId")}),
+      body: JSON.stringify({idToGet: sessionStorage.getItem("courseId")}),
     });
 
     await response.json().then(data => {
@@ -83,6 +83,7 @@ class EditCourse extends Component {
         let order = data[i][0];
         let contentTitle = data[i][1];
         let contentType = data[i][2];
+        let contentId = data[i][3];
   
         var row = table.insertRow(rowCount);
         var cell1 = row.insertCell(0);
@@ -98,16 +99,16 @@ class EditCourse extends Component {
         editButton.setAttribute("class", "content-edit-button");
         editButton.innerHTML = "Edit Content";
   
-        if (contentType == 'text/image') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/edittextimage")};
-        } else if (contentType == 'video') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editvideo")};
-        } else if (contentType == 'Multiple Choice Exercise') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editchoiceexercise")};
-        } else if (contentType == 'Fill in the Gap Exercise') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editgapexercise")};
-        } else if (contentType == 'Assignment') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editassignment")};
+        if (contentType === 'text/image') {
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/edittextimage")};
+        } else if (contentType === 'video') {
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editvideo")};
+        } else if (contentType === 'Multiple Choice Exercise') {
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editchoiceexercise")};
+        } else if (contentType === 'Fill in the Gap Exercise') {
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editgapexercise")};
+        } else if (contentType === 'Assignment') {
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editassignment")};
         }
         cell4.appendChild(editButton);
   

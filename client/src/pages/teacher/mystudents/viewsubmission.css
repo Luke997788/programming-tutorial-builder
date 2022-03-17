@@ -1,0 +1,12 @@
+#student-assignment-container {
+    border: 2px solid black;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-left: 50px;
+    padding-right: 50px;
+    height: 1500px;
+}

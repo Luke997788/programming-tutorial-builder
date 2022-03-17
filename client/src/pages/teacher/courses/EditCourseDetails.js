@@ -8,7 +8,7 @@ class EditCourseDetails extends Component {
 		responseToSubmission: '',
 		title: '',
 		description: '',
-		targetClass: '',
+		targetClass: 'CS1001',
 		order: '',
 		hide: '',
 		creator: sessionStorage.getItem("username"),
@@ -52,13 +52,13 @@ class EditCourseDetails extends Component {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId")}),
+          body: JSON.stringify({idToGet: sessionStorage.getItem("courseId")}),
         });
 
 		await response.json().then(data => {
-			this.setState({title: data[2]})
-			this.setState({description: data[3]})
-			this.setState({targetClass: data[4]})
+			this.setState({title: data[0]})
+			this.setState({description: data[1]})
+			this.setState({targetClass: data[2]})
 		})
     }
 

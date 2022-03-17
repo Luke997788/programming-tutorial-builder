@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Editor } from '@tinymce/tinymce-react';
 import './mycourses.css';
+import './viewcourse.css';
+import AssignmentTextEditor from './AssignmentTextEditor';
 
 class ViewCourse extends Component {
 
@@ -10,14 +13,18 @@ class ViewCourse extends Component {
     currentTutorial: 0,
     numberOfTutorials: 0,
     contentIdToRetrieve: 0,
+    currentContentId: 0,
     correctAnswer: 0,
     correctAnswerText: '',
     answerSelected: 0,
+    displayEditor: false,
+    data: '',
   };
 
   gapAnswers = [];
   gapInputValues = [];
   gapTask = ``;
+  fileToSubmit;
 
   componentDidMount() {
 	const status = sessionStorage.getItem('username');
@@ -64,8 +71,6 @@ class ViewCourse extends Component {
 
     await response.json().then(data => {
         this.state.numberOfTutorials = data.length - 1;
-
-        var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
         
         var tutorialTitle = document.getElementById("tutorial-title");
         var tutorialContent = document.getElementById("tutorial-content");
@@ -75,7 +80,18 @@ class ViewCourse extends Component {
         tutorialContent.innerHTML = "" + data[this.state.currentTutorial][3];
         resultMessage.innerHTML = "";
 
+        this.setState({currentContentId: data[this.state.currentTutorial][4]});
+        sessionStorage.setItem("currentContentId", this.state.currentContentId);
+
         if ((data[this.state.currentTutorial][2] == 'text/image') || (data[this.state.currentTutorial][2] == 'video')) {
+          var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
+          /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
+          var assignmentInput = document.getElementById("assignment-submission-container");
+        assignmentInput.innerHTML = ``;*/
+
+          var editor = document.getElementById("editor");
+          editor.style.display='none';
+
           var answer1 = document.getElementById("answer-1-option").innerHTML = '';
           var answer2 = document.getElementById("answer-2-option").innerHTML = '';
           var answer3 = document.getElementById("answer-3-option").innerHTML = '';
@@ -85,13 +101,39 @@ class ViewCourse extends Component {
           var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
           var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
         } else if (data[this.state.currentTutorial][2] == 'Multiple Choice Exercise') {
+          /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
+          var assignmentInput = document.getElementById("assignment-submission-container");
+          assignmentInput.innerHTML = ``;*/
+
+          var editor = document.getElementById("editor");
+          editor.style.display='none';
+
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveExerciseAnswers();
         } else if (data[this.state.currentTutorial][2] == 'Fill in the Gap Exercise') {
+          /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
+          var assignmentInput = document.getElementById("assignment-submission-container");
+          assignmentInput.innerHTML = ``;*/
+
+          var editor = document.getElementById("editor");
+          editor.style.display='none';
+
           this.gapTask = "" + data[this.state.currentTutorial][3];
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveGapExerciseAnswers();
-        } 
+        }  else if (data[this.state.currentTutorial][2] == 'Assignment') {
+          var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
+          /*var assignmentInput = document.getElementById("assignment-submission-container");
+          assignmentInput.innerHTML = `<label for="assignment-submission">Upload a PDF file: </label> <input id="assignment-submission" type="file" />`;*/
+
+          var editor = document.getElementById("editor");
+          editor.style.display='block';
+
+          /*var submitAssignmentButton = document.getElementById("submit-assignment-button");
+          submitAssignmentButton.style.display = 'block';
+          submitAssignmentButton.hidden = false;
+          submitAssignmentButton.onclick = () => {this.submitAssignment()};*/
+        }
     })
   }
 
@@ -177,7 +219,6 @@ async retrieveGapExerciseAnswers() {
   });
 }
 
-
 async selectAnswer() {
   for (let i = 1; i <= 4; i++)
   {
@@ -244,7 +285,7 @@ async submitGapAnswer() {
 
     return (
       <>
-      <h5>{this.state.courseTitle}</h5>
+      <h5 id="course-title">{this.state.courseTitle}</h5>
       <div id="tutorial-container">
         <h1 id="tutorial-title"></h1>
         <div id="tutorial-content"></div>
@@ -254,14 +295,24 @@ async submitGapAnswer() {
           <p id="answer-2-option"></p>
           <p id="answer-3-option"></p>
           <p id="answer-4-option"></p>
-          <button id="submit-answer-button" hidden>Submit Answer</button>
         </div>
+
+        {/*<div id="assignment-submission-container"></div>*/}
+        <div id="editor">
+          <AssignmentTextEditor />
+        </div>
+
+        <button id="submit-answer-button" hidden>Submit Answer</button>
+        {/*<button id="submit-assignment-button" hidden>Submit Assignment</button>*/}
 
         <p id="result-message"></p>
 
       </div>
-      <button id="previous-button" onClick={this.displayPreviousTutorial}>Prev</button>
-      <button id="next-button" onClick={this.displayNextTutorial}>Next</button>
+
+      <div id="navigation-buttons">
+        <button id="previous-button" onClick={this.displayPreviousTutorial}>Prev</button>
+        <button id="next-button" onClick={this.displayNextTutorial}>Next</button>
+      </div>
       </>
 
     );

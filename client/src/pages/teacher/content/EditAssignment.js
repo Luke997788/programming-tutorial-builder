@@ -37,7 +37,7 @@ async retrieveTutorialContent() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: sessionStorage.getItem("contentTitle").replaceAll('"','')}),
+      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: sessionStorage.getItem("contentTitle")}),
     });
 
     await response.text().then(data => {

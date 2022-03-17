@@ -37,25 +37,27 @@ class LoginForm extends Component {
       body: JSON.stringify({ username: this.state.username, password: this.state.password }),
     });
 
-    const body = await response.text();
-
-    if (body === 'teacher') {
-      this.setState({responseToLoginRequest: "Login Success"});
-      sessionStorage.setItem("loggedIn", true);
-      sessionStorage.setItem("username", this.state.username);
-      sessionStorage.setItem("role", "teacher");
-      this.props.navigate("/home");
-
-    } else if (body === 'student') {
-      this.setState({responseToLoginRequest: "Login Success"});
-      sessionStorage.setItem("loggedIn", true);
-      sessionStorage.setItem("username", this.state.username);
-      sessionStorage.setItem("role", "student");
-      this.props.navigate("/studenthome");
-
-    } else {
-      this.setState({ responseToLoginRequest: 'Login failed. Please try again' });
-    }
+    await response.json().then(data => {
+      if (data[1] === 'teacher') {
+        this.setState({responseToLoginRequest: "Login Success"});
+        sessionStorage.setItem("loggedIn", true);
+        sessionStorage.setItem("username", this.state.username);
+        sessionStorage.setItem("role", "teacher");
+        sessionStorage.setItem("teacherId", data[0]);
+        this.props.navigate("/home");
+  
+      } else if (data[1] === 'student') {
+        this.setState({responseToLoginRequest: "Login Success"});
+        sessionStorage.setItem("loggedIn", true);
+        sessionStorage.setItem("username", this.state.username);
+        sessionStorage.setItem("role", "student");
+        sessionStorage.setItem("studentId", data[0]);
+        this.props.navigate("/studenthome");
+  
+      } else {
+        this.setState({ responseToLoginRequest: 'Login failed. Please try again' });
+      }
+    });
   };
   
 render() {

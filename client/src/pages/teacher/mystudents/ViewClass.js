@@ -60,10 +60,22 @@ class ViewClass extends Component {
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
         var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+
+        var studentId = data[i][0];
+        var firstName = data[i][1];
+        var lastName = data[i][2];
   
-        cell1.innerHTML = data[i][0];
-        cell2.innerHTML = data[i][1];
-        cell3.innerHTML = data[i][2];
+        cell1.innerHTML = studentId;
+        cell2.innerHTML = firstName;
+        cell3.innerHTML = lastName;
+
+        var viewButton = document.createElement("button");
+        viewButton.setAttribute("class", "assignmentsViewButton");
+        viewButton.innerHTML = "View Assignments";
+        viewButton.onclick = () => {sessionStorage.setItem("studentId", studentId); sessionStorage.setItem("studentFirstName", firstName); sessionStorage.setItem("studentLastName", lastName); this.props.navigate("/mystudents/viewassignments")};
+  
+        cell4.appendChild(viewButton);
 
         rowCount += 1;
       }
@@ -83,6 +95,7 @@ class ViewClass extends Component {
             <th>Student Id</th>
             <th>First Name</th>
             <th>Surname</th>
+            <th></th>
           </tr>
         </table>
       </div>

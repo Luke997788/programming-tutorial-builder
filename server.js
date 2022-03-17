@@ -28,7 +28,7 @@ app.post('/api/verifylogindetails', (req, res) => {
       if (result.length != 0) {
         if ((req.body.username == result[0].username) && (req.body.password == result[0].password)) {
           console.log("Username and password match");
-          res.send(result[0].role);
+          res.send([result[0].user_id, result[0].role]);
         } else {
           res.send('failed');
         }  
@@ -114,10 +114,10 @@ app.post('/api/getspecificcourseinfo', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT course_title, course_description FROM course_information WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT course_title, course_description, target_class_id FROM course_information WHERE course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {       
-        var courseInformation = [result[0].course_title, result[0].course_description];
+        var courseInformation = [result[0].course_title, result[0].course_description, result[0].target_class_id];
 
         res.send(courseInformation);
       } else {
@@ -432,9 +432,74 @@ app.post('/api/uploadassignmentsubmission', (req, res) => {
     console.log("Connected");
     console.log(req.body);
 
-    databaseConnection.query("INSERT INTO assignment_submissions (student_id, first_name, last_name, username, course_id, assignment_content_id, assignment_submission) VALUES ('" + req.body.studentId + "', '" + req.body.firstName + "', '" + req.body.lastName + "', '" + req.body.username + "', '" + req.body.courseId + "', '" + req.body.contentId + "', '" + req.body.submission + "')", function(err,result,fields) {
+    databaseConnection.query("INSERT INTO assignment_submissions (student_id, username, course_id, assignment_content_id, assignment_submission) VALUES ('" + req.body.studentId + "', '" + req.body.username + "', '" + req.body.courseId + "', '" + req.body.contentId + "', '" + req.body.submission + "')", function(err,result,fields) {
       if (err) throw err;
       res.send("successful insertion");
+    });
+  });
+});
+
+// gets assignment submissions for a specific student
+app.post('/api/getstudentassignmentsubmissions', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+    databaseConnection.query("SELECT course_id, assignment_content_id, assignment_submission FROM assignment_submissions WHERE student_id = '" + req.body.studentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        var data = [[result[0].course_id, result[0].assignment_content_id, result[0].assignment_submission]];
+
+        for (let i=1; i < result.length; i++) {
+          var row = [result[i].course_id, result[i].assignment_content_id, result[i].assignment_submission];
+          data.push(row);
+        }
+        
+        res.send(data);
+      } else {
+        //res.send('failed');
+      }
+    });
+  });
+});
+
+// gets a specific assignment submission for a specific student
+app.post('/api/getspecificstudentassignmentsubmission', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+    databaseConnection.query("SELECT assignment_submission FROM assignment_submissions WHERE student_id = '" + req.body.studentId + "' AND assignment_content_id = '" + req.body.assignmentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        var data = [result[0].assignment_submission];
+  
+        res.send(data);
+      } else {
+        //res.send('failed');
+      }
     });
   });
 });
@@ -459,7 +524,7 @@ app.post('/api/getallcoursetutorialcontent', (req, res) => {
       if (err) throw err;
       if (result.length != 0) {
 
-        var data = [[result[0].content_order_position, result[0].content_title, result[0].content_type, result[0].content]];
+        var data = [[result[0].content_order_position, result[0].content_title, result[0].content_type, result[0].content, result[0].content_id]];
 
         for (let i=1; i < result.length; i++) {
           var row = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].content, result[i].content_id];
