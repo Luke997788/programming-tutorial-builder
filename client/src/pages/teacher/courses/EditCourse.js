@@ -83,34 +83,36 @@ class EditCourse extends Component {
         let order = data[i][0];
         let contentTitle = data[i][1];
         let contentType = data[i][2];
-        let contentId = data[i][3];
+        let dateLastModified = data[i][3].replace("T", ' ').replace("Z", '');
   
         var row = table.insertRow(rowCount);
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
         var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
   
         cell1.innerHTML = order;
         cell2.innerHTML = contentTitle;
         cell3.innerHTML = contentType;
+        cell4.innerHTML = dateLastModified;
   
         var editButton = document.createElement("button");
         editButton.setAttribute("class", "content-edit-button");
         editButton.innerHTML = "Edit Content";
   
         if (contentType === 'text/image') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/edittextimage")};
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/edittextimage")};
         } else if (contentType === 'video') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editvideo")};
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editvideo")};
         } else if (contentType === 'Multiple Choice Exercise') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editchoiceexercise")};
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editchoiceexercise")};
         } else if (contentType === 'Fill in the Gap Exercise') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editgapexercise")};
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editgapexercise")};
         } else if (contentType === 'Assignment') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); sessionStorage.setItem("contentId", contentId); this.props.navigate("/editcourse/editassignment")};
+          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editassignment")};
         }
-        cell4.appendChild(editButton);
+        cell5.appendChild(editButton);
   
         rowCount += 1;
       }
@@ -134,6 +136,7 @@ class EditCourse extends Component {
             <th>Order</th>
             <th>Title</th>
             <th>Type</th>
+            <th>Last Modified</th>
             <th></th>
           </tr>
         </table>

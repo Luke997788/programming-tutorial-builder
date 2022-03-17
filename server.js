@@ -83,10 +83,10 @@ app.post('/api/getcourseinfo', (req, res) => {
       if (result.length != 0) {
         console.log(result);
 
-        var coursesInformation = [[result[0].course_id, result[0].course_title, result[0].course_description, result[0].target_class_id]];
+        var coursesInformation = [[result[0].course_id, result[0].course_title, result[0].course_description, result[0].target_class_id, result[0].last_modified]];
 
         for (let i=1; i < result.length; i++) {
-          var information = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].target_class_id];
+          var information = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].target_class_id, result[i].last_modified];
           coursesInformation[i] = information;
         }
 
@@ -656,16 +656,16 @@ app.post('/api/getcoursecontentinfo', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT content_order_position, content_title, content_type FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT content_order_position, content_title, content_type, last_modified FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
         console.log(result);
 
-        var contentInformation = [[result[0].content_order_position, result[0].content_title, result[0].content_type]];
+        var contentInformation = [[result[0].content_order_position, result[0].content_title, result[0].content_type, result[0].last_modified]];
 
         for (let i=1; i < result.length; i++) {
-          var information = [result[i].content_order_position, result[i].content_title, result[i].content_type];
+          var information = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].last_modified];
           contentInformation[i] = information;
         }
 

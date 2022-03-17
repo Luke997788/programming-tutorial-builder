@@ -55,17 +55,20 @@ class MyCourses extends Component {
         let courseTitle = data[i][1];
         let courseDescription = data[i][2];
         let targetClass = data[i][3];
-  
+        let dateLastModified = data[i][4].replace("T", ' ').replace("Z", '');
+
         var row = table.insertRow(rowCount);
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
         var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
         var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
   
         cell1.innerHTML = courseTitle;
         cell2.innerHTML = courseDescription;
         cell3.innerHTML = targetClass;
+        cell4.innerHTML = dateLastModified;
   
         var editButton = document.createElement("button");
         editButton.setAttribute("class", "courseEditButton");
@@ -74,16 +77,24 @@ class MyCourses extends Component {
         editButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/editcourse")};
   
         var viewButton = document.createElement("button");
-        viewButton.setAttribute("class", "courseViewButton");
+        viewButton.setAttribute("class", "course-view-button");
         viewButton.setAttribute("value", courseId);
-        viewButton.innerHTML = "View";
+        viewButton.innerHTML = 'View';
         viewButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/viewcourse")};
   
-        cell4.appendChild(viewButton);
-        cell5.appendChild(editButton);
+        cell5.appendChild(viewButton);
+        cell6.appendChild(editButton);
   
         rowCount += 1;
       }
+
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0');
+      var yyyy = today.getFullYear();
+      today = yyyy + '-' + mm + '-' + dd;
+      document.getElementById("date").innerHTML = '' + today;
+
     });
   }
 
@@ -100,11 +111,13 @@ class MyCourses extends Component {
             <th>Course Title</th>
             <th>Course Description</th>
             <th>Class</th>
+            <th>Last Modified</th>
             <th></th>
             <th></th>
           </tr>
         </table>
       </div>
+      <p id="date"></p>
       </>
 
     );

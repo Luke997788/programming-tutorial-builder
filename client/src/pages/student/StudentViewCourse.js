@@ -196,6 +196,9 @@ async retrieveGapExerciseAnswers() {
   });
 
   await response.text().then(data => {
+    this.gapAnswers = [];
+    this.gapInputValues = [];
+
       var answers = data.split(',');
 
       answer1.innerHTML = '';
