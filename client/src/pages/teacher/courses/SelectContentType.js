@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 class SelectContentType extends Component {
 
 	state = {
 		creator: sessionStorage.getItem("username"),
-		title: '',
 	};
 
 	componentDidMount = () => {
@@ -21,7 +20,6 @@ class SelectContentType extends Component {
 			this.props.navigate("/studenthome");
 		}
 
-		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
         this.setOnClickFunctions();
 	}
 
@@ -40,20 +38,23 @@ class SelectContentType extends Component {
 	}
 
     setOnClickFunctions() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+		
         var textImageButton = document.getElementById("text-image-content-button");
-        textImageButton.onclick = () => {this.props.navigate("/editcourse/addtextimage");};
+        textImageButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/addtextimage");};
 
 		var videoButton = document.getElementById("video-content-button");
-        videoButton.onclick = () => {this.props.navigate("/editcourse/addvideo");};
+        videoButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/addvideo");};
 
 		var exerciseButton = document.getElementById("exercise-content-button");
-        exerciseButton.onclick = () => {this.props.navigate("/editcourse/addchoiceexercise");};
+        exerciseButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/addchoiceexercise");};
 
 		var fillInTheGapButton = document.getElementById("fill-in-gap-exercise-content-button");
-        fillInTheGapButton.onclick = () => {this.props.navigate("/editcourse/addgapexercise");};
+        fillInTheGapButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/addgapexercise");};
 
 		var assignmentButton = document.getElementById("assignment-content-button");
-        assignmentButton.onclick = () => {this.props.navigate("/editcourse/addassignment");};
+        assignmentButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/addassignment");};
     }
 
 	render() {
@@ -61,7 +62,7 @@ class SelectContentType extends Component {
 
 		return (
             <>
-            <h2>Select content to add to {this.state.title}</h2>
+            <h2>Select content to add</h2>
             <button id="text-image-content-button">Text and Images</button>
             <button id="video-content-button">Video</button>
             <button>Slideshow Presentation</button>
@@ -75,7 +76,8 @@ class SelectContentType extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+	const params = useParams();
   
-	return <SelectContentType navigate={navigate} />;
+	return <SelectContentType navigate={navigate} params={params} />;
   
 }

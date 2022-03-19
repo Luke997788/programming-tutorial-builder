@@ -21,7 +21,7 @@ class MyStudents extends Component {
 			this.props.navigate("/studenthome");
 		}
 
-    this.test();
+    this.retrieveStudentInformation();
 	}
 
   componentDidUpdate() {
@@ -41,7 +41,7 @@ class MyStudents extends Component {
     }
 	}
 
-  async test() {
+  async retrieveStudentInformation() {
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getteacherclasses', {
       method: 'POST',
@@ -51,44 +51,34 @@ class MyStudents extends Component {
       body: JSON.stringify({ teacherUsername: sessionStorage.getItem("username")}),
     });
 
-    const body = await response.text()
+    await response.json().then(data => {
+      let information = document.getElementById("teacher-class-information");
+      var rowCount = 1;
 
-    this.setState({ responseToPost: body });
-
-    var dataForTable = body.split("[").join(']').split(']').join(',').split(',').join('"').split('"');
-   
-    this.setState({ tableData: dataForTable });
-
-    var rowCount = 1;
-    for(let i=0; i < this.state.tableData.length; i += 1) {
-      if ((this.state.tableData[i] !== undefined) && (this.state.tableData[i] !== null) && (this.state.tableData[i] !== '')) {
-        let classId = this.state.tableData[i];
-
-        let information = document.getElementById("teacher-class-information");
-
+      for(let i=0; i < data.length; i += 1) {
+        let classId = data[i];
+  
         let classInformationContainer = document.createElement("div");
         classInformationContainer.style.cssText = 'border: 1px solid black';
-
+  
         let classTitle = document.createElement("h2");
-        classTitle.innerHTML = this.state.tableData[i];
-
+        classTitle.innerHTML = classId;
+  
         let viewButton = document.createElement("button");
         viewButton.setAttribute("class", "viewButton");
         viewButton.innerHTML = "View Students";
-        viewButton.onclick = () => {sessionStorage.setItem("classId", classId); this.props.navigate("/mystudents/viewclass")};
-
+        viewButton.onclick = () => {this.props.navigate("/mystudents/viewclass/" + classId)};
+  
         let lineBreak = document.createElement("br");
-
+  
         classInformationContainer.appendChild(classTitle);
         classInformationContainer.appendChild(viewButton);
         information.appendChild(classInformationContainer);
         information.appendChild(lineBreak);
-
-        rowCount += 1;
-      } else {
+  
         rowCount += 1;
       }
-    }
+    });
   }
 
   render () {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import tinymce from "https://cdn.tiny.cloud/1/6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o/tinymce/5/tinymce.min.js";
 import './tutorial-page.css';
@@ -7,7 +7,7 @@ import './tutorial-page.css';
 class EditAssignment extends React.Component {
 
   state = {
-    courseTitle: '',
+    title: '',
     creator: '',
     courseId: '',
     contentType: 'Assignment',
@@ -21,14 +21,34 @@ class EditAssignment extends React.Component {
 
   componentDidMount = () => {		
     this.setState({creator: sessionStorage.getItem("username")});
-    this.setState({courseId: sessionStorage.getItem("courseId")});
-    this.setState({courseTitle: sessionStorage.getItem("courseTitle").replaceAll('"','')});
-    this.setState({contentTitle: sessionStorage.getItem("contentTitle").replaceAll('"','')});
-    //this.setState({contentTitle: sessionStorage.getItem("contentTitle").replaceAll('"','')});
-    this.retrieveTutorialContent().then(data => {
-        this.retrieveContentId();
+
+    this.retrieveCourseDetails().then(data => {
+        this.retrieveTutorialContent();
     });
-}
+  }
+
+  async retrieveCourseDetails() {
+    let { id, contentid } = this.props.params;
+    this.setState({courseId: id});
+    this.setState({contentId: contentid});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getspecificcourseinfo', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {
+		  if (data[0] == 'failed') {
+			this.props.navigate("/mycourses")
+		  }
+		  
+		  this.setState({title: data[0]});
+		});
+	}
 
 async retrieveTutorialContent() {
     // starts a request, passes URL and configuration object
@@ -37,11 +57,16 @@ async retrieveTutorialContent() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: sessionStorage.getItem("contentTitle")}),
+      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: this.state.courseId, contentId: this.state.contentId}),
     });
 
-    await response.text().then(data => {
-        this.setState({ textAreaContents: data });
+    await response.json().then(data => {
+      if (data[0] == 'failed') {
+        this.props.navigate("/mycourses");
+      }
+
+      this.setState({ contentTitle: data[0] });
+      this.setState({ textAreaContents: data[1] });
     })
   }
 
@@ -89,22 +114,23 @@ async retrieveTutorialContent() {
         body: JSON.stringify({ courseId: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: contentToSubmit, contentId: this.state.contentId }),
     });
 
-        const body = await response.text();
-
-        if (body === 'successful update') {
+        await response.text().then(data => {
+          if (data === 'successful update') {
             this.setState({ responseToContentSubmission: 'Tutorial content successfully updated' });
-            this.props.navigate("/editcourse");
+            this.props.navigate("/editcourse/" + this.state.courseId);
         } else {
             this.setState({ responseToContentSubmission: 'ERROR: failed to update tutorial content' });
         }
+      });
     };
 
   render() {
     return (
         <>
-        <div id="assignment-information-container">
 
-            <h1>Edit an assignment for {this.state.courseTitle}</h1>
+        <h1>Edit an Assignment for {this.state.title}</h1>
+
+        <div id="assignment-information-container">
 
 
             <div>
@@ -173,7 +199,8 @@ async retrieveTutorialContent() {
 
 export default function(props) {
 	const navigate = useNavigate();
+  const params = useParams();
   
-	return <EditAssignment navigate={navigate} />;
+	return <EditAssignment navigate={navigate} params={params}/>;
   
 }

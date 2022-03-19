@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { useNavigate } from 'react-router-dom';
-//import './homepage.css';
-//import './mycourses.css';
+import { useNavigate, useParams } from 'react-router-dom';
+
 
 class ViewClass extends Component {
 
   state = {
-
+    classId: '',
   };
 
   componentDidMount() {
@@ -42,16 +41,23 @@ class ViewClass extends Component {
 	}
 
   async retrieveStudentInformation() {
+    let { id } = this.props.params;
+		this.setState({classId: id});
+
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getclassstudents', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ classId: sessionStorage.getItem("classId")}),
+      body: JSON.stringify({ classId: id}),
     });
 
     await response.json().then(data => {
+      if (data[0][0] == 'failed') {
+        this.props.navigate("/mystudents");
+      }
+
       var table = document.getElementById("student-info-table");
 
       var rowCount = 1;
@@ -73,7 +79,7 @@ class ViewClass extends Component {
         var viewButton = document.createElement("button");
         viewButton.setAttribute("class", "assignmentsViewButton");
         viewButton.innerHTML = "View Assignments";
-        viewButton.onclick = () => {sessionStorage.setItem("studentId", studentId); sessionStorage.setItem("studentFirstName", firstName); sessionStorage.setItem("studentLastName", lastName); this.props.navigate("/mystudents/viewassignments")};
+        viewButton.onclick = () => {this.props.navigate("/mystudents/viewassignments/" + this.state.classId + "/" + studentId)};
   
         cell4.appendChild(viewButton);
 
@@ -107,5 +113,7 @@ class ViewClass extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
-	return <ViewClass navigate={navigate} />;
+  const params = useParams();
+
+	return <ViewClass navigate={navigate} params={params}/>;
 }

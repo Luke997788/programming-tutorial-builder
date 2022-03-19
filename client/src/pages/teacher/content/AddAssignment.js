@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
 //import './homepage.css';
 import './addcontent.css';
@@ -15,12 +15,12 @@ class AddAssignment extends Component {
         contentType: 'Assignment',
         task: ``,
         responseToPostRequest: '',
+        orderPosition: sessionStorage.getItem("nextContentPosition"),
 	};
 
 	componentDidMount = () => {
         this.setState({creator: sessionStorage.getItem("username")});
-        this.setState({courseId: sessionStorage.getItem("courseId")});		
-		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+        this.retrieveCourseDetails();
 	}
 
 	componentDidUpdate() {
@@ -37,6 +37,28 @@ class AddAssignment extends Component {
 		}
 	}
 
+    async retrieveCourseDetails() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getspecificcourseinfo', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {
+		  if (data[0] == 'failed') {
+			this.props.navigate("/mycourses")
+		  }
+		  
+		  this.setState({title: data[0]});
+		});
+	}
+
     async uploadAssignmentInformation() {
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/uploadtutorialcontent', {
@@ -44,13 +66,13 @@ class AddAssignment extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
+            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task, orderPosition: this.state.orderPosition}),
         });
 
         await response.text().then(responseData => {
             if (responseData == 'successful insertion') {
                 this.setState({ responseToPostRequest: 'Tutorial information added' });
-                this.props.navigate("/editcourse");
+                this.props.navigate("/editcourse/" + this.state.courseId);
             } else {
                 this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
             }
@@ -150,7 +172,8 @@ class AddAssignment extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+    const params = useParams();
   
-	return <AddAssignment navigate={navigate} />;
+	return <AddAssignment navigate={navigate} params={params} />;
   
 }

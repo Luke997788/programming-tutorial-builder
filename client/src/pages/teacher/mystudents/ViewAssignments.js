@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 class ViewAssignments extends Component {
 
   state = {
-
+    classId: '',
+    studentId: '',
+    firstName: '',
+    lastName: '',
   };
 
   componentDidMount() {
@@ -19,7 +22,9 @@ class ViewAssignments extends Component {
 			this.props.navigate("/studenthome");
 		}
 
-        this.retrieveStudentAssignmentInformation();
+    this.retrieveStudentInformation().then(data => {
+      this.retrieveStudentAssignmentInformation();
+    });
 	}
 
   componentDidUpdate() {
@@ -39,6 +44,32 @@ class ViewAssignments extends Component {
         }
     }
 
+    async retrieveStudentInformation() {
+      let { classid, studentid } = this.props.params;
+      this.setState({classId: classid});
+      this.setState({studentId: studentid});
+  
+      // starts a request, passes URL and configuration object
+      const response = await fetch('/api/getspecificstudentinformation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentId: studentid}),
+      });
+  
+      await response.json().then(data => {
+        if (data[0] == 'failed') {
+          this.props.navigate("/mystudents");
+        } else if (data[2] != this.state.classId) {
+          this.props.navigate("/mystudents");
+        }
+
+        this.setState({firstName: data[0]});
+        this.setState({lastName: data[1]});
+      })
+    }
+
     async retrieveStudentAssignmentInformation() {
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/getstudentassignmentsubmissions', {
@@ -46,7 +77,7 @@ class ViewAssignments extends Component {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({studentId: sessionStorage.getItem("studentId")}),
+          body: JSON.stringify({studentId: this.state.studentId}),
         });
     
         await response.json().then(data => {
@@ -68,7 +99,7 @@ class ViewAssignments extends Component {
 
             var viewButton = document.createElement("button");
             viewButton.innerHTML = "View Submission";
-            viewButton.onclick = () => {sessionStorage.setItem("assignmentId", assignmentId); this.props.navigate("/mystudents/viewassignments/viewsubmission")};
+            viewButton.onclick = () => {this.props.navigate("/mystudents/viewassignments/viewsubmission/" + this.state.studentId + "/" + assignmentId)};
       
             cell3.appendChild(viewButton);
     
@@ -82,7 +113,7 @@ class ViewAssignments extends Component {
 
     return (
       <>
-      <h1>{sessionStorage.getItem("studentFirstName") + ' ' + sessionStorage.getItem("studentLastName") + ' (' + sessionStorage.getItem("studentId") + ')'}</h1>
+      <h1>{this.state.firstName + ' ' + this.state.lastName + ' (' + this.state.studentId + ')'}</h1>
       
       <div id="student-assignments-container">
         <table id="assignments-information-table">
@@ -93,8 +124,6 @@ class ViewAssignments extends Component {
           </tr>
         </table>
       </div>
-
-      {/*<iframe src="https://www.orimi.com/pdf-test.pdf" width="500px" height="800px"></iframe>*/}
       </>
 
     );
@@ -103,5 +132,7 @@ class ViewAssignments extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
-	return <ViewAssignments navigate={navigate} />;
+  const params = useParams();
+
+	return <ViewAssignments navigate={navigate} params={params}/>;
 }

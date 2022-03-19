@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import tinymce from "https://cdn.tiny.cloud/1/6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o/tinymce/5/tinymce.min.js";
 import './tutorial-page.css';
@@ -9,18 +9,20 @@ class TextImageContentEditor extends React.Component {
   state = {
     creator: '',
     courseId: '',
-    contentType: 'text/image',
+    contentType: 'Text/Image',
     contentTitle: '',
     textAreaContents: '',
     responseToPostRequest: '',
     initialContents: '<p>Enter content here</p>',
     content: '',
     contentId: '',
+    orderPosition: sessionStorage.getItem("nextContentPosition"),
   };
 
   componentDidMount = () => {		
     this.setState({creator: sessionStorage.getItem("username")});
-    this.setState({courseId: sessionStorage.getItem("courseId")});
+    let { id } = this.props.params;
+		this.setState({courseId: id});
 	}
 
   handleEditorChange = (e) => {
@@ -44,14 +46,14 @@ class TextImageContentEditor extends React.Component {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.textAreaContents}),
+        body: JSON.stringify({ id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.textAreaContents, orderPosition: this.state.orderPosition}),
       });
 
       const body = await response.text();
 
       if (body === 'successful insertion') {
         this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
-        this.props.navigate("/editcourse");
+        this.props.navigate("/editcourse/" + this.state.courseId);
       } else {
         this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
       }
@@ -112,6 +114,8 @@ class TextImageContentEditor extends React.Component {
       />
         
         <button id="save-button" onClick={this.handleSubmit}>Save</button>
+
+        <p>{this.state.contentId}</p>
       </>
     );
   }
@@ -119,7 +123,8 @@ class TextImageContentEditor extends React.Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+  const params = useParams();
   
-	return <TextImageContentEditor navigate={navigate} />;
+	return <TextImageContentEditor navigate={navigate} params={params} />;
   
 }

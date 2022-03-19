@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import './mycourses.css';
 
 class EditCourse extends Component {
@@ -7,6 +7,8 @@ class EditCourse extends Component {
   state = {
     title: '',
     description: '',
+    courseId: '',
+    contentId: '',
   };
 
   componentDidMount() {
@@ -20,10 +22,10 @@ class EditCourse extends Component {
 		if (role == "student") {
 			this.props.navigate("/studenthome");
 		}
-    this.setState({title: sessionStorage.getItem("courseTitle")});
-    this.setState({description: sessionStorage.getItem("courseDescription")});
-    this.retrieveCourseDetails();
-    this.retrieveCourseContentInformation();
+
+    this.retrieveCourseDetails().then(data => {
+      this.retrieveCourseContentInformation();
+    });
 	}
 
   componentDidUpdate() {
@@ -44,24 +46,28 @@ class EditCourse extends Component {
 	}
 
   async retrieveCourseDetails() {
+    let { id } = this.props.params;
+    this.setState({courseId: id});
+
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getspecificcourseinfo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({idToGet: sessionStorage.getItem("courseId")}),
+      body: JSON.stringify({idToGet: id}),
     });
 
     await response.json().then(data => {
+      if (data[0] == 'failed') {
+        this.props.navigate("/mycourses")
+      }
+      
       this.setState({title: data[0]});
       this.setState({description: data[1]});
   
       var editCourseDetailsButton = document.getElementById("edit-course-details");
-      editCourseDetailsButton.onclick = () => {this.props.navigate("/editcoursedetails")};
-  
-      var addCourseContent = document.getElementById("add-course-content-button");
-      addCourseContent.onclick = () => {this.props.navigate("/editcourse/selectcontent")};
+      editCourseDetailsButton.onclick = () => {this.props.navigate("/editcoursedetails/" + this.state.courseId)};
     });
   }
 
@@ -72,18 +78,21 @@ class EditCourse extends Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId")}),
+      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: this.state.courseId}),
     });
 
     await response.json().then(data => {
       var table = document.getElementById("course-info-table");
       var rowCount = 1;
-  
+      var nextContentPosition = data.length + 1;
+      sessionStorage.setItem("nextContentPosition", nextContentPosition);
+
       for(let i=0; i < data.length; i++) {
         let order = data[i][0];
         let contentTitle = data[i][1];
         let contentType = data[i][2];
         let dateLastModified = data[i][3].replace("T", ' ').replace("Z", '');
+        let contentId = data[i][4];
   
         var row = table.insertRow(rowCount);
         var cell1 = row.insertCell(0);
@@ -101,16 +110,16 @@ class EditCourse extends Component {
         editButton.setAttribute("class", "content-edit-button");
         editButton.innerHTML = "Edit Content";
   
-        if (contentType === 'text/image') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/edittextimage")};
-        } else if (contentType === 'video') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editvideo")};
+        if (contentType === 'Text/Image') {
+          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittextimage/" + contentId)};
+        } else if (contentType === 'Video') {
+          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editvideo/" + contentId)};
         } else if (contentType === 'Multiple Choice Exercise') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editchoiceexercise")};
+          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editchoiceexercise/" + contentId)};
         } else if (contentType === 'Fill in the Gap Exercise') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editgapexercise")};
+          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editgapexercise/" + contentId)};
         } else if (contentType === 'Assignment') {
-          editButton.onclick = () => {sessionStorage.setItem("contentTitle", contentTitle); this.props.navigate("/editcourse/editassignment")};
+          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
         }
         cell5.appendChild(editButton);
   
@@ -128,7 +137,18 @@ class EditCourse extends Component {
       <p>{this.state.description}</p>
       <button id="edit-course-details">Edit Course Details</button>
       <button>Edit Content</button>
-      <button id="add-course-content-button">Add Content</button>
+
+      <div class="dropdown">
+        <button class="add-course-content-button">Add Content</button>
+        <div class="dropdown-content">
+          <Link to={"/editcourse/" + this.state.courseId + "/addtextimage"}>Text/Image</Link>
+          <Link to={"/editcourse/" + this.state.courseId + "/addvideo"}>Video</Link>
+          <Link to={"/editcourse/" + this.state.courseId + "/addchoiceexercise"}>Multiple Choice Exercise</Link>
+          <Link to={"/editcourse/" + this.state.courseId + "/addgapexercise"}>Fill in the Gap Exercise</Link>
+          <Link to={"/editcourse/" + this.state.courseId + "/addassignment"}>Assignment Task</Link>
+        </div>
+
+      </div>
 
       <div id="course_info_table">
         <table id="course-info-table">
@@ -149,5 +169,6 @@ class EditCourse extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
-	return <EditCourse navigate={navigate} />;
+  const params = useParams();
+	return <EditCourse navigate={navigate} params={params} />;
 }

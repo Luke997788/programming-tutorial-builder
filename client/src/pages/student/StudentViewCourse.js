@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import './mycourses.css';
 import './viewcourse.css';
@@ -8,6 +8,7 @@ import TextEditor from './TextEditor';
 class StudentViewCourse extends Component {
 
   state = {
+    courseId: '',
     courseTitle: '',
     responseData: '',
     currentTutorial: 0,
@@ -38,7 +39,9 @@ class StudentViewCourse extends Component {
 			this.props.navigate("/home");
 		}
 
-    this.setState({courseTitle: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+    var backButton = document.getElementById("back-to-my-courses-button").onclick  = () => {this.props.navigate("/studentmycourses")};
+
+    this.retrieveCourseDetails();
     this.retrieveCourseTutorialContent();
 	}
 
@@ -59,19 +62,44 @@ class StudentViewCourse extends Component {
     }
   }
 
+  async retrieveCourseDetails() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getspecificcourseinfo', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {
+		  if (data[0] == 'failed') {
+			this.props.navigate("/mycourses")
+		  }
+		  
+		  this.setState({courseTitle: data[0]});
+		});
+	}
+
   async retrieveCourseTutorialContent() {
+    let { id } = this.props.params;
+		this.setState({courseId: id});
+
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getallcoursetutorialcontent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({idToGet: sessionStorage.getItem("courseId")}),
+      body: JSON.stringify({idToGet: id}),
     });
 
     await response.json().then(data => {
         this.state.numberOfTutorials = data.length - 1;
-        
+  
         var tutorialTitle = document.getElementById("tutorial-title");
         var tutorialContent = document.getElementById("tutorial-content");
         var resultMessage = document.getElementById("result-message");
@@ -83,8 +111,9 @@ class StudentViewCourse extends Component {
         this.setState({currentContentId: data[this.state.currentTutorial][4]});
         sessionStorage.setItem("currentContentId", this.state.currentContentId);
 
-        if ((data[this.state.currentTutorial][2] == 'text/image') || (data[this.state.currentTutorial][2] == 'video')) {
+        if ((data[this.state.currentTutorial][2] == 'Text/Image') || (data[this.state.currentTutorial][2] == 'Video')) {
           var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
+          var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
           /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
           var assignmentInput = document.getElementById("assignment-submission-container");
         assignmentInput.innerHTML = ``;*/
@@ -101,6 +130,7 @@ class StudentViewCourse extends Component {
           var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
           var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
         } else if (data[this.state.currentTutorial][2] == 'Multiple Choice Exercise') {
+          var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
           /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
           var assignmentInput = document.getElementById("assignment-submission-container");
           assignmentInput.innerHTML = ``;*/
@@ -111,6 +141,7 @@ class StudentViewCourse extends Component {
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveExerciseAnswers();
         } else if (data[this.state.currentTutorial][2] == 'Fill in the Gap Exercise') {
+          var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
           /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
           var assignmentInput = document.getElementById("assignment-submission-container");
           assignmentInput.innerHTML = ``;*/
@@ -122,6 +153,7 @@ class StudentViewCourse extends Component {
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveGapExerciseAnswers();
         }  else if (data[this.state.currentTutorial][2] == 'Assignment') {
+          var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
           var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
           /*var assignmentInput = document.getElementById("assignment-submission-container");
           assignmentInput.innerHTML = `<label for="assignment-submission">Upload a PDF file: </label> <input id="assignment-submission" type="file" />`;*/
@@ -314,6 +346,27 @@ async submitGapAnswer() {
         this.state.currentTutorial = currentTutorial + 1;
     
         this.retrieveCourseTutorialContent();
+    } else if (this.state.currentTutorial == this.state.numberOfTutorials) {
+      var currentTutorial = parseInt(this.state.currentTutorial);
+      this.state.currentTutorial = currentTutorial + 1;
+
+      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
+      var editor = document.getElementById("editor").style.display='none';
+
+      var tutorialTitle = document.getElementById("tutorial-title").innerHTML = "";
+      var tutorialContent = document.getElementById("tutorial-content").innerHTML = "";
+      var resultMessage = document.getElementById("result-message").innerHTML = "";
+      var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
+      var answer1 = document.getElementById("answer-1-option").innerHTML = '';
+      var answer2 = document.getElementById("answer-2-option").innerHTML = '';
+      var answer3 = document.getElementById("answer-3-option").innerHTML = '';
+      var answer4 = document.getElementById("answer-4-option").innerHTML = '';
+      var checkbox1 = document.getElementById("answer-1-checkbox").innerHTML = '';
+      var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
+      var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
+      var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
+
+      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
     }
   }
 
@@ -322,6 +375,8 @@ async submitGapAnswer() {
 
     return (
       <>
+      <button id="back-to-my-courses-button">&#8249; {' Back to My Courses'}</button>
+
       <h5 id="course-title">{this.state.courseTitle}</h5>
       <div id="tutorial-container">
         <h1 id="tutorial-title"></h1>
@@ -344,6 +399,11 @@ async submitGapAnswer() {
 
         <p id="result-message"></p>
 
+
+      </div>
+
+      <div id="end-of-course-container">
+        <p id="end-of-course-message"></p>
       </div>
 
       <div id="navigation-buttons">
@@ -358,5 +418,7 @@ async submitGapAnswer() {
 
 export default function(props) {
 	const navigate = useNavigate();
-	return <StudentViewCourse navigate={navigate} />;
+  const params = useParams();
+
+	return <StudentViewCourse navigate={navigate} params={params}/>;
 }

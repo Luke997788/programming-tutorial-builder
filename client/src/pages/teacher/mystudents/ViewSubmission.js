@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './viewsubmission.css';
 
 class ViewAssignments extends Component {
 
   state = {
-
+    studentId: '',
+    assignmentId: '',
+    firstName: '',
+    lastName: '',
   };
 
   componentDidMount() {
@@ -20,7 +23,9 @@ class ViewAssignments extends Component {
 			this.props.navigate("/studenthome");
 		}
 
-        this.retrieveStudentAssignmentInformation();
+    this.retrieveStudentInformation().then(data => {
+      this.retrieveStudentAssignmentInformation();
+    });
 	}
 
   componentDidUpdate() {
@@ -40,6 +45,30 @@ class ViewAssignments extends Component {
         }
     }
 
+    async retrieveStudentInformation() {
+      let { assignmentid, studentid } = this.props.params;
+      this.setState({studentId: studentid});
+      this.setState({assignmentId: assignmentid});
+  
+      // starts a request, passes URL and configuration object
+      const response = await fetch('/api/getspecificstudentinformation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ studentId: studentid}),
+      });
+  
+      await response.json().then(data => {
+        if (data[0] == 'failed') {
+          this.props.navigate("/mystudents");
+        }
+
+        this.setState({firstName: data[0]});
+        this.setState({lastName: data[1]});
+      })
+    }
+
     async retrieveStudentAssignmentInformation() {
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/getspecificstudentassignmentsubmission', {
@@ -47,10 +76,14 @@ class ViewAssignments extends Component {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({studentId: sessionStorage.getItem("studentId"), assignmentId: sessionStorage.getItem("assignmentId")}),
+          body: JSON.stringify({studentId: this.state.studentId, assignmentId: this.state.assignmentId}),
         });
     
         await response.json().then(data => {
+          if (data[0] == 'failed') {
+            this.props.navigate("/mystudents");
+          }
+          
             var submissionContainer = document.getElementById("student-assignment-container");
     
             var submission = data[0];
@@ -64,7 +97,7 @@ class ViewAssignments extends Component {
 
     return (
       <>
-      <h1>{sessionStorage.getItem("studentFirstName") + ' ' + sessionStorage.getItem("studentLastName") + ' (' + sessionStorage.getItem("studentId") + ')'}</h1>
+      <h1>{this.state.firstName + ' ' + this.state.lastName + ' (' + this.state.studentId + ')'}</h1>
       
       <div id="student-assignment-container">
 
@@ -77,5 +110,7 @@ class ViewAssignments extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
-	return <ViewAssignments navigate={navigate} />;
+  const params = useParams();
+
+	return <ViewAssignments navigate={navigate} params={params}/>;
 }

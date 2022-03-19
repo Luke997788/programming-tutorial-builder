@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
 //import './homepage.css';
 import './addcontent.css';
@@ -11,7 +11,7 @@ class EditMultipleChoiceExerciseContent extends Component {
 		creator: '',
         courseId: '',
         contentId: '',
-        contentTitle: sessionStorage.getItem("contentTitle"),
+        contentTitle: '',
         contentType: 'exercise',
         task: ``,
         content: ``,
@@ -25,11 +25,9 @@ class EditMultipleChoiceExerciseContent extends Component {
 
 	componentDidMount = () => {
         this.setState({creator: sessionStorage.getItem("username")});
-        this.setState({courseId: sessionStorage.getItem("courseId")});		
-		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
         
-        this.retrieveExerciseTask().then(data => {
-            this.retrieveContentId().then(item => {
+        this.retrieveCourseDetails().then(data => {
+            this.retrieveExerciseTask().then(item => {
                 this.retrieveExerciseAnswers();
             })
         });
@@ -49,6 +47,29 @@ class EditMultipleChoiceExerciseContent extends Component {
 		}
 	}
 
+    async retrieveCourseDetails() {
+        let { id, contentid } = this.props.params;
+        this.setState({courseId: id});
+        this.setState({contentId: contentid});
+        
+            // starts a request, passes URL and configuration object
+            const response = await fetch('/api/getspecificcourseinfo', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({idToGet: id}),
+            });
+        
+            await response.json().then(data => {
+              if (data[0] == 'failed') {
+                this.props.navigate("/mycourses")
+              }
+              
+              this.setState({title: data[0]});
+            });
+    }
+
     async retrieveExerciseTask() {
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/getspecifictutorialcontent', {
@@ -56,15 +77,17 @@ class EditMultipleChoiceExerciseContent extends Component {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: sessionStorage.getItem("contentTitle")}),
+          body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: this.state.courseId, contentId: this.state.contentId}),
         });
     
-        await response.text().then(data => {
-            this.setState({task: data});
+        await response.json().then(data => {
+            if (data[0] == 'failed') {
+                this.props.navigate("/mycourses");
+            }
+        
+            this.setState({ contentTitle: data[0] });
+            this.setState({ task: data[1] });
         });
-
-        //const body = await response.text()
-        //this.setState({ task: body });
     }
 
     async retrieveContentId() {
@@ -131,16 +154,6 @@ class EditMultipleChoiceExerciseContent extends Component {
                 this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
             }
         });
-
-        /*const body = await response.text();
-
-        if (body === 'successful insertion') {
-            this.setState({ responseToPostRequest: 'Tutorial information updated' });
-            //this.props.navigate("/editcourse");
-        } else {
-            this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
-        }*/
-
 	};
 
     async updateExerciseAnswers() {
@@ -158,27 +171,17 @@ class EditMultipleChoiceExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), task: contentToSubmit, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correctAnswer: this.state.correctAnswer}),
+            body: JSON.stringify({ contentId: this.state.contentId, courseId: this.state.courseId, task: contentToSubmit, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correctAnswer: this.state.correctAnswer}),
         });
 
         await response.text().then(data => {
             if (data === 'successful update') {
                 this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
-                this.props.navigate("/editcourse");
+                this.props.navigate("/editcourse/" + this.state.courseId);
             } else {
                 this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
             }
         });
-
-        /*const body = await response.text();
-
-        if (body === 'successful update') {
-            this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
-            //this.props.navigate("/editcourse");
-        } else {
-            this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
-        }*/
-
 	};
 
     handleEditorChange = (e) => {
@@ -304,7 +307,8 @@ class EditMultipleChoiceExerciseContent extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+    const params = useParams();
   
-	return <EditMultipleChoiceExerciseContent navigate={navigate} />;
+	return <EditMultipleChoiceExerciseContent navigate={navigate} params={params} />;
   
 }

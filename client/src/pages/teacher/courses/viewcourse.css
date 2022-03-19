@@ -1,3 +1,15 @@
+#back-to-my-courses-button {
+    margin-left: 50px;
+    margin-right: 50px;
+    background-color: white;
+    box-shadow: none;
+    border: none;
+}
+
+#back-to-my-courses-button:hover {
+    text-decoration: underline;
+}
+
 #course-title {
     margin-left: 50px;
     margin-right: 50px;
@@ -33,6 +45,17 @@
     text-align: center;
     margin-top: 30px;
     margin-bottom: 30px;
+}
+
+#end-of-course-container {
+    text-align: center;
+}
+
+#end-of-course-message {
+    text-align: center;
+    font-size: 36px;
+    margin-left: 50px;
+    margin-right: 50px;   
 }
 
 #previous-button {

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
 import './index.css';
 
 import Layout from './pages/teacher/Layout';
@@ -47,30 +47,30 @@ function App() {
                     <Route path="/home" element={<Homepage />} />
                     <Route path="/createacourse" element={<CreateCourse />} />
                     <Route path="/mycourses" element={<MyCourses />} />
-                    <Route path="/viewcourse" element={<ViewCourse />} />
-                    <Route path="/editcourse" element={<EditCourse />} />
-                    <Route path="/editcoursedetails" element={<EditCourseDetails />} />
-                    <Route path="/editcourse/selectcontent" element={<SelectContentType />} />
+                    <Route path="/viewcourse/:id" element={<ViewCourse />} />
+                    <Route path="/editcourse/:id" element={<EditCourse />} />
+                    <Route path="/editcoursedetails/:id" element={<EditCourseDetails />} />
+                    <Route path="/editcourse/:id/selectcontent" element={<SelectContentType />} />
 
-                    <Route path="/editcourse/addtextimage" element={<AddTextImageContent />} />
-                    <Route path="/editcourse/edittextimage" element={<EditTextImageContent />} />
-                    <Route path="/editcourse/addvideo" element={<AddVideoContent />} />
-                    <Route path="/editcourse/editvideo" element={<EditVideoContent />} />
-                    <Route path="/editcourse/addchoiceexercise" element={<AddMultipleChoiceExerciseContent />} />
-                    <Route path="/editcourse/editchoiceexercise" element={<EditMultipleChoiceExerciseContent />} />
-                    <Route path="/editcourse/addgapexercise" element={<AddFillInGapExerciseContent />} />
-                    <Route path="/editcourse/editgapexercise" element={<EditFillInGapExerciseContent />} />
-                    <Route path="/editcourse/addassignment" element={<AddAssignment />} />
-                    <Route path="/editcourse/editassignment" element={<EditAssignment />} />
+                    <Route path="/editcourse/:id/addtextimage" element={<AddTextImageContent />} />
+                    <Route path="/editcourse/:id/edittextimage/:contentid" element={<EditTextImageContent />} />
+                    <Route path="/editcourse/:id/addvideo" element={<AddVideoContent />} />
+                    <Route path="/editcourse/:id/editvideo/:contentid" element={<EditVideoContent />} />
+                    <Route path="/editcourse/:id/addchoiceexercise" element={<AddMultipleChoiceExerciseContent />} />
+                    <Route path="/editcourse/:id/editchoiceexercise/:contentid" element={<EditMultipleChoiceExerciseContent />} />
+                    <Route path="/editcourse/:id/addgapexercise" element={<AddFillInGapExerciseContent />} />
+                    <Route path="/editcourse/:id/editgapexercise/:contentid" element={<EditFillInGapExerciseContent />} />
+                    <Route path="/editcourse/:id/addassignment" element={<AddAssignment />} />
+                    <Route path="/editcourse/:id/editassignment/:contentid" element={<EditAssignment />} />
                     <Route path="/mystudents" element={<MyStudents />} />
-                    <Route path="/mystudents/viewclass" element={<ViewClass />} />
-                    <Route path="/mystudents/viewassignments" element={<ViewAssignments />} />
-                    <Route path="/mystudents/viewassignments/viewsubmission" element={<ViewSubmission />} />
+                    <Route path="/mystudents/viewclass/:id" element={<ViewClass />} />
+                    <Route path="/mystudents/viewassignments/:classid/:studentid" element={<ViewAssignments />} />
+                    <Route path="/mystudents/viewassignments/viewsubmission/:studentid/:assignmentid" element={<ViewSubmission />} />
                 </Route>
                 <Route path="/" element={<StudentLayout />} >
                     <Route path="/studenthome" element={<StudentHomepage />} />
                     <Route path="/studentmycourses" element={<StudentMyCourses />} />
-                    <Route path="/studentviewcourse" element={<StudentViewCourse />} />
+                    <Route path="/studentviewcourse/:id" element={<StudentViewCourse />} />
                     <Route path="/studentmyfeedback" element={<StudentMyFeedback />} />
                 </Route>
             </Routes>

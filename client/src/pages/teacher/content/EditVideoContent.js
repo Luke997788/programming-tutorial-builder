@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 //import './homepage.css';
 import './addcontent.css';
-import EditingTextImageContentEditor from './EditingTextImageContentEditor';
+import EditingVideoContentEditor from './EditingVideoContentEditor';
 
 class EditVideoContent extends Component {
 
 	state = {
 		creator: sessionStorage.getItem("username"),
 		title: '',
-		contentTitle: sessionStorage.getItem("contentTitle"),
+		courseId: '',
 	};
 
 	componentDidMount = () => {		
-		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+		this.retrieveCourseDetails();
 	}
 
 	componentDidUpdate() {
@@ -31,6 +31,28 @@ class EditVideoContent extends Component {
 		}
 	}
 
+	async retrieveCourseDetails() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getspecificcourseinfo', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {
+		  if (data[0] == 'failed') {
+			this.props.navigate("/mycourses")
+		  }
+		  
+		  this.setState({title: data[0]});
+		});
+	  }
+
 	render() {
 		const {navigate} = this.props;
 
@@ -39,7 +61,7 @@ class EditVideoContent extends Component {
 			<div id="create-a-course-container">
 			  <h1>Edit Video Content for {this.state.title}</h1>
 
-				<EditingTextImageContentEditor titleOfContent={this.state.contentTitle}/>
+				<EditingVideoContentEditor />
 
 		  </div>
 		  </>
@@ -49,7 +71,8 @@ class EditVideoContent extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+	const params = useParams();
   
-	return <EditVideoContent navigate={navigate} />;
+	return <EditVideoContent navigate={navigate} params={params} />;
   
 }

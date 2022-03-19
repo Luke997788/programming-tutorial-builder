@@ -4,71 +4,114 @@ import { Editor } from '@tinymce/tinymce-react';
 import tinymce from "https://cdn.tiny.cloud/1/6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o/tinymce/5/tinymce.min.js";
 import './tutorial-page.css';
 
-class VideoContentEditor extends React.Component {
+class EditingVideoContentEditor extends React.Component {
 
   state = {
     creator: '',
     courseId: '',
-    contentType: 'Video',
+    contentType: 'Text/Image',
     contentTitle: '',
-    textAreaContents: '',
-    responseToPostRequest: '',
+    textAreaContents: ``,
+    content: ``,
+    responseToContentSubmission: '',
     initialContents: '<p>Enter content here</p>',
-    content: '',
     contentId: '',
-    orderPosition: sessionStorage.getItem("nextContentPosition"),
   };
 
   componentDidMount = () => {		
     this.setState({creator: sessionStorage.getItem("username")});
-    let { id } = this.props.params;
-		this.setState({courseId: id});
+    this.retrieveTutorialContent().then(data => {
+      //this.retrieveContentId();
+    });
 	}
+
+  async retrieveTutorialContent() {
+    let { id, contentid } = this.props.params;
+		this.setState({courseId: id});
+    this.setState({contentId: contentid});
+
+    // starts a request, passes URL and configuration object
+    const response = await fetch('/api/getspecifictutorialcontent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: id, contentId: contentid}),
+    });
+
+    await response.json().then(data => {
+      if (data[0] == 'failed') {
+        this.props.navigate("/mycourses");
+      }
+
+      this.setState({ contentTitle: data[0] });
+      this.setState({ textAreaContents: data[1] });
+    });
+  }
+
+  async retrieveContentId() {
+    // starts a request, passes URL and configuration object
+    const response = await fetch('/api/retrievecontentid', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: this.state.courseId, title: this.state.contentTitle}),
+    });
+
+    const body = await response.text()
+
+    this.setState({ contentId: body });
+  }
 
   handleEditorChange = (e) => {
     console.log(
       'Content was updated:',
       e.target.getContent()
     );
-
-    this.setState({textAreaContents: e.target.getContent()});
+    
+    this.setState({content: e.target.getContent()});
   }
 
   handleSubmit = async e => {
-      e.preventDefault();
+		e.preventDefault();
 
-      if (this.state.contentTitle < 1) {
-        alert("Please enter a title for the tutorial")
+    var contentToSubmit = '';
+
+    if (this.state.content == '') {
+      contentToSubmit = this.state.textAreaContents;
+    } else {
+      contentToSubmit = this.state.content;
+    }
+
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/updatetutorialcontent', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ courseId: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: contentToSubmit, contentId: this.state.contentId }),
+		});
+
+		await response.text().then(data => {
+      if (data === 'successful update') {
+        this.setState({ responseToContentSubmission: 'Tutorial content successfully updated' });
+        this.props.navigate("/editcourse/" + this.state.courseId);
       } else {
-	    // starts a request, passes URL and configuration object
-	    const response = await fetch('/api/uploadtutorialcontent', {
-		    method: 'POST',
-		    headers: {
-			    'Content-Type': 'application/json',
-		    },
-		    body: JSON.stringify({ id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.textAreaContents, orderPosition: this.state.orderPosition}),
-	    });
-
-	    const body = await response.text();
-
-	    if (body === 'successful insertion') {
-		    this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
-            this.props.navigate("/editcourse/" + this.state.courseId);
-        } else {
-		    this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-		}
+        this.setState({ responseToContentSubmission: 'ERROR: failed to update tutorial content' });
       }
+    });
 	};
 
   render() {
     return (
       <>
       <label for="content-title">Content Title: </label>
-      <input id ="content-title" type="text" placeholder="Enter content title" value={this.state.contentTitle} onChange={e => this.setState({ contentTitle: e.target.value })} required />
+      <input id ="content-title" type="text" placeholder="Enter content title" value={this.state.contentTitle} onChange={e => this.setState({ contentTitle: e.target.value })}/>
       <Editor
         //tinymceScriptSrc={process.env.PUBLIC_URL + '/tinymce/tinymce.min.js'}
         apiKey='6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o'
-        initialValue= {this.state.initialContents}
+        initialValue= {this.state.textAreaContents}
         init={{
           selector: 'text-area',
           height: 500,
@@ -112,7 +155,8 @@ class VideoContentEditor extends React.Component {
       />
         
         <button id="save-button" onClick={this.handleSubmit}>Save</button>
-        <p>{this.state.courseId}</p>
+        <p>course id is {this.state.courseId}</p>
+        <p>content id is {this.state.contentId}</p>
       </>
     );
   }
@@ -122,6 +166,6 @@ export default function(props) {
 	const navigate = useNavigate();
   const params = useParams();
   
-	return <VideoContentEditor navigate={navigate} params={params} />;
+	return <EditingVideoContentEditor navigate={navigate} params={params} />;
   
 }

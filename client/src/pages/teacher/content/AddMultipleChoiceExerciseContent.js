@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
 //import './homepage.css';
 import './addcontent.css';
@@ -19,14 +19,14 @@ class AddMultipleChoiceExerciseContent extends Component {
         answer2: '',
         answer3: '',
         answer4: '',
-        correctAnswer: '',
+        correctAnswer: '1',
         responseToPostRequest: '',
+        orderPosition: sessionStorage.getItem("nextContentPosition"),
 	};
 
 	componentDidMount = () => {
         this.setState({creator: sessionStorage.getItem("username")});
-        this.setState({courseId: sessionStorage.getItem("courseId")});		
-		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+        this.retrieveCourseDetails();
 	}
 
 	componentDidUpdate() {
@@ -41,6 +41,28 @@ class AddMultipleChoiceExerciseContent extends Component {
 		if (role == "student") {
 			this.props.navigate("/studenthome");
 		}
+	}
+
+    async retrieveCourseDetails() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getspecificcourseinfo', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {
+		  if (data[0] == 'failed') {
+			this.props.navigate("/mycourses")
+		  }
+		  
+		  this.setState({title: data[0]});
+		});
 	}
 
     handleEditorChange = (e) => {
@@ -60,7 +82,7 @@ class AddMultipleChoiceExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
+            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task, orderPosition: this.state.orderPosition}),
         });
 
         await response.text().then(responseData => {
@@ -70,16 +92,6 @@ class AddMultipleChoiceExerciseContent extends Component {
                 this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
             }
         });
-
-        /*const body = await response.text();
-
-        if (body === 'successful insertion') {
-            this.setState({ responseToPostRequest: 'Tutorial information added' });
-            //this.props.navigate("/editcourse");
-        } else {
-            this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-        }*/
-
 	};
 
     async retrieveContentId() {
@@ -96,11 +108,6 @@ class AddMultipleChoiceExerciseContent extends Component {
         await response.text().then(responseData => {
             this.setState({contentId: responseData}); 
         });
-
-        /*const body = await response.text();
-
-        this.setState({contentId: body});*/
-
 	};
 
     async submitExerciseAnswers() {
@@ -111,27 +118,17 @@ class AddMultipleChoiceExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), creator: this.state.creator, type: this.state.contentType, task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
+            body: JSON.stringify({ contentId: this.state.contentId, courseId: this.state.courseId, creator: this.state.creator, type: this.state.contentType, task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
         });
 
         await response.text().then(responseData => {
             if (responseData == 'successful insertion') {
                 this.setState({ responseToPostRequest: 'Tutorial information added' });
-                this.props.navigate("/editcourse");
+                this.props.navigate("/editcourse/" + this.state.courseId);
             } else {
                 this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
             }
         });
-
-        /*const body = await response.text();
-
-        if (body === 'successful insertion') {
-            this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
-            //this.props.navigate("/editcourse");
-        } else {
-            this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-        }*/
-
 	};
 
     handleSubmit = async e => {
@@ -141,34 +138,6 @@ class AddMultipleChoiceExerciseContent extends Component {
                 this.submitExerciseAnswers();
             })
         });
-
-        /*let [res1, res2, res3] = await Promise.all([
-            fetch('/api/uploadtutorialcontent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task}),
-            }).then(response => response.json()),
-
-            fetch('/api/retrievecontentid', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({idToGet: this.state.courseId, title: this.state.contentTitle}),
-            }).then(response => {
-                this.setState({contenId: response.text()});
-            }),
-
-            fetch('/api/uploadexercisecontent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), creator: this.state.creator, type: this.state.contentType, task: this.state.task, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correct: this.state.correctAnswer}),
-            }).then(response => response.json()),
-        ]);*/
     };
 
 	render() {
@@ -268,8 +237,7 @@ class AddMultipleChoiceExerciseContent extends Component {
 				    </div>
 
 		  </div>
-          <p>{this.state.correctAnswer}</p>
-          <p>{this.state.contentId}</p>
+          <p>{this.state.courseId}</p>
           <p>{this.state.responseToPostRequest}</p>
 		  </>
 		);
@@ -278,7 +246,8 @@ class AddMultipleChoiceExerciseContent extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+    const params = useParams();
   
-	return <AddMultipleChoiceExerciseContent navigate={navigate} />;
+	return <AddMultipleChoiceExerciseContent navigate={navigate} params={params}/>;
   
 }

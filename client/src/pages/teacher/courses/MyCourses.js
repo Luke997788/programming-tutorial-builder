@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, createSearchParams } from 'react-router-dom';
 import './mycourses.css';
 
 class MyCourses extends Component {
@@ -64,6 +64,7 @@ class MyCourses extends Component {
         var cell4 = row.insertCell(3);
         var cell5 = row.insertCell(4);
         var cell6 = row.insertCell(5);
+        var cell7 = row.insertCell(6);
   
         cell1.innerHTML = courseTitle;
         cell2.innerHTML = courseDescription;
@@ -71,31 +72,34 @@ class MyCourses extends Component {
         cell4.innerHTML = dateLastModified;
   
         var editButton = document.createElement("button");
-        editButton.setAttribute("class", "courseEditButton");
+        editButton.setAttribute("class", "course-edit-button");
         editButton.setAttribute("value", courseId);
         editButton.innerHTML = "Edit";
-        editButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/editcourse")};
+        editButton.onclick = () => {this.props.navigate('/editcourse/' + courseId)};
   
         var viewButton = document.createElement("button");
         viewButton.setAttribute("class", "course-view-button");
         viewButton.setAttribute("value", courseId);
         viewButton.innerHTML = 'View';
-        viewButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); sessionStorage.setItem("courseDescription", courseDescription); this.props.navigate("/viewcourse")};
+        viewButton.onclick = () => {this.props.navigate("/viewcourse/" + courseId)};
   
+        var deleteButton = document.createElement("button");
+        deleteButton.setAttribute("class", "course-delete-button");
+        deleteButton.setAttribute("value", courseId);
+        deleteButton.innerHTML = 'Delete';
+        deleteButton.onclick = () => {this.deleteCourse(courseId)};
+
         cell5.appendChild(viewButton);
         cell6.appendChild(editButton);
+        cell7.appendChild(deleteButton);
   
         rowCount += 1;
       }
-
-      var today = new Date();
-      var dd = String(today.getDate()).padStart(2, '0');
-      var mm = String(today.getMonth() + 1).padStart(2, '0');
-      var yyyy = today.getFullYear();
-      today = yyyy + '-' + mm + '-' + dd;
-      document.getElementById("date").innerHTML = '' + today;
-
     });
+  }
+
+  async deleteCourse(id) {
+    alert(id);
   }
 
   render () {
@@ -114,10 +118,10 @@ class MyCourses extends Component {
             <th>Last Modified</th>
             <th></th>
             <th></th>
+            <th></th>
           </tr>
         </table>
       </div>
-      <p id="date"></p>
       </>
 
     );

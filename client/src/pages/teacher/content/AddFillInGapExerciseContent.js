@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
 //import './homepage.css';
 import './addcontent.css';
@@ -16,6 +16,7 @@ class AddFillInGapExerciseContent extends Component {
         contentType: 'Fill in the Gap Exercise',
         task: ``,
         responseToPostRequest: '',
+        orderPosition: sessionStorage.getItem("nextContentPosition"),
 	};
 
     taskContent = ``;
@@ -23,8 +24,7 @@ class AddFillInGapExerciseContent extends Component {
 
 	componentDidMount = () => {
         this.setState({creator: sessionStorage.getItem("username")});
-        this.setState({courseId: sessionStorage.getItem("courseId")});		
-		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+        this.retrieveCourseDetails();
 	}
 
 	componentDidUpdate() {
@@ -39,6 +39,28 @@ class AddFillInGapExerciseContent extends Component {
 		if (role == "student") {
 			this.props.navigate("/studenthome");
 		}
+	}
+
+    async retrieveCourseDetails() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getspecificcourseinfo', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {
+		  if (data[0] == 'failed') {
+			this.props.navigate("/mycourses")
+		  }
+		  
+		  this.setState({title: data[0]});
+		});
 	}
 
     handleEditorChange = (e) => {
@@ -56,13 +78,11 @@ class AddFillInGapExerciseContent extends Component {
         for (let i=0; i < this.state.task.length; i++) {
             if (this.state.task[i] == '[') {
                 indexesOfSquareBrackets.push(i+1);
-                //var answer = this.state.task.substring(i);
             } else if (this.state.task[i] == ']') {
                 indexesOfSquareBrackets.push(i);
             }
         }
 
-        //var answers = [];
         var answerCount = 1;
         this.taskContent = this.state.task;
         for (let i=0; i < indexesOfSquareBrackets.length; i += 2) {
@@ -79,7 +99,7 @@ class AddFillInGapExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.taskContent}),
+            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.taskContent, orderPosition: this.state.orderPosition}),
         });
 
         await response.text().then(responseData => {
@@ -115,13 +135,13 @@ class AddFillInGapExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ contentId: this.state.contentId, courseId: sessionStorage.getItem("courseId"), creator: this.state.creator, type: this.state.contentType, task: this.taskContent, answer1: this.exerciseAnswers, correct: this.exerciseAnswers}),
+            body: JSON.stringify({ contentId: this.state.contentId, courseId: this.state.courseId, creator: this.state.creator, type: this.state.contentType, task: this.taskContent, answer1: this.exerciseAnswers, correct: this.exerciseAnswers}),
         });
 
         await response.text().then(responseData => {
             if (responseData == 'successful insertion') {
                 this.setState({ responseToPostRequest: 'Tutorial information added' });
-                this.props.navigate("/editcourse");
+                this.props.navigate("/editcourse/" + this.state.courseId);
             } else {
                 this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
             }
@@ -213,7 +233,8 @@ class AddFillInGapExerciseContent extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+    const params = useParams();
   
-	return <AddFillInGapExerciseContent navigate={navigate} />;
+	return <AddFillInGapExerciseContent navigate={navigate} params={params}/>;
   
 }

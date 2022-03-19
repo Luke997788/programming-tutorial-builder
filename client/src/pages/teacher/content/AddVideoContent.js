@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 //import './homepage.css';
 import './addcontent.css';
 import VideoContentEditor from './VideoContentEditor';
@@ -11,10 +11,11 @@ class AddVideoContent extends Component {
 		textBoxContents: '',
 		creator: sessionStorage.getItem("username"),
 		title: '',
+		courseId: '',
 	};
 
 	componentDidMount = () => {		
-		this.setState({title: sessionStorage.getItem("courseTitle").replaceAll('"','')});
+		this.retrieveCourseDetails();
 	}
 
 	componentDidUpdate() {
@@ -30,6 +31,28 @@ class AddVideoContent extends Component {
 			this.props.navigate("/studenthome");
 		}
 	}
+
+	async retrieveCourseDetails() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getspecificcourseinfo', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {
+		  if (data[0] == 'failed') {
+			this.props.navigate("/mycourses")
+		  }
+
+		  this.setState({title: data[0]});
+		});
+	  }
 
 	render() {
 		const {navigate} = this.props;
@@ -49,7 +72,8 @@ class AddVideoContent extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+	const params = useParams();
   
-	return <AddVideoContent navigate={navigate} />;
+	return <AddVideoContent navigate={navigate} params={params}/>;
   
 }

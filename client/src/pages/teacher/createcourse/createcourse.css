@@ -1,0 +1,91 @@
+#back-to-my-courses-button {
+    margin: 0px;
+    padding: 0px;
+    background-color: white;
+    box-shadow: none;
+    border: none;
+}
+
+#back-to-my-courses-button:hover {
+    text-decoration: underline;
+}
+
+#create-a-course-container {
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+#create-course-title {
+    text-align: center;
+}
+
+#title-input-container {
+    text-align: left;
+    margin: 0 auto;
+    width: 700px;
+}
+
+#title-input-label {
+    display:block;
+}
+
+#title {
+    width:700px;
+    height:30px;
+}
+
+#description-input-container{
+    text-align: left;
+    margin: 0 auto;
+    padding: 30px 0px 0px 0px;
+    width: 700px;
+}
+
+#description-input-label {
+    display:block;
+}
+
+#description {
+    width:700px;
+    height:200px;
+}
+
+#class-select-container {
+    text-align: left;
+    width: 700px;
+    margin: 0 auto;
+    padding: 30px 0px 0px 0px;
+}
+
+#class-select-label {
+    display:block;
+}
+
+#class-select{
+    width:300px;
+    height:80px;
+}
+
+#checkboxes-container {
+    float: right;
+    margin: 0px 10px 0px 0px;
+}
+
+#in-order-checkbox-container{
+    padding: 0px 0px 10px 0px;
+}
+
+#hide-course-checkbox-container{
+ 
+}
+
+#submit-button-container {
+    width: 700px;
+    margin: 0 auto;
+    padding: 30px 0px 0px 0px;
+}
+
+#submit-button {
+    width: 300px;
+    margin: 0 auto; 
+}

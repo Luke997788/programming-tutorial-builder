@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import tinymce from "https://cdn.tiny.cloud/1/6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o/tinymce/5/tinymce.min.js";
 import './tutorial-page.css';
@@ -9,10 +9,10 @@ class EditingTextImageContentEditor extends React.Component {
   state = {
     creator: '',
     courseId: '',
-    contentType: 'text/image',
-    contentTitle: sessionStorage.getItem("contentTitle"),
-    textAreaContents: '',
-    content: '',
+    contentType: 'Text/Image',
+    contentTitle: '',
+    textAreaContents: ``,
+    content: ``,
     responseToContentSubmission: '',
     initialContents: '<p>Enter content here</p>',
     contentId: '',
@@ -20,24 +20,33 @@ class EditingTextImageContentEditor extends React.Component {
 
   componentDidMount = () => {		
     this.setState({creator: sessionStorage.getItem("username")});
-    this.setState({courseId: sessionStorage.getItem("courseId")});
-    this.retrieveTutorialContent();
-    this.retrieveContentId();
+    this.retrieveTutorialContent().then(data => {
+      //this.retrieveContentId();
+    });
 	}
 
   async retrieveTutorialContent() {
+    let { id, contentid } = this.props.params;
+		this.setState({courseId: id});
+    this.setState({contentId: contentid});
+
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getspecifictutorialcontent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: sessionStorage.getItem("contentTitle")}),
+      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: id, contentId: contentid}),
     });
 
-    const body = await response.text()
+    await response.json().then(data => {
+      if (data[0] == 'failed') {
+        this.props.navigate("/mycourses");
+      }
 
-    this.setState({ textAreaContents: body });
+      this.setState({ contentTitle: data[0] });
+      this.setState({ textAreaContents: data[1] });
+    });
   }
 
   async retrieveContentId() {
@@ -47,7 +56,7 @@ class EditingTextImageContentEditor extends React.Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: sessionStorage.getItem("courseId"), title: this.state.contentTitle}),
+      body: JSON.stringify({ creator: sessionStorage.getItem("username"), idToGet: this.state.courseId, title: this.state.contentTitle}),
     });
 
     const body = await response.text()
@@ -84,14 +93,14 @@ class EditingTextImageContentEditor extends React.Component {
 			body: JSON.stringify({ courseId: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: contentToSubmit, contentId: this.state.contentId }),
 		});
 
-		const body = await response.text();
-
-		if (body === 'successful update') {
-			this.setState({ responseToContentSubmission: 'Tutorial content successfully updated' });
-      this.props.navigate("/editcourse");
-		} else {
-			this.setState({ responseToContentSubmission: 'ERROR: failed to update tutorial content' });
-		}
+		await response.text().then(data => {
+      if (data === 'successful update') {
+        this.setState({ responseToContentSubmission: 'Tutorial content successfully updated' });
+        this.props.navigate("/editcourse/" + this.state.courseId);
+      } else {
+        this.setState({ responseToContentSubmission: 'ERROR: failed to update tutorial content' });
+      }
+    });
 	};
 
   render() {
@@ -148,7 +157,8 @@ class EditingTextImageContentEditor extends React.Component {
       />
         
         <button id="save-button" onClick={this.handleSubmit}>Save</button>
-        <p>id is {this.state.contentId}</p>
+        <p>course id is {this.state.courseId}</p>
+        <p>content id is {this.state.contentId}</p>
       </>
     );
   }
@@ -156,7 +166,8 @@ class EditingTextImageContentEditor extends React.Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+  const params = useParams();
   
-	return <EditingTextImageContentEditor navigate={navigate} />;
+	return <EditingTextImageContentEditor navigate={navigate} params={params} />;
   
 }

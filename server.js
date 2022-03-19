@@ -112,17 +112,18 @@ app.post('/api/getspecificcourseinfo', (req, res) => {
 
   databaseConnection.connect(function(err) {
     if (err) throw err;
-    console.log("Connected");
+    console.log("Retrieving specific course information");
     console.log(req.body);
     databaseConnection.query("SELECT course_title, course_description, target_class_id FROM course_information WHERE course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
-      if (result.length != 0) {       
-        var courseInformation = [result[0].course_title, result[0].course_description, result[0].target_class_id];
+        if (result.length != 0) {       
+          var courseInformation = [result[0].course_title, result[0].course_description, result[0].target_class_id];
 
-        res.send(courseInformation);
-      } else {
-        res.send('failed');
-      }
+          res.send(courseInformation);
+        } else {
+          var failed = ['failed'];
+          res.send(failed);
+        }
     });
   });
 });
@@ -168,17 +169,12 @@ app.post('/api/getteacherclasses', (req, res) => {
     databaseConnection.query("SELECT class_id FROM course_teachers WHERE username = '" + req.body.teacherUsername + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
-
-        console.log(result);
-
-        var listOfIds = new Array(result.length);
-       
+        var listOfClasses = []
         for (let i=0; i < result.length; i++) {
-          console.log("TEST: " + result[i].class_id);
-          listOfIds[i] = result[i].class_id;
+          listOfClasses.push(result[i].class_id);
         }
 
-        res.send(listOfIds);
+        res.send(listOfClasses);
       } else {
         //res.send('failed');
       }
@@ -215,7 +211,8 @@ app.post('/api/getclassstudents', (req, res) => {
 
         res.send(studentInformation);
       } else {
-        //res.send('failed');
+        var failed = [['failed']];
+        res.send(failed);
       }
     });
   });
@@ -272,18 +269,14 @@ app.post('/api/getstudentcourses', (req, res) => {
 
         console.log(result);
 
-        var rows = new Array(result.length);
+        var courseInformation =  [[result[0].course_id, result[0].course_title, result[0].course_description, result[0].target_class_id]];
        
-
-        for (let i=0; i < result.length; i++) {
-          console.log("TEST: " + result[i].course_title);
-
-          var row = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].target_class_id];
-          rows[i] = row;
-
+        for (let i=1; i < result.length; i++) {
+          var data = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].target_class_id];
+          courseInformation.push(data);
         }
 
-        res.send(rows);
+        res.send(courseInformation);
       } else {
         //res.send('failed');
       }
@@ -308,7 +301,7 @@ app.post('/api/uploadtutorialcontent', (req, res) => {
     console.log("Connected");
     console.log(req.body);
 
-    databaseConnection.query("INSERT INTO tutorial_content (course_id, course_creator, content_title, content_type, content) VALUES ('" + req.body.id + "', '" + req.body.creator + "', '" + req.body.title + "', '" + req.body.type + "', '" + req.body.content + "')", function(err,result,fields) {
+    databaseConnection.query("INSERT INTO tutorial_content (course_id, course_creator, content_title, content_type, content, content_order_position) VALUES ('" + req.body.id + "', '" + req.body.creator + "', '" + req.body.title + "', '" + req.body.type + "', '" + req.body.content + "', '" + req.body.orderPosition + "')", function(err,result,fields) {
       if (err) throw err;
       res.send("successful insertion");
     });
@@ -439,6 +432,38 @@ app.post('/api/uploadassignmentsubmission', (req, res) => {
   });
 });
 
+
+// gets information about a specific student
+app.post('/api/getspecificstudentinformation', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected");
+    console.log(req.body);
+    databaseConnection.query("SELECT first_name, last_name, student_class FROM students WHERE student_school_id = '" + req.body.studentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        var data = [result[0].first_name, result[0].last_name, result[0].student_class];
+        
+        res.send(data);
+      } else {
+        var failed = ['failed'];
+        res.send(failed);
+      }
+    });
+  });
+});
+
 // gets assignment submissions for a specific student
 app.post('/api/getstudentassignmentsubmissions', (req, res) => {
 
@@ -498,7 +523,8 @@ app.post('/api/getspecificstudentassignmentsubmission', (req, res) => {
   
         res.send(data);
       } else {
-        //res.send('failed');
+        var failed= ['failed'];
+        res.send(failed);
       }
     });
   });
@@ -615,26 +641,17 @@ app.post('/api/getspecifictutorialcontent', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT content FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "' AND content_title = '" + req.body.title + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT content_title, content FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "' AND content_id = '" + req.body.contentId + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
-        console.log(result);
+        
+      var contentInformation = [result[0].content_title, result[0].content]
 
-        var rows = new Array(result.length);
-        var test = {};
-       
-
-        for (let i=0; i < result.length; i++) {
-          console.log("TEST: " + result[i].content);
-
-          var row = [result[i].content];
-          rows[i] = row;
-        }
-
-        res.send(result[0].content);
+        res.send(contentInformation);
       } else {
-        //res.send('failed');
+        var failed = ['failed']
+        res.send(failed);
       }
     });
   });
@@ -643,7 +660,6 @@ app.post('/api/getspecifictutorialcontent', (req, res) => {
 // gets the information about pieces of content that are part of a specific course
 app.post('/api/getcoursecontentinfo', (req, res) => {
 
-  console.log(req.body);
   var mysql = require('mysql');
   var databaseConnection = mysql.createConnection ( {
     host : 'localhost',
@@ -654,24 +670,25 @@ app.post('/api/getcoursecontentinfo', (req, res) => {
 
   databaseConnection.connect(function(err) {
     if (err) throw err;
-    console.log("Connected");
+    console.log("Getting course content information");
     console.log(req.body);
-    databaseConnection.query("SELECT content_order_position, content_title, content_type, last_modified FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT content_order_position, content_title, content_type, last_modified, content_id FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' AND course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
         console.log(result);
 
-        var contentInformation = [[result[0].content_order_position, result[0].content_title, result[0].content_type, result[0].last_modified]];
+        var contentInformation = [[result[0].content_order_position, result[0].content_title, result[0].content_type, result[0].last_modified, result[0].content_id]];
 
         for (let i=1; i < result.length; i++) {
-          var information = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].last_modified];
+          var information = [result[i].content_order_position, result[i].content_title, result[i].content_type, result[i].last_modified, result[i].content_id];
           contentInformation[i] = information;
         }
 
         res.send(contentInformation);
       } else {
-        //res.send('failed');
+        var failed = [['failed']];
+        res.send(failed);
       }
     });
   });

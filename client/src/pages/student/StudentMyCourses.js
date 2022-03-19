@@ -55,9 +55,9 @@ class StudentMyCourses extends Component {
       body: JSON.stringify({ username: sessionStorage.getItem("username")}),
     });
 
-    const body = await response.text()
-
-    this.setState({studentClass: body});
+    await response.text().then(data => {
+      this.setState({studentClass: data});
+    });
   }
 
   async retrieveStudentCourse() {
@@ -70,53 +70,39 @@ class StudentMyCourses extends Component {
       body: JSON.stringify({targetClass: this.state.studentClass}),
     });
 
-    const body = await response.text()
-
-    var dataForTable = body.split("[").join(']').split(']').join(',').split(',');
-    this.setState({ studentCourseInformation: dataForTable });
-
-    var arr = [];
-    var index = 0;
-    for(let i=0; i < this.state.studentCourseInformation.length; i++) {
-      if ((this.state.studentCourseInformation[i] !== undefined) && (this.state.studentCourseInformation[i] !== null) && (this.state.studentCourseInformation[i] !== '')) {
-        arr[index] = this.state.studentCourseInformation[i];
-        index += 1;
+    await response.json().then(data => {
+      var table = document.getElementById("course-info-table");
+      var rowCount = 1;
+  
+      for(let i=0; i < data.length; i++) {
+        let courseId = data[i][0];
+        let courseTitle = data[i][1];
+        let courseDescription = data[i][2];
+        let targetClass = data[i][3];
+  
+        var row = table.insertRow(rowCount);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+  
+        cell1.innerHTML = courseId;
+        cell2.innerHTML = courseTitle;
+        cell3.innerHTML = courseDescription;
+        cell4.innerHTML = targetClass;
+  
+        var viewButton = document.createElement("button");
+        viewButton.setAttribute("class", "courseViewButton");
+        viewButton.setAttribute("value", courseId);
+        viewButton.innerHTML = "View";
+        viewButton.onclick = () => {this.props.navigate("/studentviewcourse/" + courseId)};
+  
+        cell5.appendChild(viewButton);
+  
+        rowCount += 1;
       }
-    }
-
-    this.setState({tableData: arr});
-      
-    var table = document.getElementById("course-info-table");
-    var rowCount = 1;
-
-    for(let i=0; i < this.state.tableData.length; i += 4) {
-      let courseId = this.state.tableData[i];
-      let courseTitle = this.state.tableData[i+1];
-      let courseDescription = this.state.tableData[i+2];
-      let targetClass = this.state.tableData[i+3];
-
-      var row = table.insertRow(rowCount);
-      var cell1 = row.insertCell(0);
-      var cell2 = row.insertCell(1);
-      var cell3 = row.insertCell(2);
-      var cell4 = row.insertCell(3);
-      var cell5 = row.insertCell(4);
-
-      cell1.innerHTML = courseId.replaceAll('"','');
-      cell2.innerHTML = courseTitle.replaceAll('"','');
-      cell3.innerHTML = courseDescription.replaceAll('"','');
-      cell4.innerHTML = targetClass.replaceAll('"','');
-
-      var viewButton = document.createElement("button");
-      viewButton.setAttribute("class", "courseViewButton");
-      viewButton.setAttribute("value", courseId);
-      viewButton.innerHTML = "View";
-      viewButton.onclick = () => {sessionStorage.setItem("courseId", courseId); sessionStorage.setItem("courseTitle", courseTitle); this.props.navigate("/studentviewcourse")};
-
-      cell5.appendChild(viewButton);
-
-      rowCount += 1;
-    }
+    });
   }
 
   render () {

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 //import './homepage.css';
 
 class EditCourseDetails extends Component {
 
 	state = {
+		courseId: '',
 		responseToSubmission: '',
 		title: '',
 		description: '',
@@ -46,13 +47,16 @@ class EditCourseDetails extends Component {
 	}
 
     async retrieveCourseDetails() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/getspecificcourseinfo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({idToGet: sessionStorage.getItem("courseId")}),
+          body: JSON.stringify({idToGet: id}),
         });
 
 		await response.json().then(data => {
@@ -71,13 +75,13 @@ class EditCourseDetails extends Component {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ idToGet: sessionStorage.getItem("courseId"), creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.order, hide: this.state.hide}),
+			body: JSON.stringify({ idToGet: this.state.courseId, creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.order, hide: this.state.hide}),
 		});
 
 		await response.text().then(data => {
 			if (data === 'successful update') {
 				this.setState({ responseToSubmission: 'Course details successfully updated' });
-				this.props.navigate("/editcourse")
+				this.props.navigate("/editcourse/" + this.state.courseId)
 			} else {
 				this.setState({ responseToSubmission: 'ERROR: Failed to update course details' });
 			}
@@ -135,7 +139,8 @@ class EditCourseDetails extends Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+	const params = useParams();
   
-	return <EditCourseDetails navigate={navigate} />;
+	return <EditCourseDetails navigate={navigate} params={params} />;
   
 }
