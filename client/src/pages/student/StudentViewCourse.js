@@ -77,7 +77,7 @@ class StudentViewCourse extends Component {
 	
 		await response.json().then(data => {
 		  if (data[0] == 'failed') {
-			this.props.navigate("/mycourses")
+			this.props.navigate("/studentmycourses")
 		  }
 		  
 		  this.setState({courseTitle: data[0]});
