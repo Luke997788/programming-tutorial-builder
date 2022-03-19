@@ -99,27 +99,17 @@ class StudentViewCourse extends Component {
 
     await response.json().then(data => {
         this.state.numberOfTutorials = data.length - 1;
-  
-        var tutorialTitle = document.getElementById("tutorial-title");
-        var tutorialContent = document.getElementById("tutorial-content");
-        var resultMessage = document.getElementById("result-message");
-
-        tutorialTitle.innerHTML = "" + data[this.state.currentTutorial][1];
-        tutorialContent.innerHTML = "" + data[this.state.currentTutorial][3];
-        resultMessage.innerHTML = "";
-
         this.setState({currentContentId: data[this.state.currentTutorial][4]});
         sessionStorage.setItem("currentContentId", this.state.currentContentId);
+  
+        var tutorialTitle = document.getElementById("tutorial-title").innerHTML = "" + data[this.state.currentTutorial][1];
+        var tutorialContent = document.getElementById("tutorial-content").innerHTML = "" + data[this.state.currentTutorial][3];
+        var resultMessage = document.getElementById("result-message").innerHTML = "";
 
         if ((data[this.state.currentTutorial][2] == 'Text/Image') || (data[this.state.currentTutorial][2] == 'Video')) {
           var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
           var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-          /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
-          var assignmentInput = document.getElementById("assignment-submission-container");
-        assignmentInput.innerHTML = ``;*/
-
-          var editor = document.getElementById("editor");
-          editor.style.display='none';
+          var editor = document.getElementById("editor").style.display='none';
 
           var answer1 = document.getElementById("answer-1-option").innerHTML = '';
           var answer2 = document.getElementById("answer-2-option").innerHTML = '';
@@ -129,42 +119,26 @@ class StudentViewCourse extends Component {
           var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
           var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
           var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
+
         } else if (data[this.state.currentTutorial][2] == 'Multiple Choice Exercise') {
           var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-          /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
-          var assignmentInput = document.getElementById("assignment-submission-container");
-          assignmentInput.innerHTML = ``;*/
-
-          var editor = document.getElementById("editor");
-          editor.style.display='none';
+          var editor = document.getElementById("editor").style.display='none';
 
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveExerciseAnswers();
+
         } else if (data[this.state.currentTutorial][2] == 'Fill in the Gap Exercise') {
           var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-          /*var submitAssignmentButton = document.getElementById("submit-assignment-button").style.display = 'none';
-          var assignmentInput = document.getElementById("assignment-submission-container");
-          assignmentInput.innerHTML = ``;*/
-
-          var editor = document.getElementById("editor");
-          editor.style.display='none';
+          var editor = document.getElementById("editor").style.display='none';
 
           this.gapTask = "" + data[this.state.currentTutorial][3];
           this.setState({contentIdToRetrieve: data[this.state.currentTutorial][4]});
           this.retrieveGapExerciseAnswers();
+
         }  else if (data[this.state.currentTutorial][2] == 'Assignment') {
           var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
           var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
-          /*var assignmentInput = document.getElementById("assignment-submission-container");
-          assignmentInput.innerHTML = `<label for="assignment-submission">Upload a PDF file: </label> <input id="assignment-submission" type="file" />`;*/
-
-          var editor = document.getElementById("editor");
-          editor.style.display='block';
-
-          /*var submitAssignmentButton = document.getElementById("submit-assignment-button");
-          submitAssignmentButton.style.display = 'block';
-          submitAssignmentButton.hidden = false;
-          submitAssignmentButton.onclick = () => {this.submitAssignment()};*/
+          var editor = document.getElementById("editor").style.display='block';
         }
     })
   }

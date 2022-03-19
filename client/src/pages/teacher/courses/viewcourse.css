@@ -25,6 +25,10 @@
     margin-right: 50px;
 }
 
+#editor {
+    display: none;
+}
+
 #assignment-submission-container {
     margin-left: 50px;
     margin-right: 50px;
