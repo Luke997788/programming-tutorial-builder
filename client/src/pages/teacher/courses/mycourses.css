@@ -54,3 +54,7 @@ table {
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .add-course-content-button {background-color: #3e8e41;}
+
+#course-info-table {
+  visibility: hidden;
+}

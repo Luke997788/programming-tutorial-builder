@@ -92,7 +92,8 @@ app.post('/api/getcourseinfo', (req, res) => {
 
         res.send(coursesInformation);
       } else {
-        res.send('failed');
+        var failed = [['failed']];
+        res.send(failed);
       }
     });
   });
@@ -114,10 +115,10 @@ app.post('/api/getspecificcourseinfo', (req, res) => {
     if (err) throw err;
     console.log("Retrieving specific course information");
     console.log(req.body);
-    databaseConnection.query("SELECT course_title, course_description, target_class_id FROM course_information WHERE course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT course_title, course_description, target_class_id, course_creator FROM course_information WHERE course_id = '" + req.body.idToGet + "'", function(err,result,fields) {
       if (err) throw err;
         if (result.length != 0) {       
-          var courseInformation = [result[0].course_title, result[0].course_description, result[0].target_class_id];
+          var courseInformation = [result[0].course_title, result[0].course_description, result[0].target_class_id, result[0].course_creator];
 
           res.send(courseInformation);
         } else {

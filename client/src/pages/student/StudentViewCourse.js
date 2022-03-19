@@ -41,8 +41,9 @@ class StudentViewCourse extends Component {
 
     var backButton = document.getElementById("back-to-my-courses-button").onclick  = () => {this.props.navigate("/studentmycourses")};
 
-    this.retrieveCourseDetails();
-    this.retrieveCourseTutorialContent();
+    this.retrieveCourseDetails().then(data => {
+      this.retrieveCourseTutorialContent();
+    });
 	}
 
   componentDidUpdate() {
@@ -85,16 +86,13 @@ class StudentViewCourse extends Component {
 	}
 
   async retrieveCourseTutorialContent() {
-    let { id } = this.props.params;
-		this.setState({courseId: id});
-
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getallcoursetutorialcontent', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({idToGet: id}),
+      body: JSON.stringify({idToGet: this.state.courseId}),
     });
 
     await response.json().then(data => {
