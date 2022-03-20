@@ -9,6 +9,8 @@ class EditCourse extends Component {
     description: '',
     courseId: '',
     contentId: '',
+    responseToDeletion: '',
+    responseToAnswersDeletion: '',
   };
 
   componentDidMount() {
@@ -82,7 +84,7 @@ class EditCourse extends Component {
     });
 
     await response.json().then(data => {
-      var table = document.getElementById("course-info-table");
+      var table = document.getElementById("course-content-table");
       var rowCount = 1;
       var nextContentPosition = data.length + 1;
       sessionStorage.setItem("nextContentPosition", nextContentPosition);
@@ -100,6 +102,7 @@ class EditCourse extends Component {
         var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
         var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
   
         cell1.innerHTML = order;
         cell2.innerHTML = contentTitle;
@@ -122,8 +125,61 @@ class EditCourse extends Component {
           editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
         }
         cell5.appendChild(editButton);
+
+        var deleteButton = document.createElement("button");
+        deleteButton.setAttribute("class", "course-delete-button");
+        deleteButton.innerHTML = 'Delete';
+        deleteButton.onclick = () => {this.deleteCourse(contentId, contentType)};
+
+        cell6.appendChild(deleteButton);
   
         rowCount += 1;
+      }
+    });
+  }
+
+  async deleteCourse(id, type) {
+    // starts a request, passes URL and configuration object
+    const response = await fetch('/api/deletetutorialcontent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ contentId: id }),
+    });
+
+    await response.text().then(data => {
+      if (data == 'deleted') {
+        this.setState({ responseToDeletion: 'Content deleted' });
+        if ((type == 'Text/Image') || (type == 'Video') || (type == 'Assignment')) {
+          window.location.reload(true);
+        }
+      } else {
+        this.setState({ responseToDeletion: 'ERROR: Failed to delete content' });
+      }
+    });
+
+    if ((type == 'Multiple Choice Exercise') || (type == 'Fill in the Gap')) {
+      this.deleteExerciseAnswers(id);
+    }
+  }
+
+  async deleteExerciseAnswers(id) {
+    // starts a request, passes URL and configuration object
+    const response = await fetch('/api/deleteexerciseanswers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ contentId: id }),
+    });
+
+    await response.text().then(data => {
+      if (data == 'deleted') {
+        this.setState({ responseToAnswersDeletion: 'Answers deleted' });
+        window.location.reload(true);
+      } else {
+        this.setState({ responseToAnswersDeletion: 'ERROR: Failed to delete answers' });
       }
     });
   }
@@ -150,16 +206,20 @@ class EditCourse extends Component {
 
       </div>
 
-      <div id="course_info_table">
-        <table id="course-info-table">
+      <div id="course-content-table-container">
+        <table id="course-content-table">
           <tr>
             <th>Order</th>
             <th>Title</th>
             <th>Type</th>
             <th>Last Modified</th>
             <th></th>
+            <th></th>
           </tr>
         </table>
+
+        <p>{this.state.responseToDeletion}</p>
+        <p>{this.state.responseToAnswersDeletion}</p>
       </div>
       </>
 

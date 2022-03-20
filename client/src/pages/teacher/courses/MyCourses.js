@@ -4,6 +4,10 @@ import './mycourses.css';
 
 class MyCourses extends Component {
 
+  state = {
+    responseToDeletion: '',
+  }
+
   componentDidMount() {
 		const status = sessionStorage.getItem('username');
     const role = sessionStorage.getItem('role');
@@ -106,7 +110,23 @@ class MyCourses extends Component {
   }
 
   async deleteCourse(id) {
-    alert(id);
+    // starts a request, passes URL and configuration object
+    const response = await fetch('/api/deletecourse', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ courseId: id}),
+    });
+
+    await response.text().then(data => {
+      if (data == 'deleted') {
+        this.setState({ responseToDeletion: 'Course deleted' });
+        window.location.reload(true);
+      } else {
+				this.setState({ responseToDeletion: 'ERROR: Failed to delete course' });
+      }
+    });
   }
 
   render () {
@@ -128,6 +148,8 @@ class MyCourses extends Component {
             <th></th>
           </tr>
         </table>
+
+        <p>{this.state.responseToDeletion}</p>
       </div>
       </>
 

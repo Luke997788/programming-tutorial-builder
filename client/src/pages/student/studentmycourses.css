@@ -13,3 +13,7 @@ table {
   tr:nth-child(even) {
     background-color: #dddddd;
   }
+
+  #student-course-info-table {
+    visibility: visible;
+  }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './homepage.css';
-import './mycourses.css';
+import './studentmycourses.css';
 
 class StudentMyCourses extends Component {
 
@@ -71,7 +71,7 @@ class StudentMyCourses extends Component {
     });
 
     await response.json().then(data => {
-      var table = document.getElementById("course-info-table");
+      var table = document.getElementById("student-course-info-table");
       var rowCount = 1;
   
       for(let i=0; i < data.length; i++) {
@@ -112,8 +112,8 @@ class StudentMyCourses extends Component {
       <>
       <h1>My Courses</h1> 
 
-      <div id="course_info_table">
-        <table id="course-info-table">
+      <div id="student-course-info-container">
+        <table id="student-course-info-table">
           <tr>
             <th>Course Id</th>
             <th>Course Title</th>

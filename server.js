@@ -99,6 +99,90 @@ app.post('/api/getcourseinfo', (req, res) => {
   });
 });
 
+// deletes a specific course
+app.post('/api/deletecourse', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Retrieving details for created courses");
+    console.log(req.body);
+    databaseConnection.query("DELETE FROM course_information WHERE course_id = '" + req.body.courseId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        res.send('deleted');
+      } else {
+        res.send('failed');
+      }
+    });
+  });
+});
+
+// deletes a specific piece of tutorial content
+app.post('/api/deletetutorialcontent', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Retrieving details for created courses");
+    console.log(req.body);
+    databaseConnection.query("DELETE FROM tutorial_content WHERE content_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        res.send('deleted');
+      } else {
+        res.send('failed');
+      }
+    });
+  });
+});
+
+// deletes the answers for a specific piece of tutorial content
+app.post('/api/deleteexerciseanswers', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Retrieving details for created courses");
+    console.log(req.body);
+    databaseConnection.query("DELETE FROM multiple_choice_exercises WHERE content_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        res.send('deleted');
+      } else {
+        res.send('failed');
+      }
+    });
+  });
+});
+
 // gets the details of a specific course
 app.post('/api/getspecificcourseinfo', (req, res) => {
 
