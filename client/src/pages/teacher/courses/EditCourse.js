@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import './mycourses.css';
+import './editcourse.css';
 
 class EditCourse extends Component {
 
@@ -203,7 +203,6 @@ class EditCourse extends Component {
           <Link to={"/editcourse/" + this.state.courseId + "/addgapexercise"}>Fill in the Gap Exercise</Link>
           <Link to={"/editcourse/" + this.state.courseId + "/addassignment"}>Assignment Task</Link>
         </div>
-
       </div>
 
       <div id="course-content-table-container">

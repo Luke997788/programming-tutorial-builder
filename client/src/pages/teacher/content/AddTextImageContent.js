@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate, useParams } from "react-router-dom"
-//import './homepage.css';
-import './addcontent.css';
 import TextImageContentEditor from './TextImageContentEditor';
 
 class AddTextImageContent extends Component {

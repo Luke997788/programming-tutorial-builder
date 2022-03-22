@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { useNavigate, useParams } from "react-router-dom"
-//import './homepage.css';
 
 class EditCourseDetails extends Component {
 

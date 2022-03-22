@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate, useParams } from "react-router-dom"
-//import './homepage.css';
-import './addcontent.css';
+import { useNavigate, useParams } from "react-router-dom";
 import EditingVideoContentEditor from './EditingVideoContentEditor';
 
 class EditVideoContent extends Component {

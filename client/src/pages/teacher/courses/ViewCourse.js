@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
-import './mycourses.css';
 import './viewcourse.css';
 import AssignmentTextEditor from './AssignmentTextEditor';
 

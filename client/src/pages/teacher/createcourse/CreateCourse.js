@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate } from "react-router-dom"
-//import './createcourse.css';
+import './createcourse.css';
 
 class CreateCourse extends Component {
 
@@ -69,7 +69,7 @@ class CreateCourse extends Component {
 		const {navigate} = this.props;
 
 		return (
-			<div id="create-a-course-container">
+			<div class="container" id="create-a-course-container">
 			  <button id="back-to-my-courses-button">&#8249; {' Back to My Courses'}</button>
 
 			  <h1 id="create-course-title">Create a New Course</h1>

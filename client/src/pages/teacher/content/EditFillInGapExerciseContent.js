@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate, useParams } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
-//import './homepage.css';
-import './addcontent.css';
 
 class EditFillInTheGapExerciseContent extends Component {
 

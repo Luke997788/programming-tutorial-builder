@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useNavigate, createSearchParams } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './mycourses.css';
 
 class MyCourses extends Component {
@@ -134,22 +134,25 @@ class MyCourses extends Component {
 
     return (
       <>
-      <h1>My Courses</h1> 
 
-      <div id="course-info-container">
-        <table id="course-info-table">
-          <tr>
-            <th>Course Title</th>
-            <th>Course Description</th>
-            <th>Class</th>
-            <th>Last Modified</th>
-            <th></th>
-            <th></th>
-            <th></th>
-          </tr>
-        </table>
+      <div class="container p-20">
+        <h1>My Courses</h1> 
 
-        <p>{this.state.responseToDeletion}</p>
+        <div>
+          <table id="course-info-table">
+            <tr>
+              <th>Course Title</th>
+              <th>Course Description</th>
+              <th>Class</th>
+              <th>Last Modified</th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </table>
+
+          <p>{this.state.responseToDeletion}</p>
+        </div>
       </div>
       </>
 

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate, useParams } from "react-router-dom"
 import { Editor } from '@tinymce/tinymce-react';
-//import './homepage.css';
-import './addcontent.css';
 
 class AddAssignment extends Component {
 
