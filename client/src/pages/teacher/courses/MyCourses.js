@@ -135,7 +135,7 @@ class MyCourses extends Component {
     return (
       <>
 
-      <div class="container p-20">
+      <div>
         <h1>My Courses</h1> 
 
         <div>
