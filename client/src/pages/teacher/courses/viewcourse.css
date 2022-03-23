@@ -20,6 +20,11 @@
     margin-right: 50px;
 }
 
+#tutorial-content {
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
 #answer-options {
     margin-left: 50px;
     margin-right: 50px;
@@ -60,6 +65,15 @@
     font-size: 36px;
     margin-left: 50px;
     margin-right: 50px;   
+}
+
+#return-to-edit-course-button-container {
+    text-align: center;
+}
+
+#return-to-edit-course-button {
+    text-decoration: none;
+    color: black;
 }
 
 #previous-button {

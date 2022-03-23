@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import './viewcourse.css';
 import AssignmentTextEditor from './AssignmentTextEditor';
@@ -202,6 +202,8 @@ async retrieveGapExerciseAnswers() {
   await response.text().then(data => {
       var answers = data.split(',');
 
+      this.gapAnswers = [];
+      this.gapInputValues = [];
       answer1.innerHTML = '';
       answer2.innerHTML = '';
       answer3.innerHTML = '';
@@ -338,6 +340,10 @@ async submitGapAnswer() {
 
       <div id="end-of-course-container">
         <p id="end-of-course-message"></p>
+      </div>
+
+      <div id="return-to-edit-course-button-container">
+        {/*<Link id="return-to-edit-course-button" to={"/editcourse/" + this.state.courseId}>Back to Edit Course</Link>*/}
       </div>
 
       <div id="navigation-buttons">

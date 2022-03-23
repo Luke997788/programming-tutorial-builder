@@ -6,6 +6,7 @@ class MyCourses extends Component {
 
   state = {
     responseToDeletion: '',
+    coursesSorted: false,
   }
 
   componentDidMount() {
@@ -74,11 +75,14 @@ class MyCourses extends Component {
           var cell5 = row.insertCell(4);
           var cell6 = row.insertCell(5);
           var cell7 = row.insertCell(6);
+          var cell8 = row.insertCell(7);
     
           cell1.innerHTML = courseTitle;
           cell2.innerHTML = courseDescription;
           cell3.innerHTML = targetClass;
           cell4.innerHTML = dateLastModified;
+          cell8.innerHTML = courseId;
+          cell8.style.display = "none";
     
           var editButton = document.createElement("button");
           editButton.setAttribute("class", "course-edit-button");
@@ -105,6 +109,15 @@ class MyCourses extends Component {
           rowCount += 1;
         }
         table.style.visibility = 'visible';
+
+        var sortDefaultButton = document.getElementById("sort-by-id");
+        var sortTitleButton = document.getElementById("sort-by-title");
+        var sortClassButton = document.getElementById("sort-by-class");
+        var sortDateButton = document.getElementById("sort-by-date");
+        sortDefaultButton.onclick = () => {this.sortCourses("id")};
+        sortTitleButton.onclick = () => {this.sortCourses("title")};
+        sortClassButton.onclick = () => {this.sortCourses("class")};
+        sortDateButton.onclick = () => {this.sortCourses("date")};
       }
     });
   }
@@ -129,6 +142,130 @@ class MyCourses extends Component {
     });
   }
 
+  async sortCourses(sortOption) {
+    var table = document.getElementById("course-info-table");
+    var rows;
+    var switching = true;
+    var i;
+    var x;
+    var y;
+    var shouldSwitch;
+
+    if (sortOption == "id") {
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[7];
+          y = rows[i + 1].getElementsByTagName("TD")[7];
+
+          if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+
+        if (shouldSwitch) {
+
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+      this.setState({coursesSorted: false});
+      document.getElementById("sort-by-id").style.backgroundColor = "blue";
+      document.getElementById("sort-by-title").style.backgroundColor = "";
+      document.getElementById("sort-by-class").style.backgroundColor = "";
+      document.getElementById("sort-by-date").style.backgroundColor = "";
+
+    } else if (sortOption == "title") {
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[0];
+          y = rows[i + 1].getElementsByTagName("TD")[0];
+
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+
+        if (shouldSwitch) {
+
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+      this.setState({coursesSorted: true});
+      document.getElementById("sort-by-id").style.backgroundColor = "";
+      document.getElementById("sort-by-title").style.backgroundColor = "blue";
+      document.getElementById("sort-by-class").style.backgroundColor = "";
+      document.getElementById("sort-by-date").style.backgroundColor = "";
+
+    } else if (sortOption == "class") {
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[2];
+          y = rows[i + 1].getElementsByTagName("TD")[2];
+
+          if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+
+        if (shouldSwitch) {
+
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+      this.setState({coursesSorted: true});
+      document.getElementById("sort-by-id").style.backgroundColor = "";
+      document.getElementById("sort-by-title").style.backgroundColor = "";
+      document.getElementById("sort-by-class").style.backgroundColor = "blue";
+      document.getElementById("sort-by-date").style.backgroundColor = "";
+
+    } else if (sortOption == "date") {     
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[3];
+          y = rows[i + 1].getElementsByTagName("TD")[3];
+
+          if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+            shouldSwitch = true;
+            break;
+          }
+        }
+
+        if (shouldSwitch) {
+
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+        }
+      }
+      this.setState({coursesSorted: true});
+      document.getElementById("sort-by-id").style.backgroundColor = "";
+      document.getElementById("sort-by-title").style.backgroundColor = "";
+      document.getElementById("sort-by-class").style.backgroundColor = "";
+      document.getElementById("sort-by-date").style.backgroundColor = "blue";
+
+    }
+  }
+
   render () {
     const {navigate} = this.props;
 
@@ -137,6 +274,15 @@ class MyCourses extends Component {
 
       <div>
         <h1>My Courses</h1> 
+        <div class="sort-dropdown">
+          <button class="sort-button">Sort By</button>
+          <div class="sort-dropdown-options">
+            <button class="sort-option" id="sort-by-id">Default</button>
+            <button class="sort-option" id="sort-by-title">Title</button>
+            <button class="sort-option" id="sort-by-class">Class</button>
+            <button class="sort-option" id="sort-by-date">Date Last Modified</button>
+          </div>
+        </div>
 
         <div>
           <table id="course-info-table">
