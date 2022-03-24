@@ -5,12 +5,6 @@ import './studentmycourses.css';
 
 class StudentMyCourses extends Component {
 
-  state = {
-    studentClass: '',
-    studentCourseInformation: '',
-    tableData: '',
-  };
-
   componentDidMount() {
 		const status = sessionStorage.getItem('username');
     const role = sessionStorage.getItem('role');
@@ -23,9 +17,7 @@ class StudentMyCourses extends Component {
 			this.props.navigate("/home");
 		}
 
-    this.retrieveStudentClass().then(data => {
-      this.retrieveStudentCourse();
-    })
+    this.retrieveStudentCourse();
 	}
 
   componentDidUpdate() {
@@ -45,21 +37,6 @@ class StudentMyCourses extends Component {
     }
 	}
 
-  async retrieveStudentClass() {
-    // starts a request, passes URL and configuration object
-    const response = await fetch('/api/getstudentclass', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: sessionStorage.getItem("username")}),
-    });
-
-    await response.text().then(data => {
-      this.setState({studentClass: data});
-    });
-  }
-
   async retrieveStudentCourse() {
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getstudentcourses', {
@@ -67,10 +44,11 @@ class StudentMyCourses extends Component {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({targetClass: this.state.studentClass}),
+      body: JSON.stringify({studentId: sessionStorage.getItem("studentId")}),
     });
 
     await response.json().then(data => {
+      document.getElementById("title").innerHTML = "My Courses (" + data[0][3] + ")";
       var table = document.getElementById("student-course-info-table");
       var rowCount = 1;
   
@@ -78,17 +56,14 @@ class StudentMyCourses extends Component {
         let courseId = data[i][0];
         let courseTitle = data[i][1];
         let courseDescription = data[i][2];
-        let targetClass = data[i][3];
   
         var row = table.insertRow(rowCount);
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
         var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
   
         cell1.innerHTML = courseTitle;
         cell2.innerHTML = courseDescription;
-        cell3.innerHTML = targetClass;
   
         var viewButton = document.createElement("button");
         viewButton.setAttribute("class", "courseViewButton");
@@ -96,7 +71,7 @@ class StudentMyCourses extends Component {
         viewButton.innerHTML = "View";
         viewButton.onclick = () => {this.props.navigate("/studentviewcourse/" + courseId)};
   
-        cell4.appendChild(viewButton);
+        cell3.appendChild(viewButton);
   
         rowCount += 1;
       }
@@ -108,14 +83,13 @@ class StudentMyCourses extends Component {
 
     return (
       <>
-      <h1>My Courses</h1> 
+      <h1 id="title"></h1> 
 
       <div id="student-course-info-container">
         <table id="student-course-info-table">
           <tr>
             <th>Course Title</th>
             <th>Course Description</th>
-            <th>Class</th>
             <th></th>
           </tr>
         </table>
