@@ -85,12 +85,10 @@ class StudentMyCourses extends Component {
         var cell2 = row.insertCell(1);
         var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
-        var cell5 = row.insertCell(4);
   
-        cell1.innerHTML = courseId;
-        cell2.innerHTML = courseTitle;
-        cell3.innerHTML = courseDescription;
-        cell4.innerHTML = targetClass;
+        cell1.innerHTML = courseTitle;
+        cell2.innerHTML = courseDescription;
+        cell3.innerHTML = targetClass;
   
         var viewButton = document.createElement("button");
         viewButton.setAttribute("class", "courseViewButton");
@@ -98,7 +96,7 @@ class StudentMyCourses extends Component {
         viewButton.innerHTML = "View";
         viewButton.onclick = () => {this.props.navigate("/studentviewcourse/" + courseId)};
   
-        cell5.appendChild(viewButton);
+        cell4.appendChild(viewButton);
   
         rowCount += 1;
       }
@@ -115,7 +113,6 @@ class StudentMyCourses extends Component {
       <div id="student-course-info-container">
         <table id="student-course-info-table">
           <tr>
-            <th>Course Id</th>
             <th>Course Title</th>
             <th>Course Description</th>
             <th>Class</th>
