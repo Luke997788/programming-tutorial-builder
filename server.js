@@ -565,14 +565,15 @@ app.post('/api/getstudentassignmentsubmissions', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT course_id, assignment_content_id, assignment_submission FROM assignment_submissions WHERE student_id = '" + req.body.studentId + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT tutorial_content.content_title, assignment_submissions.assignment_content_id, course_information.course_title FROM assignment_submissions INNER JOIN tutorial_content ON tutorial_content.content_id=assignment_submissions.assignment_content_id INNER JOIN course_information ON tutorial_content.course_id=course_information.course_id WHERE assignment_submissions.student_id = '" + req.body.studentId + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
+        console.log(result);
 
-        var data = [[result[0].course_id, result[0].assignment_content_id, result[0].assignment_submission]];
+        var data = [[result[0].course_title, result[0].content_title, result[0].assignment_content_id]];
 
         for (let i=1; i < result.length; i++) {
-          var row = [result[i].course_id, result[i].assignment_content_id, result[i].assignment_submission];
+          var row = [result[0].course_title, result[0].content_title, result[0].assignment_content_id];
           data.push(row);
         }
         
@@ -600,11 +601,89 @@ app.post('/api/getspecificstudentassignmentsubmission', (req, res) => {
     if (err) throw err;
     console.log("Connected");
     console.log(req.body);
-    databaseConnection.query("SELECT assignment_submission FROM assignment_submissions WHERE student_id = '" + req.body.studentId + "' AND assignment_content_id = '" + req.body.assignmentId + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT course_information.course_title, tutorial_content.content_title, assignment_submissions.assignment_submission FROM assignment_submissions INNER JOIN tutorial_content ON tutorial_content.content_id=assignment_submissions.assignment_content_id INNER JOIN course_information ON course_information.course_id=tutorial_content.course_id WHERE student_id = '" + req.body.studentId + "' AND assignment_content_id = '" + req.body.assignmentId + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
-        var data = [result[0].assignment_submission];
+        var data = [result[0].course_title, result[0].content_title, result[0].assignment_submission];
+  
+        res.send(data);
+      } else {
+        var failed= ['failed'];
+        res.send(failed);
+      }
+    });
+  });
+});
+
+// upload feedback for a student based on an assignment submission
+app.post('/api/uploadteacherfeedback', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Inserting teacher feedback");
+    console.log(req.body);
+    databaseConnection.query("INSERT INTO teacher_feedback (assignment_id, student_id, feedback) VALUES ('" + req.body.assignmentId + "', '" + req.body.studentId + "', '" + req.body.feedback + "')", function(err,result,fields) {
+      if (err) throw err;
+      res.send('successful insertion');
+    });
+  });
+});
+
+// updates feedback for a student based on an assignment submission
+app.post('/api/updateteacherfeedback', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Updating teacher feedback");
+    console.log(req.body);
+    databaseConnection.query("UPDATE teacher_feedback SET feedback = '" + req.body.feedback + "' WHERE assignment_id = '" + req.body.assignmentId + "' AND student_id = '" + req.body.studentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      res.send('successful update');
+    });
+  });
+});
+
+// gets feedback on an assignment for a specific student
+app.post('/api/getteacherfeedback', (req, res) => {
+
+  console.log(req.body);
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ( {
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Getting teacher feedback");
+    console.log(req.body);
+    databaseConnection.query("SELECT feedback FROM teacher_feedback WHERE student_id = '" + req.body.studentId + "' AND assignment_id = '" + req.body.assignmentId + "'", function(err,result,fields) {
+      if (err) throw err;
+      if (result.length != 0) {
+
+        var data = [result[0].feedback];
+        console.log(data);
   
         res.send(data);
       } else {

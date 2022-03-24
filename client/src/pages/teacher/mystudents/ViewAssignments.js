@@ -90,12 +90,12 @@ class ViewAssignments extends Component {
             var cell2 = row.insertCell(1);
             var cell3 = row.insertCell(2);
     
-            var courseId = data[i][0];
-            var assignmentId = data[i][1];
-            var submission = data[i][2];
+            var courseTitle = data[i][0];
+            var contentTitle = data[i][1];
+            var assignmentId = data[i][2];
       
-            cell1.innerHTML = courseId;
-            cell2.innerHTML = assignmentId;
+            cell1.innerHTML = courseTitle;
+            cell2.innerHTML = contentTitle;
 
             var viewButton = document.createElement("button");
             viewButton.innerHTML = "View Submission";
@@ -118,8 +118,8 @@ class ViewAssignments extends Component {
       <div id="student-assignments-container">
         <table id="assignments-information-table">
           <tr>
-            <th>Course Id</th>
-            <th>Assignment Id</th>
+            <th>Course Title</th>
+            <th>Assignment Title</th>
             <th></th>
           </tr>
         </table>

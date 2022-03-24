@@ -32,6 +32,7 @@ import StudentLayout from './pages/student/StudentLayout';
 import StudentHomepage from './pages/student/StudentHomepage';
 import StudentMyCourses from './pages/student/StudentMyCourses';
 import StudentMyFeedback from './pages/student/StudentMyFeedback';
+import StudentViewSubmission from './pages/student/StudentViewSubmission'
 import StudentViewCourse from './pages/student/StudentViewCourse'
 
 
@@ -72,6 +73,7 @@ function App() {
                     <Route path="/studentmycourses" element={<StudentMyCourses />} />
                     <Route path="/studentviewcourse/:id" element={<StudentViewCourse />} />
                     <Route path="/studentmyfeedback" element={<StudentMyFeedback />} />
+                    <Route path="/studentmyfeedback/viewsubmission/:assignmentid" element={<StudentViewSubmission />} />
                 </Route>
             </Routes>
         </BrowserRouter>        

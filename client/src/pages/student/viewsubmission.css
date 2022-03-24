@@ -21,8 +21,12 @@
     /*height: 1500px;*/
 }
 
-#feedback-editor {
-    margin-top: 50px;
+#feedback-title {
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+#teacher-feedback-container {
     margin-bottom: 50px;
     margin-left: 50px;
     margin-right: 50px;

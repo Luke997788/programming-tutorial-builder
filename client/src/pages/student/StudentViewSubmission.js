@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './viewsubmission.css';
-import FeedbackEditor from './FeedbackEditor';
 
-class ViewAssignments extends Component {
+class StudentViewAssignments extends Component {
 
   state = {
     studentId: '',
     assignmentId: '',
-    firstName: '',
-    lastName: '',
   };
 
   componentDidMount() {
@@ -20,13 +17,13 @@ class ViewAssignments extends Component {
 		  this.props.navigate("/login");
 		}
 
-		if (role == "student") {
-			this.props.navigate("/studenthome");
+		if (role == "teacher") {
+			this.props.navigate("/home");
 		}
 
-    this.retrieveStudentInformation().then(data => {
-      this.retrieveStudentAssignmentInformation();
-    });
+        this.retrieveStudentAssignmentInformation().then(data => {
+            this.retrieveAssignmentFeedback();
+        });
 	}
 
   componentDidUpdate() {
@@ -37,8 +34,8 @@ class ViewAssignments extends Component {
 		  this.props.navigate("/login");
 		}
 
-		if (role == "student") {
-			this.props.navigate("/studenthome");
+		if (role == "teacher") {
+			this.props.navigate("/home");
 		}
 
         if (role == "teacher") {
@@ -46,45 +43,22 @@ class ViewAssignments extends Component {
         }
     }
 
-    async retrieveStudentInformation() {
-      let { assignmentid, studentid } = this.props.params;
-      this.setState({studentId: studentid});
-      this.setState({assignmentId: assignmentid});
-  
-      // starts a request, passes URL and configuration object
-      const response = await fetch('/api/getspecificstudentinformation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ studentId: studentid}),
-      });
-  
-      await response.json().then(data => {
-        if (data[0] == 'failed') {
-          this.props.navigate("/mystudents");
-        }
-
-        var firstName = data[0];
-        var lastName = data[1];
-
-        document.getElementById("student-information").innerHTML = "Submitted by: " + firstName + " " + lastName + " " + "(" + this.state.studentId + ")";
-      })
-    }
-
     async retrieveStudentAssignmentInformation() {
+        let { assignmentid } = this.props.params;
+        this.setState({assignmentId: assignmentid});
+
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/getspecificstudentassignmentsubmission', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({studentId: this.state.studentId, assignmentId: this.state.assignmentId}),
+          body: JSON.stringify({studentId: sessionStorage.getItem("studentId"), assignmentId: assignmentid}),
         });
     
         await response.json().then(data => {
           if (data[0] == 'failed') {
-            this.props.navigate("/mystudents");
+            this.props.navigate("/studentmyfeedback");
           }
           
             var assignmentTitle = document.getElementById("assignment-title");
@@ -95,9 +69,32 @@ class ViewAssignments extends Component {
             var assignmentName = data[1]
             var submission = data[2];
 
-            assignmentTitle.innerHTML = assignmentName;
+            assignmentTitle.innerHTML = "Assignment Title: " + assignmentName;
             courseTitle.innerHTML = "Submission for: " + courseName;
             submissionContainer.innerHTML = submission;
+        })
+      }
+
+      async retrieveAssignmentFeedback() {
+        let { assignmentid } = this.props.params;
+        this.setState({assignmentId: assignmentid});
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/getteacherfeedback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({studentId: sessionStorage.getItem("studentId"), assignmentId: assignmentid}),
+        });
+    
+        await response.json().then(data => {
+          if (data[0] == 'failed') {
+            document.getElementById("teacher-feedback-container").innerHTML = 'Awaiting feedback from your course instructor';
+          } else {
+            var feedback = data[0];
+            document.getElementById("teacher-feedback-container").innerHTML = feedback;
+          }
         })
       }
 
@@ -110,13 +107,10 @@ class ViewAssignments extends Component {
       <h4 id="course-title"></h4>
       <h4 id="student-information"></h4>
       
-      <div id="student-assignment-container">
+      <div id="student-assignment-container"></div>
 
-      </div>
-
-      <div id="feedback-editor">
-        <FeedbackEditor />
-      </div>
+      <h4 id="feedback-title">Assignment Feedback</h4>
+      <div id="teacher-feedback-container"></div>
       </>
 
     );
@@ -127,5 +121,5 @@ export default function(props) {
 	const navigate = useNavigate();
   const params = useParams();
 
-	return <ViewAssignments navigate={navigate} params={params}/>;
+	return <StudentViewAssignments navigate={navigate} params={params}/>;
 }

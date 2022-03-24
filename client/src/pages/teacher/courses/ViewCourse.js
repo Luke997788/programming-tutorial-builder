@@ -142,6 +142,14 @@ class ViewCourse extends Component {
       var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
       var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
       var editor = document.getElementById("editor").style.display='block';
+      var answer1 = document.getElementById("answer-1-option").innerHTML = '';
+      var answer2 = document.getElementById("answer-2-option").innerHTML = '';
+      var answer3 = document.getElementById("answer-3-option").innerHTML = '';
+      var answer4 = document.getElementById("answer-4-option").innerHTML = '';
+      var checkbox1 = document.getElementById("answer-1-checkbox").innerHTML = '';
+      var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
+      var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
+      var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
     }
   }
 
