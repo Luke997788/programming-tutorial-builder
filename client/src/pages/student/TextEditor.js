@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import tinymce from "https://cdn.tiny.cloud/1/6cu1ne0veiukjtacnibio7cbu6auswe97bn0ohl224e32g6o/tinymce/5/tinymce.min.js";
 import './assignment-editor.css';
@@ -20,7 +20,9 @@ class TextEditor extends React.Component {
 
   componentDidMount = () => {		
     this.setState({creator: sessionStorage.getItem("username")});
-    this.setState({courseId: sessionStorage.getItem("courseId")});
+
+    let { id } = this.props.params;
+		this.setState({courseId: id});
 	}
 
   handleEditorChange = (e) => {
@@ -45,7 +47,7 @@ class TextEditor extends React.Component {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({studentId: sessionStorage.getItem("studentId"), username: sessionStorage.getItem("username"), courseId: sessionStorage.getItem("courseId"), contentId: sessionStorage.getItem("currentContentId"), submission: this.state.textAreaContents}),
+        body: JSON.stringify({studentId: sessionStorage.getItem("studentId"), username: sessionStorage.getItem("username"), courseId: this.state.courseId, contentId: sessionStorage.getItem("assignmentContentId"), submission: this.state.textAreaContents}),
       });
 
       await response.text().then(data => {
@@ -121,7 +123,8 @@ class TextEditor extends React.Component {
 
 export default function(props) {
 	const navigate = useNavigate();
+  const params = useParams();
   
-	return <TextEditor navigate={navigate} />;
+	return <TextEditor navigate={navigate} params={params} />;
   
 }
