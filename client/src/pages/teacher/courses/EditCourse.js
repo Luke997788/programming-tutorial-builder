@@ -86,8 +86,6 @@ class EditCourse extends Component {
     await response.json().then(data => {
       var table = document.getElementById("course-content-table");
       var rowCount = 1;
-      var nextContentPosition = data.length + 1;
-      sessionStorage.setItem("nextContentPosition", nextContentPosition);
 
       for(let i=0; i < data.length; i++) {
         let order = data[i][0];

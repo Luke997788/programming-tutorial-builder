@@ -14,7 +14,7 @@ class AddFillInGapExerciseContent extends Component {
         contentType: 'Fill in the Gap Exercise',
         task: ``,
         responseToPostRequest: '',
-        orderPosition: sessionStorage.getItem("nextContentPosition"),
+        orderPosition: '',
 	};
 
     taskContent = ``;
@@ -22,7 +22,9 @@ class AddFillInGapExerciseContent extends Component {
 
 	componentDidMount = () => {
         this.setState({creator: sessionStorage.getItem("username")});
-        this.retrieveCourseDetails();
+        this.retrieveCourseDetails().then(data => {
+            this.retrieveOrderPosition();
+        });
 	}
 
 	componentDidUpdate() {
@@ -58,6 +60,24 @@ class AddFillInGapExerciseContent extends Component {
 		  }
 		  
 		  this.setState({title: data[0]});
+		});
+	}
+
+    async retrieveOrderPosition() {
+		let { id } = this.props.params;
+		this.setState({courseId: id});
+	
+		// starts a request, passes URL and configuration object
+		const response = await fetch('/api/getallcoursetutorialcontent', {
+		  method: 'POST',
+		  headers: {
+			'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify({idToGet: id}),
+		});
+	
+		await response.json().then(data => {		  
+		  this.setState({orderPosition: (data.length + 1)});
 		});
 	}
 
