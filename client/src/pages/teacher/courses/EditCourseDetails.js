@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate, useParams } from "react-router-dom"
+import './editcoursedetails.css';
 
 class EditCourseDetails extends Component {
 
@@ -9,8 +10,8 @@ class EditCourseDetails extends Component {
 		title: '',
 		description: '',
 		targetClass: 'CS1001',
-		order: '',
-		hide: '',
+		completeInOrder: false,
+		hideCourse: false,
 		creator: sessionStorage.getItem("username"),
         tableData: '',
 	};
@@ -62,6 +63,22 @@ class EditCourseDetails extends Component {
 			this.setState({title: data[0]})
 			this.setState({description: data[1]})
 			this.setState({targetClass: data[2]})
+
+			if (data[4] == 'true') {
+				this.setState({hideCourse: true});
+				document.getElementById("hide-course-checkbox").checked = true;
+			} else {
+				this.setState({hideCourse: false});
+				document.getElementById("hide-course-checkbox").checked = false;	
+			}
+
+			if (data[5] == 'true') {
+				this.setState({completeInOrder: true});
+				document.getElementById("order-checkbox").checked = true;
+			} else {
+				this.setState({completeInOrder: false});
+				document.getElementById("order-checkbox").checked = false;
+			}
 		})
     }
 
@@ -74,7 +91,7 @@ class EditCourseDetails extends Component {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ idToGet: this.state.courseId, creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.order, hide: this.state.hide}),
+			body: JSON.stringify({ idToGet: this.state.courseId, creator: this.state.creator, title: this.state.title, description: this.state.description, targetClass: this.state.targetClass, order: this.state.completeInOrder, hide: this.state.hideCourse}),
 		});
 
 		await response.text().then(data => {
@@ -92,7 +109,8 @@ class EditCourseDetails extends Component {
 
 		return (
 			<div id="edit-course-container">
-			  <h1>Edit Course Details</h1>
+
+			  <h1 id="edit-course-title">Edit Course Details</h1>
 
 			  <form id="edit-course-form" onSubmit={this.handleSubmit}>
 				<div id="title-input-container">
@@ -106,23 +124,25 @@ class EditCourseDetails extends Component {
 				</div>
 
 				<div id="class-select-container">
-				  <label for="class-select">Class</label>
+				  <label id="class-select-label" for="class-select">Class</label>
 				  <select id="class-select" value={this.state.targetClass} onChange={e => this.setState({ targetClass: e.target.value })}>
 					<option value="CS1001">CS1001</option>
 					<option value="CS1002">CS1002</option>
 					<option value="CS1003">CS1003</option>
 					<option value="CS1004">CS1004</option>
 				  </select>
-				</div>
 
-				<div id="in-order-checkbox-container">
-				<label for="order-checkbox">Complete in Order</label>
-				  <input type="checkbox" id="order-checkbox" onChange={e => this.setState({ order: e.target.value })} />
-				</div>
+					<div id="checkboxes-container">
+						<div id="in-order-checkbox-container">
+							<label for="order-checkbox">Complete in Order</label>
+							<input type="checkbox" id="order-checkbox" onChange={e => this.setState({ completeInOrder: !this.state.completeInOrder })} />
+						</div>
 
-				<div id="hide-course-checkbox-container">
-				<label for="hide-course-checkbox">Hide Course</label>
-				  <input type="checkbox" id="hide-course-checkbox" onChange={e => this.setState({ hide: e.target.value })} />
+						<div id="hide-course-checkbox-container">
+							<label for="hide-course-checkbox">Hide Course</label>
+							<input type="checkbox" id="hide-course-checkbox" onChange={e => this.setState({ hideCourse: !this.state.hideCourse })} />
+						</div>
+					</div>
 				</div>
 
 				<div id="submit-button-container">
@@ -130,6 +150,8 @@ class EditCourseDetails extends Component {
 				</div>
 			  </form>
 
+			  <p>{this.state.hideCourse.toString()}</p>
+			  <p>{this.state.completeInOrder.toString()}</p>
 			  <p>{this.state.responseToSubmission}</p>
 		  </div>
 		);

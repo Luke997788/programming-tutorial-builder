@@ -27,7 +27,26 @@
   
   /* Show the dropdown menu on hover */
   .dropdown:hover .dropdown-content {display: block;}
-  
-  /* Change the background color of the dropdown button when the dropdown content is shown */
-  .dropdown:hover .add-course-content-button {background-color: #3e8e41;}
+
+  /*#toggle-hide-course-button {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  #toggle-hide-course-button:hover {
+    background-color: #ddd;
+    cursor:active;
+  }*/
   

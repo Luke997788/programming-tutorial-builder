@@ -7,6 +7,7 @@ class EditCourse extends Component {
   state = {
     title: '',
     description: '',
+    hideCourse: '',
     courseId: '',
     contentId: '',
     responseToDeletion: '',
@@ -189,8 +190,15 @@ class EditCourse extends Component {
       <>
       <h1>{this.state.title}</h1>
       <p>{this.state.description}</p>
+
       <button id="edit-course-details">Edit Course Details</button>
-      <button>Edit Content</button>
+
+      <div class="dropdown">
+        <button class="course-options">Options</button>
+        <div class="dropdown-content">
+
+        </div>
+      </div>
 
       <div class="dropdown">
         <button class="add-course-content-button">Add Content</button>
