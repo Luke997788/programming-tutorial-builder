@@ -348,16 +348,16 @@ app.post('/api/getstudentcourses', (req, res) => {
     if (err) throw err;
     console.log("Getting student courses");
     console.log(req.body);
-    databaseConnection.query("SELECT course_information.course_id, course_information.course_title, course_information.course_description, students.student_class FROM course_information INNER JOIN students ON students.student_class=course_information.target_class_id WHERE students.student_school_id = '" + req.body.studentId + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT course_information.course_id, course_information.course_title, course_information.course_description, course_information.hide_course, course_information.complete_in_order, students.student_class FROM course_information INNER JOIN students ON students.student_class=course_information.target_class_id WHERE students.student_school_id = '" + req.body.studentId + "'", function(err,result,fields) {
       if (err) throw err;
       if (result.length != 0) {
 
         console.log(result);
 
-        var courseInformation =  [[result[0].course_id, result[0].course_title, result[0].course_description, result[0].student_class]];
+        var courseInformation =  [[result[0].course_id, result[0].course_title, result[0].course_description, result[0].hide_course, result[0].complete_in_order, result[0].student_class]];
        
         for (let i=1; i < result.length; i++) {
-          var data = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].student_class];
+          var data = [result[i].course_id, result[i].course_title, result[i].course_description, result[i].hide_course, result[i].complete_in_order, result[i].student_class];
           courseInformation.push(data);
         }
 

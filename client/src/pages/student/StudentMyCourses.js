@@ -48,7 +48,7 @@ class StudentMyCourses extends Component {
     });
 
     await response.json().then(data => {
-      document.getElementById("title").innerHTML = "My Courses (" + data[0][3] + ")";
+      document.getElementById("title").innerHTML = "My Courses (" + data[0][5] + ")";
       var table = document.getElementById("student-course-info-table");
       var rowCount = 1;
   
@@ -56,23 +56,27 @@ class StudentMyCourses extends Component {
         let courseId = data[i][0];
         let courseTitle = data[i][1];
         let courseDescription = data[i][2];
+        let hideCourse = data[i][3];
+        let completeInOrder = data[i][4];
   
-        var row = table.insertRow(rowCount);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-  
-        cell1.innerHTML = courseTitle;
-        cell2.innerHTML = courseDescription;
-  
-        var viewButton = document.createElement("button");
-        viewButton.setAttribute("class", "courseViewButton");
-        viewButton.setAttribute("value", courseId);
-        viewButton.innerHTML = "View";
-        viewButton.onclick = () => {this.props.navigate("/studentviewcourse/" + courseId)};
-  
-        cell3.appendChild(viewButton);
-  
+        if (hideCourse == 'false') {
+          var row = table.insertRow(rowCount);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(1);
+          var cell3 = row.insertCell(2);
+    
+          cell1.innerHTML = courseTitle;
+          cell2.innerHTML = courseDescription;
+    
+          var viewButton = document.createElement("button");
+          viewButton.setAttribute("class", "courseViewButton");
+          viewButton.setAttribute("value", courseId);
+          viewButton.innerHTML = "View";
+          viewButton.onclick = () => {this.props.navigate("/studentviewcourse/" + courseId)};
+    
+          cell3.appendChild(viewButton);
+        }
+            
         rowCount += 1;
       }
     });

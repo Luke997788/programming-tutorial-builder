@@ -8,8 +8,8 @@ class CreateCourse extends Component {
 		title: '',
 		description: '',
 		targetClass: 'CS1001',
-		order: '',
-		hide: '',
+		order: false,
+		hide: false,
 		creator: sessionStorage.getItem("username"),
 		responseToSubmission: '',
 	};
@@ -98,12 +98,12 @@ class CreateCourse extends Component {
 					<div id="checkboxes-container">
 						<div id="in-order-checkbox-container">
 							<label for="order-checkbox">Complete in Order</label>
-							<input type="checkbox" id="order-checkbox" onChange={e => this.setState({ order: e.target.value })} />
+							<input type="checkbox" id="order-checkbox" onChange={e => this.setState({ order: !this.state.order })} />
 						</div>
 
 						<div id="hide-course-checkbox-container">
 							<label for="hide-course-checkbox">Hide Course</label>
-							<input type="checkbox" id="hide-course-checkbox" onChange={e => this.setState({ hide: e.target.value })} />
+							<input type="checkbox" id="hide-course-checkbox" onChange={e => this.setState({ hide: !this.state.hide })} />
 						</div>
 					</div>
 				</div>
@@ -112,7 +112,6 @@ class CreateCourse extends Component {
 				  <input type="submit" id="submit-button" value="Create Course"/>
 				</div>
 			  </form>
-			  <p>{this.state.responseToSubmission}</p>
 		  </div>
 		);
 	}
