@@ -39,8 +39,12 @@ class TextImageContentEditor extends React.Component {
 		  body: JSON.stringify({idToGet: id}),
 		});
 	
-		await response.json().then(data => {		  
-		  this.setState({orderPosition: (data.length + 1)});
+		await response.json().then(data => {
+      if (data[0][0] == 'failed') {
+        this.setState({orderPosition: 1});
+      } else {
+        this.setState({orderPosition: (data.length + 1)});
+      }
 		});
 	}
 

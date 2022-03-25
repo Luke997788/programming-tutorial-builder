@@ -85,59 +85,86 @@ class EditCourse extends Component {
     });
 
     await response.json().then(data => {
-      var table = document.getElementById("course-content-table");
-      var rowCount = 1;
+      if (data[0] == 'failed') {
+        document.getElementById("course-content-table-container").style.display = 'none';
+        document.getElementById("no-content-message").innerHTML = 'No tutorial content created yet';
+      } else {
+        var table = document.getElementById("course-content-table");
+        var rowCount = 1;
 
-      for(let i=0; i < data.length; i++) {
-        let order = data[i][0];
-        let contentTitle = data[i][1];
-        let contentType = data[i][2];
-        let dateLastModified = data[i][3].replace("T", ' ').replace("Z", '');
-        let contentId = data[i][4];
-  
-        var row = table.insertRow(rowCount);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-        var cell5 = row.insertCell(4);
-        var cell6 = row.insertCell(5);
-  
-        cell1.innerHTML = order;
-        cell2.innerHTML = contentTitle;
-        cell3.innerHTML = contentType;
-        cell4.innerHTML = dateLastModified;
-  
-        var editButton = document.createElement("button");
-        editButton.setAttribute("class", "content-edit-button");
-        editButton.innerHTML = "Edit Content";
-  
-        if (contentType === 'Text/Image') {
-          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittextimage/" + contentId)};
-        } else if (contentType === 'Video') {
-          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editvideo/" + contentId)};
-        } else if (contentType === 'Multiple Choice Exercise') {
-          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editchoiceexercise/" + contentId)};
-        } else if (contentType === 'Fill in the Gap Exercise') {
-          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editgapexercise/" + contentId)};
-        } else if (contentType === 'Assignment') {
-          editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
+        for(let i=0; i < data.length; i++) {
+          let order = data[i][0];
+          let contentTitle = data[i][1];
+          let contentType = data[i][2];
+          let dateLastModified = data[i][3].replace("T", ' ').replace("Z", '');
+          let contentId = data[i][4];
+    
+          var row = table.insertRow(rowCount);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(1);
+          var cell3 = row.insertCell(2);
+          var cell4 = row.insertCell(3);
+          var cell5 = row.insertCell(4);
+          var cell6 = row.insertCell(5);
+    
+          cell1.innerHTML = order;
+          cell2.innerHTML = contentTitle;
+          cell3.innerHTML = contentType;
+          cell4.innerHTML = dateLastModified;
+    
+          var editButton = document.createElement("button");
+          editButton.setAttribute("class", "content-edit-button");
+          editButton.innerHTML = "Edit Content";
+    
+          if (contentType === 'Text/Image') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittextimage/" + contentId)};
+          } else if (contentType === 'Video') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editvideo/" + contentId)};
+          } else if (contentType === 'Multiple Choice Exercise') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editchoiceexercise/" + contentId)};
+          } else if (contentType === 'Fill in the Gap Exercise') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editgapexercise/" + contentId)};
+          } else if (contentType === 'Assignment') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
+          }
+          cell5.appendChild(editButton);
+
+          var deleteButton = document.createElement("button");
+          deleteButton.setAttribute("class", "course-delete-button");
+          deleteButton.innerHTML = 'Delete';
+          deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteCourse(contentId, contentType)};
+
+          cell6.appendChild(deleteButton);
+    
+          rowCount += 1;
         }
-        cell5.appendChild(editButton);
-
-        var deleteButton = document.createElement("button");
-        deleteButton.setAttribute("class", "course-delete-button");
-        deleteButton.innerHTML = 'Delete';
-        deleteButton.onclick = () => {this.deleteCourse(contentId, contentType)};
-
-        cell6.appendChild(deleteButton);
-  
-        rowCount += 1;
       }
     });
   }
 
+  async updateContentOrder(order) {
+    var orderPosition = order;
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/updatecoursecontentorder', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ courseId: this.state.courseId, position: orderPosition  }),
+        });
+    
+        await response.text().then(data => {
+          if (data == 'successful update') {
+            window.location.reload(true);
+          } else {
+            this.setState({ responseToDeletion: 'ERROR: Failed to update content order' });
+          }
+        });
+  }
+
   async deleteCourse(id, type) {
+
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/deletetutorialcontent', {
       method: 'POST',
@@ -210,6 +237,8 @@ class EditCourse extends Component {
           <Link to={"/editcourse/" + this.state.courseId + "/addassignment"}>Assignment Task</Link>
         </div>
       </div>
+
+      <p id="no-content-message"></p>
 
       <div id="course-content-table-container">
         <table id="course-content-table">

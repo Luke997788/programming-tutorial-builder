@@ -235,6 +235,28 @@ app.post('/api/updatecourseinfo', (req, res) => {
   });
 });
 
+// updates the information for a specific course
+app.post('/api/updatecoursecontentorder', (req, res) => {
+  console.log(req.body);
+  
+  var mysql = require('mysql');
+  var databaseConnection = mysql.createConnection ({
+    host : 'localhost',
+    user: 'root',
+    password: '',
+    database: 'programming_tutorial_builder'
+  });
+
+  databaseConnection.connect(function(err) {
+    if (err) throw err;
+    console.log("Updating course content order");
+    databaseConnection.query("UPDATE tutorial_content SET content_order_position = content_order_position - 1 WHERE course_id = '" + req.body.courseId + "' AND content_order_position > '" + req.body.position + "'", function(err,result,fields) {
+      if (err) throw err;
+      res.send('successful update');
+    });
+  });
+});
+
 // gets the classes that are taught by a specific teacher
 app.post('/api/getteacherclasses', (req, res) => {
 
@@ -723,7 +745,8 @@ app.post('/api/getallcoursetutorialcontent', (req, res) => {
         
         res.send(data);
       } else {
-        //res.send('failed');
+        var failed = [['failed']];
+        res.send(failed);
       }
     });
   });
