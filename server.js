@@ -595,7 +595,7 @@ app.post('/api/getstudentassignmentsubmissions', (req, res) => {
         var data = [[result[0].course_title, result[0].content_title, result[0].assignment_content_id]];
 
         for (let i=1; i < result.length; i++) {
-          var row = [result[0].course_title, result[0].content_title, result[0].assignment_content_id];
+          var row = [result[i].course_title, result[i].content_title, result[i].assignment_content_id];
           data.push(row);
         }
         

@@ -26,6 +26,8 @@ class EditCourse extends Component {
 			this.props.navigate("/studenthome");
 		}
 
+    document.getElementById("edit-content-order-button").onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editcontentorder")};
+
     this.retrieveCourseDetails().then(data => {
       this.retrieveCourseContentInformation();
     });
@@ -89,6 +91,7 @@ class EditCourse extends Component {
         document.getElementById("course-content-table-container").style.display = 'none';
         document.getElementById("no-content-message").innerHTML = 'No tutorial content created yet';
       } else {
+        document.getElementById("course-content-table-container").style.visibility = 'visible';
         var table = document.getElementById("course-content-table");
         var rowCount = 1;
 
@@ -223,7 +226,7 @@ class EditCourse extends Component {
       <div class="dropdown">
         <button class="course-options">Options</button>
         <div class="dropdown-content">
-
+          <button id="edit-content-order-button">Edit Content Order</button>
         </div>
       </div>
 

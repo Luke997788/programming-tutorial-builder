@@ -93,7 +93,7 @@ class ViewClass extends Component {
 
     return (
       <>
-      <h1>{sessionStorage.getItem("classId")} Students</h1> 
+      <h1>{this.state.classId} Students</h1> 
 
       <div id="student-info-container">
         <table id="student-info-table">

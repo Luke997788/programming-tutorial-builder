@@ -11,6 +11,7 @@ import CreateCourse from './pages/teacher/createcourse/CreateCourse';
 import MyCourses from './pages/teacher/courses/MyCourses';
 import EditCourse from './pages/teacher/courses/EditCourse';
 import EditCourseDetails from './pages/teacher/courses/EditCourseDetails';
+import EditContentOrder from './pages/teacher/courses/EditContentOrder';
 import SelectContentType from './pages/teacher/courses/SelectContentType';
 import ViewCourse from './pages/teacher/courses/ViewCourse'
 import MyStudents from './pages/teacher/mystudents/MyStudents';
@@ -51,6 +52,7 @@ function App() {
                     <Route path="/viewcourse/:id" element={<ViewCourse />} />
                     <Route path="/editcourse/:id" element={<EditCourse />} />
                     <Route path="/editcoursedetails/:id" element={<EditCourseDetails />} />
+                    <Route path="/editcourse/:id/editcontentorder" element={<EditContentOrder />} />
                     <Route path="/editcourse/:id/selectcontent" element={<SelectContentType />} />
 
                     <Route path="/editcourse/:id/addtextimage" element={<AddTextImageContent />} />
