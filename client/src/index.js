@@ -26,6 +26,8 @@ import AddMultipleChoiceExerciseContent from './pages/teacher/content/AddMultipl
 import EditMultipleChoiceExerciseContent from './pages/teacher/content/EditMultipleChoiceExerciseContent';
 import AddFillInGapExerciseContent from './pages/teacher/content/AddFillInGapExerciseContent';
 import EditFillInGapExerciseContent from './pages/teacher/content/EditFillInGapExerciseContent';
+import AddMatchingExercise from './pages/teacher/content/AddMatchingExercise';
+import EditMatchingExercise from './pages/teacher/content/EditMatchingExercise';
 import AddAssignment from './pages/teacher/content/AddAssignment';
 import EditAssignment from './pages/teacher/content/EditAssignment';
 
@@ -63,6 +65,8 @@ function App() {
                     <Route path="/editcourse/:id/editchoiceexercise/:contentid" element={<EditMultipleChoiceExerciseContent />} />
                     <Route path="/editcourse/:id/addgapexercise" element={<AddFillInGapExerciseContent />} />
                     <Route path="/editcourse/:id/editgapexercise/:contentid" element={<EditFillInGapExerciseContent />} />
+                    <Route path="/editcourse/:id/addmatchingexercise" element={<AddMatchingExercise />} />
+                    <Route path="/editcourse/:id/editmatchingexercise/:contentid" element={<EditMatchingExercise />} />
                     <Route path="/editcourse/:id/addassignment" element={<AddAssignment />} />
                     <Route path="/editcourse/:id/editassignment/:contentid" element={<EditAssignment />} />
                     <Route path="/mystudents" element={<MyStudents />} />

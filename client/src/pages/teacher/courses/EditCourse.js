@@ -135,6 +135,9 @@ class EditCourse extends Component {
           } else if (contentType === 'Fill in the Gap Exercise') {
             editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editgapexercise/" + contentId)};
             deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
+          } else if (contentType === 'Matching Exercise') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editmatchingexercise/" + contentId)};
+            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
           } else if (contentType === 'Assignment') {
             editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
             deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteContent(contentId)};
@@ -235,6 +238,7 @@ class EditCourse extends Component {
           <Link to={"/editcourse/" + this.state.courseId + "/addvideo"}>Video</Link>
           <Link to={"/editcourse/" + this.state.courseId + "/addchoiceexercise"}>Multiple Choice Exercise</Link>
           <Link to={"/editcourse/" + this.state.courseId + "/addgapexercise"}>Fill in the Gap Exercise</Link>
+          <Link to={"/editcourse/" + this.state.courseId + "/addmatchingexercise"}>Matching Exercise</Link>
           <Link to={"/editcourse/" + this.state.courseId + "/addassignment"}>Assignment Task</Link>
         </div>
       </div>
