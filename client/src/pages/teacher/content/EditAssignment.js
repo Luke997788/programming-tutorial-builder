@@ -11,11 +11,11 @@ class EditAssignment extends React.Component {
     courseId: '',
     contentType: 'Assignment',
     contentTitle: '',
-    textAreaContents: '',
+    textAreaContents: ``,
     responseToContentSubmission: '',
     initialContents: '<p>Enter content here</p>',
     content: '',
-    contentId: '',
+    contentId: ``,
   };
 
   componentDidMount = () => {		
@@ -96,9 +96,9 @@ async retrieveTutorialContent() {
   handleSubmit = async e => {
     e.preventDefault();
 
-    var contentToSubmit = '';
+    var contentToSubmit = ``;
 
-    if (this.state.content == '') {
+    if (this.state.content == ``) {
         contentToSubmit = this.state.textAreaContents;
     } else {
         contentToSubmit = this.state.content;

@@ -88,11 +88,11 @@ class StudentViewAssignments extends Component {
           body: JSON.stringify({studentId: sessionStorage.getItem("studentId"), assignmentId: assignmentid}),
         });
     
-        await response.json().then(data => {
-          if (data[0] == 'failed') {
+        await response.text().then(data => {
+          if (data == 'failed') {
             document.getElementById("teacher-feedback-container").innerHTML = 'Awaiting feedback from your course instructor';
           } else {
-            var feedback = data[0];
+            var feedback = data;
             document.getElementById("teacher-feedback-container").innerHTML = feedback;
           }
         })

@@ -53,8 +53,7 @@ class LoginForm extends Component {
         sessionStorage.setItem("role", "student");
         sessionStorage.setItem("studentId", data[0]);
         this.props.navigate("/studenthome");
-  
-      } else {
+      } else if(data[0] == 'failed') {
         this.setState({ responseToLoginRequest: 'Login failed. Please try again' });
       }
     });

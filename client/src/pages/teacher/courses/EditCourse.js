@@ -118,25 +118,29 @@ class EditCourse extends Component {
           var editButton = document.createElement("button");
           editButton.setAttribute("class", "content-edit-button");
           editButton.innerHTML = "Edit Content";
-    
-          if (contentType === 'Text/Image') {
-            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittextimage/" + contentId)};
-          } else if (contentType === 'Video') {
-            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editvideo/" + contentId)};
-          } else if (contentType === 'Multiple Choice Exercise') {
-            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editchoiceexercise/" + contentId)};
-          } else if (contentType === 'Fill in the Gap Exercise') {
-            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editgapexercise/" + contentId)};
-          } else if (contentType === 'Assignment') {
-            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
-          }
-          cell5.appendChild(editButton);
 
           var deleteButton = document.createElement("button");
           deleteButton.setAttribute("class", "course-delete-button");
           deleteButton.innerHTML = 'Delete';
-          deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteCourse(contentId, contentType)};
+    
+          if (contentType === 'Text/Image') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittextimage/" + contentId)};
+            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteContent(contentId)};
+          } else if (contentType === 'Video') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editvideo/" + contentId)};
+            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteContent(contentId)};
+          } else if (contentType === 'Multiple Choice Exercise') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editchoiceexercise/" + contentId)};
+            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
+          } else if (contentType === 'Fill in the Gap Exercise') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editgapexercise/" + contentId)};
+            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
+          } else if (contentType === 'Assignment') {
+            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
+            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteContent(contentId)};
+          }
 
+          cell5.appendChild(editButton);
           cell6.appendChild(deleteButton);
     
           rowCount += 1;
@@ -166,7 +170,7 @@ class EditCourse extends Component {
         });
   }
 
-  async deleteCourse(id, type) {
+  async deleteContent(id) {
 
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/deletetutorialcontent', {
@@ -180,22 +184,16 @@ class EditCourse extends Component {
     await response.text().then(data => {
       if (data == 'deleted') {
         this.setState({ responseToDeletion: 'Content deleted' });
-        if ((type == 'Text/Image') || (type == 'Video') || (type == 'Assignment')) {
-          window.location.reload(true);
-        }
+        window.location.reload(true);
       } else {
         this.setState({ responseToDeletion: 'ERROR: Failed to delete content' });
       }
     });
-
-    if ((type == 'Multiple Choice Exercise') || (type == 'Fill in the Gap')) {
-      this.deleteExerciseAnswers(id);
-    }
   }
 
-  async deleteExerciseAnswers(id) {
+  async deleteExercise(id) {
     // starts a request, passes URL and configuration object
-    const response = await fetch('/api/deleteexerciseanswers', {
+    const response = await fetch('/api/deletetutorialexercise', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -205,10 +203,10 @@ class EditCourse extends Component {
 
     await response.text().then(data => {
       if (data == 'deleted') {
-        this.setState({ responseToAnswersDeletion: 'Answers deleted' });
+        this.setState({ responseToAnswersDeletion: 'Exercise deleted' });
         window.location.reload(true);
       } else {
-        this.setState({ responseToAnswersDeletion: 'ERROR: Failed to delete answers' });
+        this.setState({ responseToAnswersDeletion: 'ERROR: Failed to delete exercise' });
       }
     });
   }

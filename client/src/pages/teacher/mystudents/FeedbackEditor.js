@@ -24,6 +24,10 @@ class FeedbackEditor extends React.Component {
     this.setState({assignmentId: assignmentid});
     this.setState({studentId: studentid});
 
+    //alert("feed");
+    //alert(assignmentid);
+    //alert(studentid);
+
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getteacherfeedback', {
       method: 'POST',
@@ -33,12 +37,12 @@ class FeedbackEditor extends React.Component {
       body: JSON.stringify({studentId: studentid, assignmentId: assignmentid}),
     });
 
-    await response.json().then(data => {
-        if (data[0] == 'failed') {
+    await response.text().then(data => {
+        if (data == 'failed') {
             this.setState({ initialContents: '' });
             document.getElementById("feedback-title").innerHTML = 'Enter feedback for the student below:';
         } else {
-            var feedback = data[0];
+            var feedback = data;
             this.setState({ initialContents: feedback });
             this.setState({ editingExistingFeedback: true });
             document.getElementById("feedback-title").innerHTML = 'You can edit your previously submitted feedback below: ';
