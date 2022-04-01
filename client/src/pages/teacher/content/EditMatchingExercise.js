@@ -105,19 +105,6 @@ class EditMatchingExercise extends Component {
             this.setState({pairOneRight: pairs[1]});
             this.setState({pairTwoLeft: pairs[2]});
             this.setState({pairTwoRight: pairs[3]});
-
-            /*var leftTerms = [];
-            var rightTerms = [];
-            for (let i=0; i < pairs.length; i++) {
-                if ((i == 0) || (i % 2 == 0)) {
-                    leftTerms.push(pairs[i]);
-                } else {
-                    rightTerms.push(pairs[i]);
-                }
-            }
-
-            alert(leftTerms);
-            alert(rightTerms);*/
         });
     }
 

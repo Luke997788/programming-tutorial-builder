@@ -17,14 +17,17 @@ class StudentViewCourse extends Component {
     answerSelected: 0,
     displayEditor: false,
     tutorialData: '',
-    data: '',
+    pairOneLeft: '',
+    pairOneRight: '',
+    pairTwoLeft: '',
+    pairTwoRight: '',
   };
 
   tutorialContent;
   gapAnswers = [];
   gapInputValues = [];
   gapTask = ``;
-  fileToSubmit;
+  matchingTermsOrder = '';
 
   componentDidMount() {
 	const status = sessionStorage.getItem('username');
@@ -125,23 +128,33 @@ class StudentViewCourse extends Component {
       var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
       var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
       var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
+      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
       
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Multiple Choice Exercise') {
       var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
+      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
       var editor = document.getElementById("editor").style.display='none';
 
       this.retrieveExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
 
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Fill in the Gap Exercise') {
       var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
+      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
       var editor = document.getElementById("editor").style.display='none';
 
       this.gapTask = "" + this.tutorialContent[tutorialToDisplay][3];
       this.retrieveGapExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
+    
+    } else if (this.tutorialContent[tutorialToDisplay][2] == 'Matching Exercise') {
+      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
+      var editor = document.getElementById("editor").style.display='none';
+
+      this.retrieveMatchingExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
 
     }  else if (this.tutorialContent[tutorialToDisplay][2] == 'Assignment') {
       var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
       var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
+      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
       var editor = document.getElementById("editor").style.display='block';
       sessionStorage.setItem("assignmentContentId", this.tutorialContent[tutorialToDisplay][4]);
       var answer1 = document.getElementById("answer-1-option").innerHTML = '';
@@ -261,6 +274,59 @@ async retrieveGapExerciseAnswers(exerciseContentId) {
   });
 }
 
+async retrieveMatchingExerciseAnswers(exerciseContentId) {
+  var tutorialContent = document.getElementById("tutorial-content");
+  var answer1 = document.getElementById("answer-1-option");
+  var answer2 = document.getElementById("answer-2-option");
+  var answer3 = document.getElementById("answer-3-option");
+  var answer4 = document.getElementById("answer-4-option");
+  var matchingExerciseTerms = document.getElementById("matching-exercise-terms");
+
+  // starts a request, passes URL and configuration object
+  const response = await fetch('/api/getgapexerciseanswers', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ contentId: exerciseContentId }),
+  });
+
+  await response.text().then(data => {
+      answer1.innerHTML = '';
+      answer2.innerHTML = '';
+      answer3.innerHTML = '';
+      answer4.innerHTML = '';
+
+      if (this.matchingTermsOrder == '') {
+        var pairs = data.split(',');
+        pairs.sort(() => Math.random() - 0.5);
+  
+        matchingExerciseTerms.innerHTML = '<p>' + pairs[0] + ', ' + pairs[1] + ', ' + pairs[2] + ', ' + pairs[3] + '</p>';
+        this.matchingTermsOrder = '<p>' + pairs[0] + ', ' + pairs[1] + ', ' + pairs[2] + ', ' + pairs[3] + '</p>';
+      } else {
+        matchingExerciseTerms.innerHTML = this.matchingTermsOrder;
+      }
+
+
+      /*var leftTerms = [];
+      var rightTerms = [];
+      for (let i=0; i < pairs.length; i++) {
+        if ((i == 0) || (i % 2 == 0)) {
+          leftTerms.push(pairs[i]);
+        } else {
+          rightTerms.push(pairs[i]);
+        }
+      }
+
+      leftTerms.sort(() => Math.random() - 0.5);
+      rightTerms.sort(() => Math.random() - 0.5);*/
+
+      var submitAnswerButton = document.getElementById("submit-answer-button");
+      submitAnswerButton.style.display = 'block';
+      submitAnswerButton.onclick = () => {this.submitMatchingAnswer()};
+  });
+}
+
 async selectAnswer() {
   for (let i = 1; i <= 4; i++)
   {
@@ -339,6 +405,7 @@ async submitGapAnswer() {
 
       var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
       var editor = document.getElementById("editor").style.display='none';
+      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
 
       var tutorialTitle = document.getElementById("tutorial-title").innerHTML = "";
       var tutorialContent = document.getElementById("tutorial-content").innerHTML = "";
@@ -374,6 +441,8 @@ async submitGapAnswer() {
           <h1 id="tutorial-title"></h1>
 
           <div id="tutorial-content"></div>
+
+          <div id="matching-exercise-terms"></div>
 
           <div id="answer-options">
             <p id="answer-1-option"></p>
