@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { Editor } from '@tinymce/tinymce-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import './viewcourse.css';
 import AssignmentTextEditor from './AssignmentTextEditor';
 
@@ -47,8 +46,6 @@ class ViewCourse extends Component {
           this.displayNavigationMenu();
         })
       });
-
-      //this.displayNavigationMenu();
 	}
 
   componentDidUpdate() {
@@ -111,61 +108,61 @@ class ViewCourse extends Component {
   }
 
   async displayTutorial(tutorialToDisplay) {
-    var tutorialTitle = document.getElementById("tutorial-title").innerHTML = "" + this.tutorialContent[tutorialToDisplay][1];
-    var tutorialContent = document.getElementById("tutorial-content").innerHTML = "" + this.tutorialContent[tutorialToDisplay][3];
-    var resultMessage = document.getElementById("result-message").innerHTML = "";
+    document.getElementById("tutorial-title").innerHTML = "" + this.tutorialContent[tutorialToDisplay][1];
+    document.getElementById("tutorial-content").innerHTML = "" + this.tutorialContent[tutorialToDisplay][3];
+    document.getElementById("result-message").innerHTML = "";
 
     if ((this.tutorialContent[tutorialToDisplay][2] == 'Text/Image') || (this.tutorialContent[tutorialToDisplay][2] == 'Video')) {
-      var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
-      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var editor = document.getElementById("editor").style.display='none';
-      var answer1 = document.getElementById("answer-1-option").innerHTML = '';
-      var answer2 = document.getElementById("answer-2-option").innerHTML = '';
-      var answer3 = document.getElementById("answer-3-option").innerHTML = '';
-      var answer4 = document.getElementById("answer-4-option").innerHTML = '';
-      var checkbox1 = document.getElementById("answer-1-checkbox").innerHTML = '';
-      var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
-      var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
-      var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
+      document.getElementById("submit-answer-button").style.display = 'none';
+      document.getElementById("end-of-course-message").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("editor").style.display='none';
+      document.getElementById("answer-1-option").innerHTML = '';
+      document.getElementById("answer-2-option").innerHTML = '';
+      document.getElementById("answer-3-option").innerHTML = '';
+      document.getElementById("answer-4-option").innerHTML = '';
+      document.getElementById("answer-1-checkbox").innerHTML = '';
+      document.getElementById("answer-2-checkbox").innerHTML = '';
+      document.getElementById("answer-3-checkbox").innerHTML = '';
+      document.getElementById("answer-4-checkbox").innerHTML = '';
       
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Multiple Choice Exercise') {
-      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var editor = document.getElementById("editor").style.display='none';
+      document.getElementById("end-of-course-message").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("editor").style.display='none';
 
       this.retrieveExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
 
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Fill in the Gap Exercise') {
-      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var editor = document.getElementById("editor").style.display='none';
+      document.getElementById("end-of-course-message").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("editor").style.display='none';
 
       this.gapTask = "" + this.tutorialContent[tutorialToDisplay][3];
       this.retrieveGapExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
 
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Matching Exercise') {
-      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-      var editor = document.getElementById("editor").style.display='none';
+      document.getElementById("end-of-course-message").innerHTML = '';
+      document.getElementById("editor").style.display='none';
 
       this.retrieveMatchingExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
 
     }  else if (this.tutorialContent[tutorialToDisplay][2] == 'Assignment') {
-      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
-      var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var editor = document.getElementById("editor").style.display='block';
-      var answer1 = document.getElementById("answer-1-option").innerHTML = '';
-      var answer2 = document.getElementById("answer-2-option").innerHTML = '';
-      var answer3 = document.getElementById("answer-3-option").innerHTML = '';
-      var answer4 = document.getElementById("answer-4-option").innerHTML = '';
-      var checkbox1 = document.getElementById("answer-1-checkbox").innerHTML = '';
-      var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
-      var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
-      var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
+      document.getElementById("end-of-course-message").innerHTML = '';
+      document.getElementById("submit-answer-button").style.display = 'none';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("editor").style.display='block';
+      document.getElementById("answer-1-option").innerHTML = '';
+      document.getElementById("answer-2-option").innerHTML = '';
+      document.getElementById("answer-3-option").innerHTML = '';
+      document.getElementById("answer-4-option").innerHTML = '';
+      document.getElementById("answer-1-checkbox").innerHTML = '';
+      document.getElementById("answer-2-checkbox").innerHTML = '';
+      document.getElementById("answer-3-checkbox").innerHTML = '';
+      document.getElementById("answer-4-checkbox").innerHTML = '';
     }
   }
 
@@ -205,25 +202,15 @@ class ViewCourse extends Component {
         this.setState({correctAnswer: data[4]});
         this.setState({correctAnswerText: data[this.state.correctAnswer - 1]});
 
-        var answer1 = document.getElementById("answer-1-option");
-        var answer2 = document.getElementById("answer-2-option");
-        var answer3 = document.getElementById("answer-3-option");
-        var answer4 = document.getElementById("answer-4-option");
+        document.getElementById("answer-1-option").innerHTML = data[0] + '<input id="answer-1-checkbox" type="checkbox" />';
+        document.getElementById("answer-2-option").innerHTML = data[1] + '<input id="answer-2-checkbox" type="checkbox" />';
+        document.getElementById("answer-3-option").innerHTML = data[2] + '<input id="answer-3-checkbox" type="checkbox" />';
+        document.getElementById("answer-4-option").innerHTML = data[3] + '<input id="answer-4-checkbox" type="checkbox" />';
 
-        answer1.innerHTML = data[0] + '<input id="answer-1-checkbox" type="checkbox" />';
-        answer2.innerHTML = data[1] + '<input id="answer-2-checkbox" type="checkbox" />';
-        answer3.innerHTML = data[2] + '<input id="answer-3-checkbox" type="checkbox" />';
-        answer4.innerHTML = data[3] + '<input id="answer-4-checkbox" type="checkbox" />';
-
-        var checkbox1 = document.getElementById("answer-1-checkbox");
-        var checkbox2 = document.getElementById("answer-2-checkbox");
-        var checkbox3 = document.getElementById("answer-3-checkbox");
-        var checkbox4 = document.getElementById("answer-4-checkbox");
-
-        checkbox1.onclick = () => {this.setState({answerSelected: 1}); this.selectAnswer()};
-        checkbox2.onclick = () => {this.setState({answerSelected: 2}); this.selectAnswer()};
-        checkbox3.onclick = () => {this.setState({answerSelected: 3}); this.selectAnswer()};
-        checkbox4.onclick = () => {this.setState({answerSelected: 4}); this.selectAnswer()};
+        document.getElementById("answer-1-checkbox").onclick = () => {this.setState({answerSelected: 1}); this.selectAnswer()};
+        document.getElementById("answer-2-checkbox").onclick = () => {this.setState({answerSelected: 2}); this.selectAnswer()};
+        document.getElementById("answer-3-checkbox").onclick = () => {this.setState({answerSelected: 3}); this.selectAnswer()};
+        document.getElementById("answer-4-checkbox").onclick = () => {this.setState({answerSelected: 4}); this.selectAnswer()};
 
         var submitAnswerButton = document.getElementById("submit-answer-button");
         submitAnswerButton.style.display = 'block';
@@ -276,7 +263,6 @@ async retrieveGapExerciseAnswers(exerciseContentId) {
 }
 
 async retrieveMatchingExerciseAnswers(exerciseContentId) {
-  var tutorialContent = document.getElementById("tutorial-content");
   var answer1 = document.getElementById("answer-1-option");
   var answer2 = document.getElementById("answer-2-option");
   var answer3 = document.getElementById("answer-3-option");
@@ -403,8 +389,6 @@ async submitMatchingAnswer() {
   displayPreviousTutorial = async e => {
     e.preventDefault();
 
-    var current = this.state.currentTutorial;
-
     if (this.state.currentTutorial > 0) {
         var currentTutorial = parseInt(this.state.currentTutorial);
         this.state.currentTutorial = currentTutorial - 1;
@@ -437,24 +421,24 @@ async submitMatchingAnswer() {
       this.state.currentTutorial = currentTutorial + 1;
       document.getElementById("" + (this.state.currentTutorial-1)).style.backgroundColor = "";
 
-      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
-      var editor = document.getElementById("editor").style.display='none';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
+      document.getElementById("editor").style.display='none';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
 
-      var tutorialTitle = document.getElementById("tutorial-title").innerHTML = "";
-      var tutorialContent = document.getElementById("tutorial-content").innerHTML = "";
-      var resultMessage = document.getElementById("result-message").innerHTML = "";
-      var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
-      var answer1 = document.getElementById("answer-1-option").innerHTML = '';
-      var answer2 = document.getElementById("answer-2-option").innerHTML = '';
-      var answer3 = document.getElementById("answer-3-option").innerHTML = '';
-      var answer4 = document.getElementById("answer-4-option").innerHTML = '';
-      var checkbox1 = document.getElementById("answer-1-checkbox").innerHTML = '';
-      var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
-      var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
-      var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
+      document.getElementById("tutorial-title").innerHTML = "";
+      document.getElementById("tutorial-content").innerHTML = "";
+      document.getElementById("result-message").innerHTML = "";
+      document.getElementById("submit-answer-button").style.display = 'none';
+      document.getElementById("answer-1-option").innerHTML = '';
+      document.getElementById("answer-2-option").innerHTML = '';
+      document.getElementById("answer-3-option").innerHTML = '';
+      document.getElementById("answer-4-option").innerHTML = '';
+      document.getElementById("answer-1-checkbox").innerHTML = '';
+      document.getElementById("answer-2-checkbox").innerHTML = '';
+      document.getElementById("answer-3-checkbox").innerHTML = '';
+      document.getElementById("answer-4-checkbox").innerHTML = '';
 
-      var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
+      document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
   }
 }
 
