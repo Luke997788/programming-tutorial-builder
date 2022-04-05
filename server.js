@@ -135,7 +135,7 @@ app.post('/api/deletecourse', (req, res) => {
     console.log("Retrieving details for created courses");
     console.log(req.body);
 
-    databaseConnection.query("DELETE FROM course_information WHERE course_id = '" + req.body.courseId + "'", function(err,result,fields) {
+    databaseConnection.query("DELETE course_information, tutorial_content, multiple_choice_exercises FROM course_information LEFT JOIN tutorial_content ON tutorial_content.course_id=course_information.course_id LEFT JOIN multiple_choice_exercises ON multiple_choice_exercises.course_id=course_information.course_id WHERE course_information.course_id = '" + req.body.courseId + "'", function(err,result,fields) {
       if (err) {
         res.send('failed');
         throw err;
