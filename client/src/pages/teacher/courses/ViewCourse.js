@@ -337,8 +337,6 @@ async retrieveMatchingExerciseAnswers(exerciseContentId) {
 
       matchingExerciseTerms.innerHTML = '<p>' + rightTerms + '</p>';
 
-      alert("Pairs: " + this.matchingAnswers);
-
       var submitAnswerButton = document.getElementById("submit-answer-button");
       submitAnswerButton.style.display = 'block';
       submitAnswerButton.onclick = () => {this.submitMatchingAnswer()};
@@ -385,7 +383,6 @@ async submitGapAnswer() {
 }
 
 async submitMatchingAnswer() {
-  alert("Selected: " + this.matchingAnswersSelected);
   var resultMessage = document.getElementById("result-message");
   var correctAnswers = 0;
 
