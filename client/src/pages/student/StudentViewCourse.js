@@ -17,17 +17,14 @@ class StudentViewCourse extends Component {
     answerSelected: 0,
     displayEditor: false,
     tutorialData: '',
-    pairOneLeft: '',
-    pairOneRight: '',
-    pairTwoLeft: '',
-    pairTwoRight: '',
   };
 
   tutorialContent;
   gapAnswers = [];
   gapInputValues = [];
   gapTask = ``;
-  matchingTermsOrder = '';
+  matchingAnswers = [];
+  matchingAnswersSelected = [];
 
   componentDidMount() {
 	const status = sessionStorage.getItem('username');
@@ -156,7 +153,7 @@ class StudentViewCourse extends Component {
       var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
       var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
       var editor = document.getElementById("editor").style.display='block';
-      sessionStorage.setItem("assignmentContentId", this.tutorialContent[tutorialToDisplay][4]);
+      //sessionStorage.setItem("assignmentContentId", this.tutorialContent[tutorialToDisplay][4]);
       var answer1 = document.getElementById("answer-1-option").innerHTML = '';
       var answer2 = document.getElementById("answer-2-option").innerHTML = '';
       var answer3 = document.getElementById("answer-3-option").innerHTML = '';
@@ -282,6 +279,9 @@ async retrieveMatchingExerciseAnswers(exerciseContentId) {
   var answer4 = document.getElementById("answer-4-option");
   var matchingExerciseTerms = document.getElementById("matching-exercise-terms");
 
+  this.matchingAnswersSelected = [];
+  this.matchingAnswers = [];
+
   // starts a request, passes URL and configuration object
   const response = await fetch('/api/getgapexerciseanswers', {
     method: 'POST',
@@ -297,29 +297,82 @@ async retrieveMatchingExerciseAnswers(exerciseContentId) {
       answer3.innerHTML = '';
       answer4.innerHTML = '';
 
-      if (this.matchingTermsOrder == '') {
-        var pairs = data.split(',');
-        pairs.sort(() => Math.random() - 0.5);
-  
-        matchingExerciseTerms.innerHTML = '<p>' + pairs[0] + ', ' + pairs[1] + ', ' + pairs[2] + ', ' + pairs[3] + '</p>';
-        this.matchingTermsOrder = '<p>' + pairs[0] + ', ' + pairs[1] + ', ' + pairs[2] + ', ' + pairs[3] + '</p>';
-      } else {
-        matchingExerciseTerms.innerHTML = this.matchingTermsOrder;
+      var pairs = data.split(',');
+      var leftTerms = [];
+      var rightTerms = [];
+
+      for (let i=0; i < pairs.length; i+=2) {
+        var pair = [pairs[i], pairs[i+1]];
+        this.matchingAnswers.push(pair);
+      }
+      this.matchingAnswers = this.matchingAnswers.sort(() => Math.random() - 0.5);
+
+      for (let i=0; i < this.matchingAnswers.length; i++) {
+        leftTerms.push(this.matchingAnswers[i][0]);
+        rightTerms.push(this.matchingAnswers[i][1]);
       }
 
+      for (let i=0; i < leftTerms.length; i++) {
+        var answerNumber = i+1;
+        document.getElementById("answer-" + answerNumber + "-option").innerHTML = '' + leftTerms[i] + '<select id="select-' + answerNumber + '"></select></div>';
+        var dropdown = document.getElementById("select-" + answerNumber);
+        dropdown.value = '';
+        dropdown.onchange = (e) => this.matchingAnswersSelected[i] = e.target.value;
 
-      /*var leftTerms = [];
+        var option = document.createElement("option");
+        option.text = 'Select Answer';
+        option.value = 'Select Answer';
+        dropdown.add(option);
+
+        for (let i=0; i < rightTerms.length; i++) {
+          var option = document.createElement("option");
+          option.text = '' + rightTerms[i];
+          option.value = '' + rightTerms[i];
+          dropdown.add(option);
+        }
+      }
+
+      matchingExerciseTerms.innerHTML = '<p>' + rightTerms + '</p>';
+
+      alert("Pairs: " + this.matchingAnswers);
+
+      /*this.matchingAnswers = data.split(',');
+      var leftTerms = [];
       var rightTerms = [];
-      for (let i=0; i < pairs.length; i++) {
+      for (let i=0; i < this.matchingAnswers.length; i++) {
         if ((i == 0) || (i % 2 == 0)) {
-          leftTerms.push(pairs[i]);
+          leftTerms.push(this.matchingAnswers[i]);
         } else {
-          rightTerms.push(pairs[i]);
+          rightTerms.push(this.matchingAnswers[i]);
         }
       }
 
       leftTerms.sort(() => Math.random() - 0.5);
-      rightTerms.sort(() => Math.random() - 0.5);*/
+      rightTerms.sort(() => Math.random() - 0.5);
+  
+      matchingExerciseTerms.innerHTML = '<p>' + rightTerms + '</p>';
+
+      for (let i=0; i < leftTerms.length; i++) {
+        var answerNumber = i+1;
+        document.getElementById("answer-" + answerNumber + "-option").innerHTML = '' + leftTerms[i] + '<select id="select-' + answerNumber + '"></select></div>';
+        var dropdown = document.getElementById("select-" + answerNumber);
+        dropdown.value = '';
+        dropdown.onchange = (e) => this.matchingAnswersSelected[i] = e.target.value;
+
+        var option = document.createElement("option");
+        option.text = 'Select Answer';
+        option.value = 'Select Answer';
+        dropdown.add(option);
+
+        for (let i=0; i < rightTerms.length; i++) {
+          var option = document.createElement("option");
+          option.text = '' + rightTerms[i];
+          option.value = '' + rightTerms[i];
+          dropdown.add(option);
+        }
+      }
+
+      alert("Pairs: " + this.matchingAnswers);*/
 
       var submitAnswerButton = document.getElementById("submit-answer-button");
       submitAnswerButton.style.display = 'block';
@@ -363,6 +416,24 @@ async submitGapAnswer() {
     resultMessage.innerHTML = "All answers correct";
   } else {
     resultMessage.innerHTML = "Incorrect";
+  }
+}
+
+async submitMatchingAnswer() {
+  alert("Selected: " + this.matchingAnswersSelected);
+  var resultMessage = document.getElementById("result-message");
+  var correctAnswers = 0;
+
+  for (let i=0; i < this.matchingAnswers.length; i++) {
+    if (this.matchingAnswers[i][1] == this.matchingAnswersSelected[i]) {
+      correctAnswers += 1;
+    }
+  }
+
+  if (correctAnswers == this.matchingAnswers.length) {
+    resultMessage.innerHTML = "Correct!";
+  } else {
+    resultMessage.innerHTML = "Incorrect. You got " + correctAnswers + " answers correct";
   }
 }
 
@@ -467,7 +538,6 @@ async submitGapAnswer() {
             <button id="previous-button" onClick={this.displayPreviousTutorial}>Prev</button>
             <button id="next-button" onClick={this.displayNextTutorial}>Next</button>
           </div>
-
         </div>
       </div>
       </>
