@@ -116,6 +116,7 @@ class ViewCourse extends Component {
     if ((this.tutorialContent[tutorialToDisplay][2] == 'Text/Image') || (this.tutorialContent[tutorialToDisplay][2] == 'Video')) {
       var submitAnswerButton = document.getElementById("submit-answer-button").style.display = 'none';
       var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
+      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
       var editor = document.getElementById("editor").style.display='none';
       var answer1 = document.getElementById("answer-1-option").innerHTML = '';
       var answer2 = document.getElementById("answer-2-option").innerHTML = '';
@@ -125,8 +126,6 @@ class ViewCourse extends Component {
       var checkbox2 = document.getElementById("answer-2-checkbox").innerHTML = '';
       var checkbox3 = document.getElementById("answer-3-checkbox").innerHTML = '';
       var checkbox4 = document.getElementById("answer-4-checkbox").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
-      var matchingExerciseTerms = document.getElementById("matching-exercise-terms").innerHTML = '';
       
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Multiple Choice Exercise') {
       var courseEndMessage = document.getElementById("end-of-course-message").innerHTML = '';
@@ -172,18 +171,12 @@ class ViewCourse extends Component {
     var tutorialMenu = document.getElementById("tutorial-navigation-menu");
 
     for (let i=0; i <= this.state.numberOfTutorials; i++) {
-
-      //var row = tutorialMenu.insertRow(i);
-      //var cell = row.insertCell(0);
-
-      //cell.className = "tutorial-menu-row";
-      //cell.id = "tutorial-menu-row" + i;
-
       let tutorialToDisplay = i;
       var tutorialSelectButton = document.createElement("button");
       tutorialSelectButton.setAttribute("class", "tutorial-title");
       tutorialSelectButton.setAttribute("id", "" + i);
       tutorialSelectButton.innerHTML = this.tutorialContent[i][1];
+      tutorialSelectButton.onclick = () => {document.getElementById("" + this.state.currentTutorial).style.backgroundColor = ""; this.setState({currentTutorial: tutorialToDisplay}); this.displayTutorial(this.state.currentTutorial); document.getElementById("" + this.state.currentTutorial).style.backgroundColor = "green"};
       tutorialMenu.appendChild(tutorialSelectButton);
     }
 
