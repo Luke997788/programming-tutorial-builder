@@ -9,6 +9,7 @@ class ViewCourse extends Component {
   state = {
     courseId: '',
     courseTitle: '',
+    completeInOrder: 'false',
     responseData: '',
     currentTutorial: 0,
     numberOfTutorials: 0,
@@ -86,6 +87,7 @@ class ViewCourse extends Component {
 		  }
 		  
 		  this.setState({courseTitle: data[0]});
+      this.setState({completeInOrder: data[5]});
 		});
 	}
 
@@ -176,7 +178,13 @@ class ViewCourse extends Component {
       tutorialSelectButton.setAttribute("class", "tutorial-title");
       tutorialSelectButton.setAttribute("id", "" + i);
       tutorialSelectButton.innerHTML = this.tutorialContent[i][1];
-      tutorialSelectButton.onclick = () => {document.getElementById("" + this.state.currentTutorial).style.backgroundColor = ""; this.setState({currentTutorial: tutorialToDisplay}); this.displayTutorial(this.state.currentTutorial); document.getElementById("" + this.state.currentTutorial).style.backgroundColor = "green"};
+
+      if (this.state.completeInOrder == 'false') {
+        tutorialSelectButton.onclick = () => {document.getElementById("" + this.state.currentTutorial).style.backgroundColor = ""; this.setState({currentTutorial: tutorialToDisplay}); this.displayTutorial(this.state.currentTutorial); document.getElementById("" + this.state.currentTutorial).style.backgroundColor = "green"};
+      } else {
+        tutorialSelectButton.onclick = () => {alert("This course must be completed in order")};
+      }
+
       tutorialMenu.appendChild(tutorialSelectButton);
     }
 
