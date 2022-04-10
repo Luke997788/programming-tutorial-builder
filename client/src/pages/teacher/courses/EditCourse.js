@@ -140,10 +140,11 @@ class EditCourse extends Component {
             deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
           } else if (contentType === 'Test') {
             editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + contentId)};
+            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteTest(contentId)};
           } else if (contentType === 'Assignment') {
             editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editassignment/" + contentId)};
             deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteContent(contentId)};
-          }
+          } 
 
           cell5.appendChild(editButton);
           cell6.appendChild(deleteButton);
@@ -212,6 +213,26 @@ class EditCourse extends Component {
         window.location.reload(true);
       } else {
         this.setState({ responseToAnswersDeletion: 'ERROR: Failed to delete exercise' });
+      }
+    });
+  }
+
+  async deleteTest(id) {
+    // starts a request, passes URL and configuration object
+    const response = await fetch('/api/deletetest', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ contentId: id }),
+    });
+
+    await response.text().then(data => {
+      if (data == 'deleted') {
+        this.setState({ responseToAnswersDeletion: 'Test and all associated exercises deleted' });
+        window.location.reload(true);
+      } else {
+        this.setState({ responseToAnswersDeletion: 'ERROR: Failed to delete test' });
       }
     });
   }

@@ -127,15 +127,13 @@ class EditTest extends Component {
     
           if (contentType === 'Multiple Choice Exercise') {
             editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editchoiceexercise/" + this.state.testId + "/" + contentId)};
-            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
+            deleteButton.onclick = () => {this.deleteExercise(contentId)};
           } else if (contentType === 'Fill in the Gap Exercise') {
             editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editgapexercise/" + this.state.testId + "/" + contentId)};
-            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
+            deleteButton.onclick = () => {this.deleteExercise(contentId)};
           } else if (contentType === 'Matching Exercise') {
             editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editmatchingexercise/" + this.state.testId + "/" + contentId)};
-            deleteButton.onclick = () => {this.updateContentOrder(order); this.deleteExercise(contentId)};
-          } else if (contentType === 'Test') {
-            editButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + contentId)};
+            deleteButton.onclick = () => {this.deleteExercise(contentId)};
           } 
 
           cell5.appendChild(editButton);
@@ -166,37 +164,16 @@ class EditTest extends Component {
             this.setState({ responseToDeletion: 'ERROR: Failed to update content order' });
           }
         });
-  }
-
-  async deleteContent(id) {
-
-    // starts a request, passes URL and configuration object
-    const response = await fetch('/api/deletetutorialcontent', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ contentId: id }),
-    });
-
-    await response.text().then(data => {
-      if (data == 'deleted') {
-        this.setState({ responseToDeletion: 'Content deleted' });
-        window.location.reload(true);
-      } else {
-        this.setState({ responseToDeletion: 'ERROR: Failed to delete content' });
-      }
-    });
-  }
+  }*/
 
   async deleteExercise(id) {
     // starts a request, passes URL and configuration object
-    const response = await fetch('/api/deletetutorialexercise', {
+    const response = await fetch('/api/deletetestexercise', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ contentId: id }),
+      body: JSON.stringify({ exerciseId: id }),
     });
 
     await response.text().then(data => {
@@ -207,7 +184,7 @@ class EditTest extends Component {
         this.setState({ responseToAnswersDeletion: 'ERROR: Failed to delete exercise' });
       }
     });
-  }*/
+  }
 
   render () {
     const {navigate} = this.props;

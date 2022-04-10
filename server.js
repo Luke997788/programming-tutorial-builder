@@ -121,7 +121,7 @@ app.post('/api/getcourseinfo', (req, res) => {
 });
 
 /*
-* Deletes all information for a specific course from the database
+* Deletes all information and associated content for a specific course from the database
 */
 app.post('/api/deletecourse', (req, res) => {
   var databaseConnection = createDatabaseConnection();
@@ -132,7 +132,7 @@ app.post('/api/deletecourse', (req, res) => {
       throw err;
     }
 
-    console.log("Retrieving details for created courses");
+    console.log("Deleting course");
     console.log(req.body);
 
     databaseConnection.query("DELETE course_information, tutorial_content, multiple_choice_exercises FROM course_information LEFT JOIN tutorial_content ON tutorial_content.course_id=course_information.course_id LEFT JOIN multiple_choice_exercises ON multiple_choice_exercises.course_id=course_information.course_id WHERE course_information.course_id = '" + req.body.courseId + "'", function(err,result,fields) {
@@ -162,7 +162,7 @@ app.post('/api/deletetutorialcontent', (req, res) => {
       throw err;
     }
 
-    console.log("Retrieving details for created courses");
+    console.log("Deleting tutorial content");
     console.log(req.body);
 
     databaseConnection.query("DELETE FROM tutorial_content WHERE content_id = '" + req.body.contentId + "'", function(err,result,fields) {
@@ -181,7 +181,7 @@ app.post('/api/deletetutorialcontent', (req, res) => {
 });
 
 /*
-* Deletes the answers for a specific piece of tutorial content
+* Deletes a specific exercise
 */
 app.post('/api/deletetutorialexercise', (req, res) => {
   var databaseConnection = createDatabaseConnection();
@@ -192,10 +192,70 @@ app.post('/api/deletetutorialexercise', (req, res) => {
       throw err;
     }
 
-    console.log("Retrieving details for created courses");
+    console.log("Deleting exercise");
     console.log(req.body);
 
     databaseConnection.query("DELETE tutorial_content, multiple_choice_exercises FROM tutorial_content INNER JOIN multiple_choice_exercises ON tutorial_content.content_id=multiple_choice_exercises.content_id WHERE tutorial_content.content_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) {
+        res.send('failed');
+        throw err;
+      }
+
+      if (result.length != 0) {
+        res.send('deleted');
+      } else {
+        res.send('failed');
+      }
+    });
+  });
+});
+
+/*
+* Deletes a specific exercise that is part of a test
+*/
+app.post('/api/deletetestexercise', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send('failed');
+      throw err;
+    }
+
+    console.log("Deleting test exercise");
+    console.log(req.body);
+
+    databaseConnection.query("DELETE test_exercises, test_exercise_answers FROM test_exercises INNER JOIN test_exercise_answers ON test_exercises.test_exercise_id=test_exercise_answers.test_exercise_id WHERE test_exercises.test_exercise_id = '" + req.body.exerciseId + "'", function(err,result,fields) {
+      if (err) {
+        res.send('failed');
+        throw err;
+      }
+
+      if (result.length != 0) {
+        res.send('deleted');
+      } else {
+        res.send('failed');
+      }
+    });
+  });
+});
+
+/*
+* Deletes a test and all associated exercises
+*/
+app.post('/api/deletetest', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send('failed');
+      throw err;
+    }
+
+    console.log("Deleting test");
+    console.log(req.body);
+
+    databaseConnection.query("DELETE tutorial_content, test_exercises, test_exercise_answers FROM tutorial_content LEFT JOIN test_exercises ON test_exercises.test_id=tutorial_content.content_id LEFT JOIN test_exercise_answers ON test_exercises.test_id=test_exercise_answers.test_id WHERE tutorial_content.content_id = '" + req.body.contentId + "'", function(err,result,fields) {
       if (err) {
         res.send('failed');
         throw err;
