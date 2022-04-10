@@ -485,6 +485,58 @@ app.post('/api/uploadexercisecontent', (req, res) => {
 });
 
 /*
+* Inserts the answers for an exercise that is part of a test
+*/
+app.post('/api/uploadtestexerciseanswers', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send('failed');
+      throw err;
+    }
+
+    console.log("Inserting test exercise answers");
+    console.log(req.body);
+
+    databaseConnection.query("INSERT INTO test_exercise_answers (test_exercise_id, test_id, answer_1, answer_2, answer_3, answer_4, correct_answer) VALUES ('" + req.body.exerciseId + "', '" + req.body.testId + "', '" + req.body.answer1 + "', '" + req.body.answer2 + "', '" + req.body.answer3 + "', '" + req.body.answer4 + "', '" + req.body.correct + "')", function(err,result,fields) {
+      if (err) {
+        res.send('failed');
+        throw err;
+      }
+      
+      res.send("successful insertion");
+    });
+  });
+});
+
+/*
+* Inserts information about a peice of exercise content into the table for exercises that are part of a test
+*/
+app.post('/api/uploadtestexercise', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send('failed');
+      throw err;
+    }
+
+    console.log("Inserting test exercise information");
+    console.log(req.body);
+
+    databaseConnection.query("INSERT INTO test_exercises (test_id, exercise_title, exercise_type, exercise_content, content_order_position) VALUES ('" + req.body.testId + "', '" + req.body.title + "', '" + req.body.type + "', '" + req.body.content + "', '" + req.body.orderPosition + "')", function(err,result,fields) {
+      if (err) {
+        res.send('failed');
+        throw err;
+      }
+      
+      res.send("successful insertion");
+    });
+  });
+});
+
+/*
 * Retrieves the content id for a specific piece of tutorial content
 */
 app.post('/api/retrievecontentid', (req, res) => {
@@ -507,6 +559,37 @@ app.post('/api/retrievecontentid', (req, res) => {
 
       if (result.length != 0) {
         var id = result[0].content_id;
+        res.send("" + id);
+      } else {
+        res.send('failed');
+      }
+    });
+  });
+});
+
+/*
+* Retrieves the content id for a specific test exercise
+*/
+app.post('/api/retrievetestexercisecontentid', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send('failed');
+      throw err;
+    }
+
+    console.log("Retrieving test exercise content id");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT test_exercise_id FROM test_exercises WHERE test_id = '" + req.body.idToGet + "' AND exercise_title = '" + req.body.title + "'", function(err,result,fields) {
+      if (err) {
+        res.send('failed');
+        throw err;
+      }
+
+      if (result.length != 0) {
+        var id = result[0].test_exercise_id;
         res.send("" + id);
       } else {
         res.send('failed');
@@ -557,6 +640,58 @@ app.post('/api/updateexerciseanswers', (req, res) => {
     console.log(req.body);
 
     databaseConnection.query("UPDATE multiple_choice_exercises SET exercise_task = '" + req.body.task + "',  answer_1 = '" + req.body.answer1 + "', answer_2 = '" + req.body.answer2 + "',  answer_3 = '" + req.body.answer3 + "',  answer_4 = '" + req.body.answer4 + "', correct_answer = '" + req.body.correctAnswer + "' WHERE course_id = '" + req.body.courseId + "' AND content_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) {
+        res.send('failed');
+        throw err;
+      }
+
+      res.send("successful update");
+    });
+  });
+});
+
+/*
+* Updates the information about a specific piece of exercise content in a specific test
+*/
+app.post('/api/updatetestexercise', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send('failed');
+      throw err;
+    }
+
+    console.log("Updating test exercise");
+    console.log(req.body);
+
+    databaseConnection.query("UPDATE test_exercises SET exercise_title = '" + req.body.title + "', exercise_content = '" + req.body.content + "' WHERE test_id = '" + req.body.testId + "' AND test_exercise_id = '" + req.body.exerciseId + "'", function(err,result,fields) {
+      if (err) {
+        res.send('failed');
+        throw err;
+      }
+
+      res.send("successful update");
+    });
+  });
+});
+
+/*
+* Updates the answers for a specific exercise that is part of a specific test
+*/
+app.post('/api/updatetestexerciseanswers', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send('failed');
+      throw err;
+    }
+
+    console.log("Updating test exercise answers");
+    console.log(req.body);
+
+    databaseConnection.query("UPDATE test_exercise_answers SET answer_1 = '" + req.body.answer1 + "', answer_2 = '" + req.body.answer2 + "',  answer_3 = '" + req.body.answer3 + "',  answer_4 = '" + req.body.answer4 + "', correct_answer = '" + req.body.correctAnswer + "' WHERE test_id = '" + req.body.testId + "' AND test_exercise_id = '" + req.body.exerciseId + "'", function(err,result,fields) {
       if (err) {
         res.send('failed');
         throw err;
@@ -842,6 +977,37 @@ app.post('/api/getexerciseanswers', (req, res) => {
 });
 
 /*
+* Retrieves the answers for a piece of exercise content that is part of a test
+*/
+app.post('/api/gettestexerciseanswers', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send(['failed']);
+      throw err;
+    }
+
+    console.log("Retrieving test exercise answers");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT answer_1, answer_2, answer_3, answer_4, correct_answer FROM test_exercise_answers WHERE test_exercise_id = '" + req.body.exerciseId + "'", function(err,result,fields) {
+      if (err) {
+        res.send(['failed']);
+        throw err;
+      }
+
+      if (result.length != 0) {
+        var data = [result[0].answer_1, result[0].answer_2, result[0].answer_3, result[0].answer_4, result[0].correct_answer];
+        res.send(data);
+      } else {
+        res.send(['failed']);
+      }
+    });
+  });
+});
+
+/*
 * Retrieves the answers for a piece of fill in the gap exercise content
 */
 app.post('/api/getgapexerciseanswers', (req, res) => {
@@ -897,6 +1063,75 @@ app.post('/api/getspecifictutorialcontent', (req, res) => {
         res.send(contentInformation);
       } else {
         res.send(['failed']);
+      }
+    });
+  });
+});
+
+/*
+* Retrieves a specific exercise that is part of a specific test
+*/
+app.post('/api/getspecifictestexercise', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send(['failed']);
+      throw err;
+    }
+
+    console.log("Retrieving specific tutorial content");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT exercise_title, exercise_content FROM test_exercises WHERE test_id = '" + req.body.testId + "' AND test_exercise_id = '" + req.body.contentId + "'", function(err,result,fields) {
+      if (err) {
+        res.send(['failed']);
+        throw err;
+      }
+
+      if (result.length != 0) {    
+        var contentInformation = [result[0].exercise_title, result[0].exercise_content];
+        res.send(contentInformation);
+      } else {
+        res.send(['failed']);
+      }
+    });
+  });
+});
+
+
+/*
+* Retrieves all exercise content that are part of a specific test
+*/
+app.post('/api/gettestexercisesinfo', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send([['failed']]);
+      throw err;
+    }
+
+    console.log("Retrieving test exercises");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT test_exercise_id, exercise_title, exercise_type, content_order_position, last_modified FROM test_exercises WHERE test_id = '" + req.body.idToGet + "'", function(err,result,fields) {
+      if (err) {
+        res.send([['failed']]);
+        throw err;
+      }
+
+      if (result.length != 0) {
+        var exercises = [[result[0].content_order_position, result[0].exercise_title, result[0].exercise_type, result[0].last_modified, result[0].test_exercise_id]];
+
+        for (let i=1; i < result.length; i++) {
+          var exercise = [result[i].content_order_position, result[i].exercise_title, result[i].exercise_type, result[i].last_modified, result[i].test_exercise_id];
+          exercises[i] = exercise;
+        }
+
+        res.send(exercises);
+      } else {
+        res.send([['failed']]);
       }
     });
   });

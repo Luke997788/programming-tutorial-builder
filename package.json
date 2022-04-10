@@ -9,6 +9,8 @@
   "dependencies": {
     "@tinymce/tinymce-react": "^3.13.0",
     "body-parser": "^1.18.3",
+    "brython": "^3.10.5",
+    "codemirror": "^5.65.2",
     "express": "^4.16.4",
     "form-data": "^4.0.0",
     "history": "^5.2.0",

@@ -28,6 +28,8 @@ import AddFillInGapExerciseContent from './pages/teacher/content/AddFillInGapExe
 import EditFillInGapExerciseContent from './pages/teacher/content/EditFillInGapExerciseContent';
 import AddMatchingExercise from './pages/teacher/content/AddMatchingExercise';
 import EditMatchingExercise from './pages/teacher/content/EditMatchingExercise';
+import AddTest from './pages/teacher/content/AddTest';
+import EditTest from './pages/teacher/content/EditTest';
 import AddAssignment from './pages/teacher/content/AddAssignment';
 import EditAssignment from './pages/teacher/content/EditAssignment';
 
@@ -59,16 +61,31 @@ function App() {
 
                     <Route path="/editcourse/:id/addtextimage" element={<AddTextImageContent />} />
                     <Route path="/editcourse/:id/edittextimage/:contentid" element={<EditTextImageContent />} />
+
                     <Route path="/editcourse/:id/addvideo" element={<AddVideoContent />} />
                     <Route path="/editcourse/:id/editvideo/:contentid" element={<EditVideoContent />} />
+
                     <Route path="/editcourse/:id/addchoiceexercise" element={<AddMultipleChoiceExerciseContent />} />
+                    <Route path="/editcourse/:id/:testid/addchoiceexercise" element={<AddMultipleChoiceExerciseContent />} />
                     <Route path="/editcourse/:id/editchoiceexercise/:contentid" element={<EditMultipleChoiceExerciseContent />} />
+                    <Route path="/editcourse/:id/editchoiceexercise/:testid/:contentid" element={<EditMultipleChoiceExerciseContent />} />
+
                     <Route path="/editcourse/:id/addgapexercise" element={<AddFillInGapExerciseContent />} />
+                    <Route path="/editcourse/:id/:testid/addgapexercise" element={<AddFillInGapExerciseContent />} />
                     <Route path="/editcourse/:id/editgapexercise/:contentid" element={<EditFillInGapExerciseContent />} />
+                    <Route path="/editcourse/:id/editgapexercise/:testid/:contentid" element={<EditFillInGapExerciseContent />} />
+
                     <Route path="/editcourse/:id/addmatchingexercise" element={<AddMatchingExercise />} />
+                    <Route path="/editcourse/:id/:testid/addmatchingexercise" element={<AddMatchingExercise />} />
                     <Route path="/editcourse/:id/editmatchingexercise/:contentid" element={<EditMatchingExercise />} />
+                    <Route path="/editcourse/:id/editmatchingexercise/:testid/:contentid" element={<EditMatchingExercise />} />
+
+                    <Route path="/editcourse/:id/addtest" element={<AddTest />} />
+                    <Route path="/editcourse/:id/edittest/:contentid" element={<EditTest />} />
+
                     <Route path="/editcourse/:id/addassignment" element={<AddAssignment />} />
                     <Route path="/editcourse/:id/editassignment/:contentid" element={<EditAssignment />} />
+
                     <Route path="/mystudents" element={<MyStudents />} />
                     <Route path="/mystudents/viewclass/:id" element={<ViewClass />} />
                     <Route path="/mystudents/viewassignments/:classid/:studentid" element={<ViewAssignments />} />

@@ -10,6 +10,7 @@ class AddMatchingExercise extends Component {
 		creator: '',
         courseId: '',
         contentId: '',
+        testId: '',
         contentTitle: '',
         contentType: 'Matching Exercise',
         initialContents: ``,
@@ -44,8 +45,9 @@ class AddMatchingExercise extends Component {
 	}
 
     async retrieveCourseDetails() {
-		let { id } = this.props.params;
+		let { id, testid } = this.props.params;
 		this.setState({courseId: id});
+        this.setState({testId: testid});
 	
 		// starts a request, passes URL and configuration object
 		const response = await fetch('/api/getspecificcourseinfo', {
@@ -153,14 +155,80 @@ class AddMatchingExercise extends Component {
         });
 	};
 
+    async submitTestExercise() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/uploadtestexercise', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ testId: this.state.testId, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task, orderPosition: 0}),
+             
+        });
+    
+        await response.text().then(responseData => {
+            if (responseData == 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information added' });
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+            }
+        });  
+    }
+
+    async retrieveTestExerciseContentId() {
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/retrievetestexercisecontentid', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({idToGet: this.state.testId, title: this.state.contentTitle}),
+        });
+
+        await response.text().then(responseData => {
+            this.setState({contentId: responseData}); 
+        });
+	};
+
+    async submitTestExerciseAnswers() {
+        var exerciseAnswers = [this.state.pairOneLeft, this.state.pairOneRight, this.state.pairTwoLeft, this.state.pairTwoRight];
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/uploadtestexerciseanswers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ exerciseId: this.state.contentId, testId: this.state.testId, answer1: exerciseAnswers, correct: exerciseAnswers}),
+        });
+
+        await response.text().then(responseData => {
+            if (responseData == 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information added' });
+                this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + this.state.testId);
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+            }
+        });
+	};
+
     handleSubmit = async e => {
         e.preventDefault();
 
-        this.submitTutorialInformation().then(data => {
-            this.retrieveContentId().then(item => {
-                this.submitExerciseAnswers();
-            })
-        });
+        if(!(!this.state.testId)) {
+            this.submitTestExercise().then(data => {
+                this.retrieveTestExerciseContentId().then(item => {
+                    this.submitTestExerciseAnswers();
+                })
+            });
+        } else {
+            this.submitTutorialInformation().then(data => {
+                this.retrieveContentId().then(item => {
+                    this.submitExerciseAnswers();
+                })
+            });
+        }
     };
 
 	render() {

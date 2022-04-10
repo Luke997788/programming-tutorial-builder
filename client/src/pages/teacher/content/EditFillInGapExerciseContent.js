@@ -8,6 +8,7 @@ class EditFillInTheGapExerciseContent extends Component {
         title: '',
 		creator: '',
         courseId: '',
+        testId: '',
         contentId: '',
         contentTitle: '',
         contentType: 'exercise',
@@ -24,9 +25,15 @@ class EditFillInTheGapExerciseContent extends Component {
         this.setState({creator: sessionStorage.getItem("username")});
         
         this.retrieveCourseDetails().then(data => {
-            this.retrieveExerciseTask().then(item => {
-                this.retrieveExerciseAnswers();
-            })
+            if(!(!this.state.testId)) {
+                this.retrieveTestExerciseTask().then(item => {
+                    this.retrieveTestExerciseAnswers();
+                });
+            } else {
+                this.retrieveExerciseTask().then(x => {
+                    this.retrieveExerciseAnswers();
+                });
+            }
         });
 	}
 
@@ -45,8 +52,9 @@ class EditFillInTheGapExerciseContent extends Component {
 	}
 
     async retrieveCourseDetails() {
-        let { id, contentid } = this.props.params;
+        let { id, testid, contentid } = this.props.params;
         this.setState({courseId: id});
+        this.setState({testId: testid});
         this.setState({contentId: contentid});
         
             // starts a request, passes URL and configuration object
@@ -87,6 +95,26 @@ class EditFillInTheGapExerciseContent extends Component {
         });
     }
 
+    async retrieveTestExerciseTask() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/getspecifictestexercise', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ testId: this.state.testId, contentId: this.state.contentId}),
+        });
+    
+        await response.json().then(data => {
+            if (data[0] == 'failed') {
+                this.props.navigate("/mycourses");
+            }
+        
+            this.setState({ contentTitle: data[0] });
+            this.setState({ task: data[1] });
+        });
+    }
+
     async retrieveContentId() {
 
         // starts a request, passes URL and configuration object
@@ -111,6 +139,30 @@ class EditFillInTheGapExerciseContent extends Component {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ contentId: this.state.contentId }),
+        });
+    
+        await response.json().then(data => {
+            var ans = data[4].split(",");
+            this.setState({answers: ans});
+            
+            var taskWithAnswers = '';
+            for (let i=1; i <= this.state.answers.length; i++) {
+                taskWithAnswers = this.state.task.replaceAll('[' + i + ']', `[` + (this.state.answers[i-1]) + `]`);
+                this.setState({task: taskWithAnswers});
+            }
+
+            this.setState({task: taskWithAnswers});
+        });
+    }
+
+    async retrieveTestExerciseAnswers() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/gettestexerciseanswers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ exerciseId: this.state.contentId }),
         });
     
         await response.json().then(data => {
@@ -193,6 +245,73 @@ class EditFillInTheGapExerciseContent extends Component {
             }
         });
 	};
+    
+    async updateTestExerciseInformation() {
+        var contentToSubmit = '';
+
+        if (this.state.content == '') {
+          contentToSubmit = this.state.task;
+        } else {
+          contentToSubmit = this.state.content;
+        }
+
+        var indexesOfSquareBrackets = [];
+        for (let i=0; i < contentToSubmit.length; i++) {
+            if (contentToSubmit[i] == '[') {
+                indexesOfSquareBrackets.push(i+1);
+            } else if (contentToSubmit[i] == ']') {
+                indexesOfSquareBrackets.push(i);
+            }
+        }
+
+        var answerCount = 1;
+        this.taskContent = contentToSubmit;
+
+        for (let i=0; i < indexesOfSquareBrackets.length; i += 2) {
+            var answer = contentToSubmit.substring(indexesOfSquareBrackets[i], indexesOfSquareBrackets[i+1]);
+            this.exerciseAnswers.push(answer);
+
+            this.taskContent = this.taskContent.replace(answer, '' + answerCount + '');
+            answerCount += 1;
+        }
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/updatetestexercise', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({testId: this.state.testId, exerciseId: this.state.contentId, title: this.state.contentTitle, content: this.taskContent}),
+        });
+
+        await response.text().then(data => {
+            if (data === 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information updated' });
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
+            }
+        });
+	};
+
+    async updateTestExerciseAnswers() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/updatetestexerciseanswers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ exerciseId: this.state.contentId, testId: this.state.testId, answer1: this.exerciseAnswers, correctAnswer: this.exerciseAnswers}),
+        });
+
+        await response.text().then(data => {
+            if (data === 'successful update') {
+                this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
+                this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + this.state.testId);
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
+            }
+        });
+	};
 
     handleEditorChange = (e) => {
         console.log(
@@ -205,9 +324,16 @@ class EditFillInTheGapExerciseContent extends Component {
 
     handleSubmit = async e => {
         e.preventDefault();
-        this.updateTutorialInformation().then(data => {
-            this.updateExerciseAnswers();
-        });
+
+        if(!(!this.state.testId)) {
+            this.updateTestExerciseInformation().then(data => {
+                this.updateTestExerciseAnswers();
+            });
+        } else {
+            this.updateTutorialInformation().then(item => {
+                this.updateExerciseAnswers();
+            });
+        }
     };
 
 	render() {

@@ -8,6 +8,7 @@ class EditMatchingExercise extends Component {
         title: '',
 		creator: '',
         courseId: '',
+        testId: '',
         contentId: '',
         contentTitle: '',
         task: ``,
@@ -24,9 +25,15 @@ class EditMatchingExercise extends Component {
         this.setState({creator: sessionStorage.getItem("username")});
         
         this.retrieveCourseDetails().then(data => {
-            this.retrieveExerciseTask().then(item => {
-                this.retrieveExerciseAnswers();
-            })
+            if(!(!this.state.testId)) {
+                this.retrieveTestExerciseTask().then(item => {
+                    this.retrieveTestExerciseAnswers();
+                });
+            } else {
+                this.retrieveExerciseTask().then(x => {
+                    this.retrieveExerciseAnswers();
+                });
+            }
         });
 	}
 
@@ -45,8 +52,9 @@ class EditMatchingExercise extends Component {
 	}
 
     async retrieveCourseDetails() {
-        let { id, contentid } = this.props.params;
+        let { id, testid, contentid } = this.props.params;
         this.setState({courseId: id});
+        this.setState({testId: testid});
         this.setState({contentId: contentid});
         
             // starts a request, passes URL and configuration object
@@ -95,6 +103,47 @@ class EditMatchingExercise extends Component {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ contentId: this.state.contentId }),
+        });
+    
+        await response.json().then(data => {
+            var pairs = data[4].split(",");
+            this.setState({itemPairs: pairs});
+
+            this.setState({pairOneLeft: pairs[0]});
+            this.setState({pairOneRight: pairs[1]});
+            this.setState({pairTwoLeft: pairs[2]});
+            this.setState({pairTwoRight: pairs[3]});
+        });
+    }
+
+    async retrieveTestExerciseTask() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/getspecifictestexercise', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ testId: this.state.testId, contentId: this.state.contentId}),
+        });
+    
+        await response.json().then(data => {
+            if (data[0] == 'failed') {
+                this.props.navigate("/mycourses");
+            }
+        
+            this.setState({ contentTitle: data[0] });
+            this.setState({ task: data[1] });
+        });
+    }
+
+    async retrieveTestExerciseAnswers() {
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/gettestexerciseanswers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ exerciseId: this.state.contentId }),
         });
     
         await response.json().then(data => {
@@ -165,6 +214,55 @@ class EditMatchingExercise extends Component {
         });
 	};
 
+    async updateTestExerciseInformation() {
+        var contentToSubmit = '';
+
+        if (this.state.content == '') {
+          contentToSubmit = this.state.task;
+        } else {
+          contentToSubmit = this.state.content;
+        }
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/updatetestexercise', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({testId: this.state.testId, exerciseId: this.state.contentId, title: this.state.contentTitle, content: contentToSubmit}),
+        });
+
+        await response.text().then(data => {
+            if (data === 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information updated' });
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial information' });
+            }
+        });
+	};
+
+    async updateTestExerciseAnswers() {
+        var exerciseAnswers = [this.state.pairOneLeft, this.state.pairOneRight, this.state.pairTwoLeft, this.state.pairTwoRight];
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/updatetestexerciseanswers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ exerciseId: this.state.contentId, testId: this.state.testId, answer1: exerciseAnswers, correctAnswer: exerciseAnswers}),
+        });
+
+        await response.text().then(data => {
+            if (data === 'successful update') {
+                this.setState({ responseToPostRequest: 'Tutorial answers successfully updated' });
+                this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + this.state.testId);
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to update tutorial answers' });
+            }
+        });
+	};
+
     handleEditorChange = (e) => {
         console.log(
           'Content was updated:',
@@ -176,9 +274,16 @@ class EditMatchingExercise extends Component {
 
     handleSubmit = async e => {
         e.preventDefault();
-        this.updateTutorialInformation().then(data => {
-            this.updateExerciseAnswers();
-        });
+
+        if(!(!this.state.testId)) {
+            this.updateTestExerciseInformation().then(data => {
+                this.updateTestExerciseAnswers();
+            });
+        } else {
+            this.updateTutorialInformation().then(item => {
+                this.updateExerciseAnswers();
+            });
+        }
     };
 
 	render() {

@@ -10,6 +10,7 @@ class AddFillInGapExerciseContent extends Component {
 		creator: '',
         courseId: '',
         contentId: '',
+        testId: '',
         contentTitle: '',
         contentType: 'Fill in the Gap Exercise',
         task: ``,
@@ -42,8 +43,9 @@ class AddFillInGapExerciseContent extends Component {
 	}
 
     async retrieveCourseDetails() {
-		let { id } = this.props.params;
+		let { id, testid } = this.props.params;
 		this.setState({courseId: id});
+        this.setState({testId: testid});
 	
 		// starts a request, passes URL and configuration object
 		const response = await fetch('/api/getspecificcourseinfo', {
@@ -170,14 +172,98 @@ class AddFillInGapExerciseContent extends Component {
         });
 	};
 
+    async submitTestExercise() {
+
+        var indexesOfSquareBrackets = [];
+        for (let i=0; i < this.state.task.length; i++) {
+            if (this.state.task[i] == '[') {
+                indexesOfSquareBrackets.push(i+1);
+            } else if (this.state.task[i] == ']') {
+                indexesOfSquareBrackets.push(i);
+            }
+        }
+
+        var answerCount = 1;
+        this.taskContent = this.state.task;
+        for (let i=0; i < indexesOfSquareBrackets.length; i += 2) {
+            var answer = this.state.task.substring(indexesOfSquareBrackets[i], indexesOfSquareBrackets[i+1]);
+            this.exerciseAnswers.push(answer);
+
+            this.taskContent = this.taskContent.replace(answer, '' + answerCount + '');
+            answerCount += 1;
+        }
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/uploadtestexercise', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({testId: this.state.testId, title: this.state.contentTitle, type: this.state.contentType, content: this.taskContent, orderPosition: 0}),
+        });
+
+        await response.text().then(responseData => {
+            if (responseData == 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information added' });
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+            }
+        });
+	};
+
+    async retrieveTestExerciseContentId() {
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/retrievetestexercisecontentid', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({idToGet: this.state.testId, title: this.state.contentTitle}),
+        });
+
+        await response.text().then(responseData => {
+            this.setState({contentId: responseData}); 
+        });
+	};
+
+    async submitTestExerciseAnswers() {
+
+        // starts a request, passes URL and configuration object
+        const response = await fetch('/api/uploadtestexerciseanswers', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ exerciseId: this.state.contentId, testId: this.state.testId, answer1: this.exerciseAnswers, correct: this.exerciseAnswers}),
+        });
+
+        await response.text().then(responseData => {
+            if (responseData == 'successful insertion') {
+                this.setState({ responseToPostRequest: 'Tutorial information added' });
+                this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + this.state.testId);
+            } else {
+                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+            }
+        });
+	};
+
     handleSubmit = async e => {
         e.preventDefault();
 
-        this.submitTutorialInformation().then(data => {
-            this.retrieveContentId().then(item => {
-                this.submitExerciseAnswers();
-            })
-        });
+        if(!(!this.state.testId)) {
+            this.submitTestExercise().then(data => {
+                this.retrieveTestExerciseContentId().then(item => {
+                    this.submitTestExerciseAnswers();
+                })
+            });
+        } else {
+            this.submitTutorialInformation().then(data => {
+                this.retrieveContentId().then(item => {
+                    this.submitExerciseAnswers();
+                })
+            });
+        }
     };
 
 	render() {
