@@ -17,6 +17,7 @@ class ViewCourse extends Component {
     answerSelected: 0,
     displayEditor: false,
     tutorialData: '',
+    numberOfTestQuestions: 0,
     currentQuestion: 0,
     currentTestScore: 0,
   };
@@ -348,7 +349,7 @@ async displayTestMultipleChoiceQuestion() {
   var submitAnswerButton = document.getElementById("submit-answer-button");
   submitAnswerButton.style.display = 'block';
   submitAnswerButton.hidden = false;
-  submitAnswerButton.onclick = () => {this.submitAnswer()};   
+  submitAnswerButton.onclick = () => {this.submitTestMultipleChoiceAnswer(); this.displayNextTestQuestion()};   
 }
 
 async displayTestGapQuestion() {
@@ -375,7 +376,7 @@ async displayTestGapQuestion() {
 
   var submitAnswerButton = document.getElementById("submit-answer-button");
   submitAnswerButton.style.display = 'block';
-  submitAnswerButton.onclick = () => {this.submitGapAnswer()};
+  submitAnswerButton.onclick = () => {this.submitTestGapAnswer(); this.displayNextTestQuestion()};
 }
 
 async displayTestMatchingQuestion() {
@@ -435,7 +436,7 @@ async displayTestMatchingQuestion() {
 
       var submitAnswerButton = document.getElementById("submit-answer-button");
       submitAnswerButton.style.display = 'block';
-      submitAnswerButton.onclick = () => {this.submitMatchingAnswer()};
+      submitAnswerButton.onclick = () => {this.submitTestMatchingAnswer(); this.displayNextTestQuestion()};
 }
 
 async selectAnswer() {
@@ -450,7 +451,6 @@ async submitAnswer() {
   var resultMessage = document.getElementById("result-message");
   if (this.state.correctAnswer == this.state.answerSelected) {
     resultMessage.innerHTML = "Correct!";
-    this.setState({currentTestScore : this.state.currentTestScore + 1});
   } else {
     resultMessage.innerHTML = "Incorrect. The correct answer is " + this.state.correctAnswerText;
   }
@@ -473,13 +473,62 @@ async submitGapAnswer() {
 
   if (numberCorrect == this.gapAnswers.length) {
     resultMessage.innerHTML = "All answers correct";
-    this.setState({currentTestScore : this.state.currentTestScore + 1});
   } else {
     resultMessage.innerHTML = "Incorrect";
   }
 }
 
 async submitMatchingAnswer() {
+  var resultMessage = document.getElementById("result-message");
+  var correctAnswers = 0;
+
+  for (let i=0; i < this.matchingAnswers.length; i++) {
+    if (this.matchingAnswers[i][1] == this.matchingAnswersSelected[i]) {
+      correctAnswers += 1;
+    }
+  }
+
+  if (correctAnswers == this.matchingAnswers.length) {
+    resultMessage.innerHTML = "Correct!";
+  } else {
+    resultMessage.innerHTML = "Incorrect. You got " + correctAnswers + " answers correct";
+  }
+}
+
+async submitTestMultipleChoiceAnswer() {
+  var resultMessage = document.getElementById("result-message");
+  if (this.state.correctAnswer == this.state.answerSelected) {
+    resultMessage.innerHTML = "Correct!";
+    this.setState({currentTestScore : this.state.currentTestScore + 1});
+  } else {
+    resultMessage.innerHTML = "Incorrect. The correct answer is " + this.state.correctAnswerText;
+  }
+}
+
+async submitTestGapAnswer() {
+  var resultMessage = document.getElementById("result-message");
+  var correctAnswers = [];
+  var numberCorrect = 0;
+
+  for (let i=0; i < this.gapAnswers.length; i++) {
+    var input = document.getElementById("gap-answer-" + (i+1) + "");
+    if (input.value == this.gapAnswers[i]) {
+      correctAnswers.push(true);
+      numberCorrect += 1;
+    } else {
+      correctAnswers.push(false);
+    }
+  }
+
+  if (numberCorrect == this.gapAnswers.length) {
+    resultMessage.innerHTML = "All answers correct";
+    this.setState({currentTestScore : this.state.currentTestScore + 1});
+  } else {
+    resultMessage.innerHTML = "Incorrect";
+  }
+}
+
+async submitTestMatchingAnswer() {
   var resultMessage = document.getElementById("result-message");
   var correctAnswers = 0;
 
@@ -513,11 +562,14 @@ async getTestQuestions(id) {
       }
 
       this.testQuestions = data;
+      this.setState({numberOfTestQuestions: this.testQuestions.length - 1});
+
       document.getElementById("start-test-button-container").style.display = 'block';
       document.getElementById("score-text").innerHTML = '';
 
 
       document.getElementById("test-question").innerHTML = '';
+      document.getElementById("end-test-message").innerHTML = '';
       document.getElementById("test-container").style.display = 'block';
       document.getElementById("end-of-course-message").innerHTML = '';
       document.getElementById("submit-answer-button").style.display = 'none';
@@ -604,28 +656,25 @@ async displayTestQuestion() {
   }
 }
 
-displayPreviousTestQuestion = async e => {
-  e.preventDefault();
+async displayNextTestQuestion() {
 
-  if (this.state.currentQuestion > 0) {
-      var currentQuestion = parseInt(this.state.currentQuestion);
-      this.state.currentQuestion = currentQuestion - 1;
-  
-      this.displayTestQuestion();
-  }
-}
-
-displayNextTestQuestion = async e => {
-  e.preventDefault();
-
-  if (this.state.currentQuestion < this.testQuestions.length) {
+  if (this.state.currentQuestion < this.state.numberOfTestQuestions) {
       var currentQuestion = parseInt(this.state.currentQuestion);
       this.state.currentQuestion = currentQuestion + 1;
   
       this.displayTestQuestion();
 
-  } else if (this.state.currentQuestion == this.testQuestions.length) {
+  } else if (this.state.currentQuestion == this.state.numberOfTestQuestions) {
+    var currentQuestion = parseInt(this.state.currentQuestion);
+    this.state.currentQuestion = currentQuestion + 1;
 
+    document.getElementById("end-test-message").innerHTML = 'Test Complete!';
+    document.getElementById("matching-exercise-terms").innerHTML = '';
+    document.getElementById("tutorial-content").innerHTML = "";
+    document.getElementById("answer-options").style.display = 'none';
+    document.getElementById("test-question").innerHTML = '';
+    document.getElementById("result-message").innerHTML = "";
+    document.getElementById("submit-answer-button").style.display = 'none';
   }
 }
 
@@ -666,6 +715,10 @@ displayNextTestQuestion = async e => {
           <div id="start-test-button-container">
             <button id="start-test-button">Start Test</button>
           </div>
+
+          <div id="end-test-message-container">
+            <p id="end-test-message"></p>
+          </div>
         </div>
 
           <div id="matching-exercise-terms"></div>
@@ -691,7 +744,7 @@ displayNextTestQuestion = async e => {
 
           <div id="test-navigation-buttons">
             {/*<button id="test-previous-button" onClick={this.displayPreviousTestQuestion}>Prev</button>*/}
-            <button id="test-next-button" onClick={this.displayNextTestQuestion}>Next</button>
+            {/*<button id="test-next-button" onClick={this.displayNextTestQuestion}>Next</button>*/}
           </div>
 
           <div id="end-of-course-container">
