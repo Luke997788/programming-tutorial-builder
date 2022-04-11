@@ -41,7 +41,7 @@ class ViewCourse extends Component {
 		}
 
     //var backButton = document.getElementById("back-to-my-courses-button").onclick  = () => {this.props.navigate("/mycourses")};
-    var backButton = document.getElementById("start-test-button").onclick = () => {this.startTest()};
+    document.getElementById("start-test-button").onclick = () => {this.startTest()};
 
       this.retrieveCourseDetails().then(data => {
         this.retrieveCourseTutorialContent().then(item => {
@@ -225,7 +225,6 @@ async displayGapExercise(exerciseContentId) {
       document.getElementById("answer-options").style.display = 'none';
       document.getElementById("end-of-course-message").innerHTML = '';
       document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
       document.getElementById("editor").style.display='none';
       document.getElementById("test-container").style.display = 'none';
 
@@ -332,6 +331,7 @@ async displayTestMultipleChoiceQuestion() {
   this.setState({correctAnswer: this.testQuestions[this.state.currentQuestion][9]});
   this.setState({correctAnswerText: this.testQuestions[this.state.currentQuestion][parseInt(this.state.correctAnswer) + 4] });
 
+  document.getElementById("tutorial-content").innerHTML = "";
   document.getElementById("answer-options").style.display = 'block';
 
   document.getElementById("answer-1-option").innerHTML = this.testQuestions[this.state.currentQuestion][5] + '<input id="answer-1-checkbox" type="checkbox" />';
@@ -348,6 +348,93 @@ async displayTestMultipleChoiceQuestion() {
   submitAnswerButton.style.display = 'block';
   submitAnswerButton.hidden = false;
   submitAnswerButton.onclick = () => {this.submitAnswer()};   
+}
+
+async displayTestGapQuestion() {
+  var question = document.getElementById("test-question");
+
+  document.getElementById("answer-options").style.display = 'none';
+  document.getElementById("end-of-course-message").innerHTML = '';
+  document.getElementById("matching-exercise-terms").innerHTML = '';
+
+  var answers = this.testQuestions[this.state.currentQuestion][9].split(',');
+
+  this.gapAnswers = [];
+  this.gapInputValues = [];
+
+  for (let i=0; i < answers.length; i++) {
+    this.gapAnswers.push(answers[i]);
+    this.gapInputValues.push('');
+  }
+
+  for (let i=1; i <= this.gapAnswers.length; i++) {
+    this.gapTask = this.gapTask.replaceAll('[' + i + ']', `<input type='text' id="gap-answer-` + i + `" value='' />`);
+    question.innerHTML = this.gapTask;
+  }
+
+  var submitAnswerButton = document.getElementById("submit-answer-button");
+  submitAnswerButton.style.display = 'block';
+  submitAnswerButton.onclick = () => {this.submitGapAnswer()};
+}
+
+async displayTestMatchingQuestion() {
+  var answer1 = document.getElementById("answer-1-option");
+  var answer2 = document.getElementById("answer-2-option");
+  var answer3 = document.getElementById("answer-3-option");
+  var answer4 = document.getElementById("answer-4-option");
+  var matchingExerciseTerms = document.getElementById("matching-exercise-terms");
+
+  this.matchingAnswersSelected = [];
+  this.matchingAnswers = [];
+
+    document.getElementById("answer-options").style.display = 'block';
+    document.getElementById("end-of-course-message").innerHTML = '';
+
+      answer1.innerHTML = '';
+      answer2.innerHTML = '';
+      answer3.innerHTML = '';
+      answer4.innerHTML = '';
+
+      var pairs = this.testQuestions[this.state.currentQuestion][9].split(',');
+      var leftTerms = [];
+      var rightTerms = [];
+
+      for (let i=0; i < pairs.length; i+=2) {
+        var pair = [pairs[i], pairs[i+1]];
+        this.matchingAnswers.push(pair);
+      }
+      this.matchingAnswers = this.matchingAnswers.sort(() => Math.random() - 0.5);
+
+      for (let i=0; i < this.matchingAnswers.length; i++) {
+        leftTerms.push(this.matchingAnswers[i][0]);
+        rightTerms.push(this.matchingAnswers[i][1]);
+      }
+
+      for (let i=0; i < leftTerms.length; i++) {
+        var answerNumber = i+1;
+        document.getElementById("answer-" + answerNumber + "-option").innerHTML = '' + leftTerms[i] + '<select id="select-' + answerNumber + '"></select></div>';
+        var dropdown = document.getElementById("select-" + answerNumber);
+        dropdown.value = '';
+        dropdown.onchange = (e) => this.matchingAnswersSelected[i] = e.target.value;
+
+        var option = document.createElement("option");
+        option.text = 'Select Answer';
+        option.value = 'Select Answer';
+        dropdown.add(option);
+
+        for (let i=0; i < rightTerms.length; i++) {
+          var option = document.createElement("option");
+          option.text = '' + rightTerms[i];
+          option.value = '' + rightTerms[i];
+          dropdown.add(option);
+        }
+      }
+
+      matchingExerciseTerms.innerHTML = '<p>' + rightTerms + '</p>';
+
+      var submitAnswerButton = document.getElementById("submit-answer-button");
+      submitAnswerButton.style.display = 'block';
+      submitAnswerButton.onclick = () => {this.submitMatchingAnswer()};
 }
 
 async selectAnswer() {
@@ -444,12 +531,19 @@ async startTest() {
 }
 
 async displayTestQuestion() {
-  var question = document.getElementById("test-question");
-
-  question.innerHTML = '' + this.testQuestions[this.state.currentQuestion][4];
-
   if (this.testQuestions[this.state.currentQuestion][3] == 'Multiple Choice Exercise') {
+    document.getElementById("test-question").innerHTML = '' + this.testQuestions[this.state.currentQuestion][4];
+    document.getElementById("result-message").innerHTML = '';
     this.displayTestMultipleChoiceQuestion();
+  } else if (this.testQuestions[this.state.currentQuestion][3] == 'Fill in the Gap Exercise') {
+    document.getElementById("test-question").innerHTML = '';
+    document.getElementById("result-message").innerHTML = '';
+    this.gapTask = "" + this.testQuestions[this.state.currentQuestion][4]
+    this.displayTestGapQuestion();
+  } else if (this.testQuestions[this.state.currentQuestion][3] == 'Matching Exercise') {
+    document.getElementById("test-question").innerHTML = '' + this.testQuestions[this.state.currentQuestion][4];
+    document.getElementById("result-message").innerHTML = '';
+    this.displayTestMatchingQuestion();
   }
 }
 
@@ -502,6 +596,31 @@ async displayTestQuestion() {
   }
 }
 
+displayPreviousTestQuestion = async e => {
+  e.preventDefault();
+
+  if (this.state.currentQuestion > 0) {
+      var currentQuestion = parseInt(this.state.currentQuestion);
+      this.state.currentQuestion = currentQuestion - 1;
+  
+      this.displayTestQuestion();
+  }
+}
+
+displayNextTestQuestion = async e => {
+  e.preventDefault();
+
+  if (this.state.currentQuestion < this.testQuestions.length) {
+      var currentQuestion = parseInt(this.state.currentQuestion);
+      this.state.currentQuestion = currentQuestion + 1;
+  
+      this.displayTestQuestion();
+
+  } else if (this.state.currentQuestion == this.testQuestions.length) {
+
+  }
+}
+
   render () {
     const {navigate} = this.props;
 
@@ -525,7 +644,7 @@ async displayTestQuestion() {
           </div>
 
 
-          <div id="tutorial-content"></div>
+        <div id="tutorial-content"></div>
 
           <div id="test-container">
           <div id="start-test-button-container">
@@ -556,6 +675,11 @@ async displayTestQuestion() {
 
           <div id="result-message-container">
             <p id="result-message"></p>
+          </div>
+
+          <div id="test-navigation-buttons">
+            <button id="test-previous-button" onClick={this.displayPreviousTestQuestion}>Prev</button>
+            <button id="test-next-button" onClick={this.displayNextTestQuestion}>Next</button>
           </div>
 
           <div id="end-of-course-container">

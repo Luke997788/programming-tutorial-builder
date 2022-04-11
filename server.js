@@ -1212,7 +1212,7 @@ app.post('/api/gettestcontent', (req, res) => {
     console.log("Retrieving test content");
     console.log(req.body);
 
-    databaseConnection.query("SELECT test_exercises.test_exercise_id, test_exercises.exercise_title, test_exercises.exercise_type, test_exercises.exercise_content, test_exercises.content_order_position, test_exercise_answers.answer_1, test_exercise_answers.answer_2, test_exercise_answers.answer_3, test_exercise_answers.answer_4, test_exercise_answers.correct_answer FROM test_exercises INNER JOIN test_exercise_answers ON test_exercises.test_id=test_exercise_answers.test_id WHERE test_exercises.test_id = '" + req.body.testId + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT test_exercises.test_exercise_id, test_exercises.exercise_title, test_exercises.exercise_type, test_exercises.exercise_content, test_exercises.content_order_position, test_exercise_answers.answer_1, test_exercise_answers.answer_2, test_exercise_answers.answer_3, test_exercise_answers.answer_4, test_exercise_answers.correct_answer FROM test_exercises INNER JOIN test_exercise_answers ON test_exercises.test_exercise_id=test_exercise_answers.test_exercise_id WHERE test_exercises.test_id = '" + req.body.testId + "'", function(err,result,fields) {
       if (err) {
         res.send([['failed']]);
         throw err;
@@ -1220,10 +1220,10 @@ app.post('/api/gettestcontent', (req, res) => {
 
       if (result.length != 0) {
         var exercises = [[result[0].test_exercise_id, result[0].content_order_position, result[0].exercise_title, result[0].exercise_type, result[0].exercise_content, result[0].answer_1, result[0].answer_2, result[0].answer_3, result[0].answer_4, result[0].correct_answer]];
-
+        console.log("ERJIUJHDBAGEFWNGS" + result.length);
         for (let i=1; i < result.length; i++) {
           var exercise = [result[i].test_exercise_id, result[i].content_order_position, result[i].exercise_title, result[i].exercise_type, result[i].exercise_content, result[i].answer_1, result[i].answer_2, result[i].answer_3, result[i].answer_4, result[i].correct_answer];
-          exercises[i] = exercise;
+          exercises.push(exercise);
         }
 
         res.send(exercises);
