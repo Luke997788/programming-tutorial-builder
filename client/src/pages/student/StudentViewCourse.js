@@ -322,7 +322,7 @@ async displayMatchingExercise(exerciseContentId) {
 }
 
 async displayAssignment() {
-  sessionStorage.setItem("assignmentContentId", this.tutorialContent[this.state.currentTutorial][4])
+  sessionStorage.setItem("assignmentContentId", this.tutorialContent[this.state.currentTutorial][4]);
 
   document.getElementById("end-of-course-message").innerHTML = '';
   document.getElementById("submit-answer-button").style.display = 'none';
@@ -587,7 +587,6 @@ async getTestQuestions(id) {
 async startTest() {
   this.setState({currentQuestion: 0});
   this.setState({currentTestScore: 0});
-  document.getElementById("score-text").innerHTML = this.state.currentTestScore;
 
   document.getElementById("start-test-button-container").style.display = 'none';
 
@@ -673,6 +672,7 @@ async displayNextTestQuestion() {
     this.state.currentQuestion = currentQuestion + 1;
 
     document.getElementById("end-test-message").innerHTML = 'Test Complete!';
+    document.getElementById("score-text").innerHTML = "You got " + this.state.currentTestScore + "/" + (this.state.numberOfTestQuestions + 1);
     document.getElementById("matching-exercise-terms").innerHTML = '';
     document.getElementById("tutorial-content").innerHTML = "";
     document.getElementById("answer-options").style.display = 'none';
@@ -708,10 +708,6 @@ async displayNextTestQuestion() {
         <div id="tutorial-content"></div>
 
           <div id="test-container">
-          <div id="score-text-container">
-            <p id="score-text">{this.state.currentTestScore}</p>
-          </div>
-
           <div id="test-question-container">
             <p id="test-question"></p>
           </div>
@@ -722,6 +718,10 @@ async displayNextTestQuestion() {
 
           <div id="end-test-message-container">
             <p id="end-test-message"></p>
+
+            <div id="score-text-container">
+              <p id="score-text"></p>
+            </div>
           </div>
         </div>
 
