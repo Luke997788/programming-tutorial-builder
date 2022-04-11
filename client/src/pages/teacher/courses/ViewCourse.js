@@ -18,6 +18,7 @@ class ViewCourse extends Component {
     displayEditor: false,
     tutorialData: '',
     currentQuestion: 0,
+    currentTestScore: 0,
   };
 
   tutorialContent;
@@ -449,6 +450,7 @@ async submitAnswer() {
   var resultMessage = document.getElementById("result-message");
   if (this.state.correctAnswer == this.state.answerSelected) {
     resultMessage.innerHTML = "Correct!";
+    this.setState({currentTestScore : this.state.currentTestScore + 1});
   } else {
     resultMessage.innerHTML = "Incorrect. The correct answer is " + this.state.correctAnswerText;
   }
@@ -471,6 +473,7 @@ async submitGapAnswer() {
 
   if (numberCorrect == this.gapAnswers.length) {
     resultMessage.innerHTML = "All answers correct";
+    this.setState({currentTestScore : this.state.currentTestScore + 1});
   } else {
     resultMessage.innerHTML = "Incorrect";
   }
@@ -488,6 +491,7 @@ async submitMatchingAnswer() {
 
   if (correctAnswers == this.matchingAnswers.length) {
     resultMessage.innerHTML = "Correct!";
+    this.setState({currentTestScore: this.state.currentTestScore + 1});
   } else {
     resultMessage.innerHTML = "Incorrect. You got " + correctAnswers + " answers correct";
   }
@@ -524,6 +528,7 @@ async getTestQuestions(id) {
 
 async startTest() {
   this.setState({currentQuestion: 0});
+  this.setState({currentTestScore: 0});
 
   document.getElementById("start-test-button-container").style.display = 'none';
 
@@ -651,6 +656,10 @@ displayNextTestQuestion = async e => {
             <button id="start-test-button">Start Test</button>
           </div>
 
+          <div id="score-text-container">
+            <p id="score-text">{this.state.currentTestScore}</p>
+          </div>
+
           <div id="test-question-container">
             <p id="test-question"></p>
           </div>
@@ -678,7 +687,7 @@ displayNextTestQuestion = async e => {
           </div>
 
           <div id="test-navigation-buttons">
-            <button id="test-previous-button" onClick={this.displayPreviousTestQuestion}>Prev</button>
+            {/*<button id="test-previous-button" onClick={this.displayPreviousTestQuestion}>Prev</button>*/}
             <button id="test-next-button" onClick={this.displayNextTestQuestion}>Next</button>
           </div>
 
