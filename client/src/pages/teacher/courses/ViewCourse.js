@@ -116,79 +116,23 @@ class ViewCourse extends Component {
     document.getElementById("result-message").innerHTML = "";
 
     if ((this.tutorialContent[tutorialToDisplay][2] == 'Text/Image') || (this.tutorialContent[tutorialToDisplay][2] == 'Video')) {
-      document.getElementById("submit-answer-button").style.display = 'none';
-      document.getElementById("test-container").style.display = 'none';
-      document.getElementById("end-of-course-message").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("editor").style.display='none';
-      document.getElementById("answer-1-option").innerHTML = '';
-      document.getElementById("answer-2-option").innerHTML = '';
-      document.getElementById("answer-3-option").innerHTML = '';
-      document.getElementById("answer-4-option").innerHTML = '';
-      document.getElementById("answer-1-checkbox").innerHTML = '';
-      document.getElementById("answer-2-checkbox").innerHTML = '';
-      document.getElementById("answer-3-checkbox").innerHTML = '';
-      document.getElementById("answer-4-checkbox").innerHTML = '';
+      this.displayTextImageContent();
       
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Multiple Choice Exercise') {
-      document.getElementById("end-of-course-message").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("editor").style.display='none';
-      document.getElementById("test-container").style.display = 'none';
-
-      this.retrieveExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
+      this.displayMultipleChoiceExercise(this.tutorialContent[tutorialToDisplay][4]);
 
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Fill in the Gap Exercise') {
-      document.getElementById("end-of-course-message").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("editor").style.display='none';
-      document.getElementById("test-container").style.display = 'none';
-
       this.gapTask = "" + this.tutorialContent[tutorialToDisplay][3];
-      this.retrieveGapExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
+      this.displayGapExercise(this.tutorialContent[tutorialToDisplay][4]);
 
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Matching Exercise') {
-      document.getElementById("end-of-course-message").innerHTML = '';
-      document.getElementById("editor").style.display='none';
-      document.getElementById("test-container").style.display = 'none';
-
-      this.retrieveMatchingExerciseAnswers(this.tutorialContent[tutorialToDisplay][4]);
+      this.displayMatchingExercise(this.tutorialContent[tutorialToDisplay][4]);
 
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Test') {
-      document.getElementById("test-container").style.display = 'block';
       this.getTestQuestions(this.tutorialContent[tutorialToDisplay][4]);
 
-      document.getElementById("end-of-course-message").innerHTML = '';
-      document.getElementById("submit-answer-button").style.display = 'none';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("editor").style.display='none';
-      document.getElementById("answer-1-option").innerHTML = '';
-      document.getElementById("answer-2-option").innerHTML = '';
-      document.getElementById("answer-3-option").innerHTML = '';
-      document.getElementById("answer-4-option").innerHTML = '';
-      document.getElementById("answer-1-checkbox").innerHTML = '';
-      document.getElementById("answer-2-checkbox").innerHTML = '';
-      document.getElementById("answer-3-checkbox").innerHTML = '';
-      document.getElementById("answer-4-checkbox").innerHTML = '';
-
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Assignment') {
-      document.getElementById("end-of-course-message").innerHTML = '';
-      document.getElementById("submit-answer-button").style.display = 'none';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("matching-exercise-terms").innerHTML = '';
-      document.getElementById("editor").style.display='block';
-      document.getElementById("answer-1-option").innerHTML = '';
-      document.getElementById("answer-2-option").innerHTML = '';
-      document.getElementById("answer-3-option").innerHTML = '';
-      document.getElementById("answer-4-option").innerHTML = '';
-      document.getElementById("answer-1-checkbox").innerHTML = '';
-      document.getElementById("answer-2-checkbox").innerHTML = '';
-      document.getElementById("answer-3-checkbox").innerHTML = '';
-      document.getElementById("answer-4-checkbox").innerHTML = '';
-      document.getElementById("test-container").style.display = 'none';
+      this.displayAssignment();
     }
   }
 
@@ -214,7 +158,16 @@ class ViewCourse extends Component {
     document.getElementById("" + this.state.currentTutorial).style.backgroundColor = "green";
   }
 
-  async retrieveExerciseAnswers(exerciseContentId) {
+  async displayTextImageContent() {
+    document.getElementById("submit-answer-button").style.display = 'none';
+    document.getElementById("test-container").style.display = 'none';
+    document.getElementById("end-of-course-message").innerHTML = '';
+    document.getElementById("matching-exercise-terms").innerHTML = '';
+    document.getElementById("editor").style.display='none';
+    document.getElementById("answer-options").style.display = 'none';
+  }
+
+  async displayMultipleChoiceExercise(exerciseContentId) {
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/getexerciseanswers', {
       method: 'POST',
@@ -228,11 +181,17 @@ class ViewCourse extends Component {
         this.setState({correctAnswer: data[4]});
         this.setState({correctAnswerText: data[this.state.correctAnswer - 1]});
 
+        document.getElementById("end-of-course-message").innerHTML = '';
+        document.getElementById("matching-exercise-terms").innerHTML = '';
+        document.getElementById("matching-exercise-terms").innerHTML = '';
+        document.getElementById("editor").style.display='none';
+        document.getElementById("test-container").style.display = 'none';
+
+        document.getElementById("answer-options").style.display = 'block';
         document.getElementById("answer-1-option").innerHTML = data[0] + '<input id="answer-1-checkbox" type="checkbox" />';
         document.getElementById("answer-2-option").innerHTML = data[1] + '<input id="answer-2-checkbox" type="checkbox" />';
         document.getElementById("answer-3-option").innerHTML = data[2] + '<input id="answer-3-checkbox" type="checkbox" />';
         document.getElementById("answer-4-option").innerHTML = data[3] + '<input id="answer-4-checkbox" type="checkbox" />';
-
         document.getElementById("answer-1-checkbox").onclick = () => {this.setState({answerSelected: 1}); this.selectAnswer()};
         document.getElementById("answer-2-checkbox").onclick = () => {this.setState({answerSelected: 2}); this.selectAnswer()};
         document.getElementById("answer-3-checkbox").onclick = () => {this.setState({answerSelected: 3}); this.selectAnswer()};
@@ -246,12 +205,8 @@ class ViewCourse extends Component {
 }
 
 
-async retrieveGapExerciseAnswers(exerciseContentId) {
+async displayGapExercise(exerciseContentId) {
   var tutorialContent = document.getElementById("tutorial-content");
-  var answer1 = document.getElementById("answer-1-option");
-  var answer2 = document.getElementById("answer-2-option");
-  var answer3 = document.getElementById("answer-3-option");
-  var answer4 = document.getElementById("answer-4-option");
 
   // starts a request, passes URL and configuration object
   const response = await fetch('/api/getgapexerciseanswers', {
@@ -267,10 +222,12 @@ async retrieveGapExerciseAnswers(exerciseContentId) {
 
       this.gapAnswers = [];
       this.gapInputValues = [];
-      answer1.innerHTML = '';
-      answer2.innerHTML = '';
-      answer3.innerHTML = '';
-      answer4.innerHTML = '';
+      document.getElementById("answer-options").style.display = 'none';
+      document.getElementById("end-of-course-message").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("editor").style.display='none';
+      document.getElementById("test-container").style.display = 'none';
 
       for (let i=0; i < answers.length; i++) {
         this.gapAnswers.push(answers[i]);
@@ -288,7 +245,7 @@ async retrieveGapExerciseAnswers(exerciseContentId) {
   });
 }
 
-async retrieveMatchingExerciseAnswers(exerciseContentId) {
+async displayMatchingExercise(exerciseContentId) {
   var answer1 = document.getElementById("answer-1-option");
   var answer2 = document.getElementById("answer-2-option");
   var answer3 = document.getElementById("answer-3-option");
@@ -308,6 +265,11 @@ async retrieveMatchingExerciseAnswers(exerciseContentId) {
   });
 
   await response.text().then(data => {
+    document.getElementById("answer-options").style.display = 'block';
+    document.getElementById("end-of-course-message").innerHTML = '';
+    document.getElementById("editor").style.display='none';
+    document.getElementById("test-container").style.display = 'none';
+
       answer1.innerHTML = '';
       answer2.innerHTML = '';
       answer3.innerHTML = '';
@@ -354,6 +316,38 @@ async retrieveMatchingExerciseAnswers(exerciseContentId) {
       submitAnswerButton.style.display = 'block';
       submitAnswerButton.onclick = () => {this.submitMatchingAnswer()};
   });
+}
+
+async displayAssignment() {
+  document.getElementById("end-of-course-message").innerHTML = '';
+  document.getElementById("submit-answer-button").style.display = 'none';
+  document.getElementById("matching-exercise-terms").innerHTML = '';
+  document.getElementById("matching-exercise-terms").innerHTML = '';
+  document.getElementById("editor").style.display='block';
+  document.getElementById("answer-options").style.display = 'none';
+  document.getElementById("test-container").style.display = 'none';
+}
+
+async displayTestMultipleChoiceQuestion() {
+  this.setState({correctAnswer: this.testQuestions[this.state.currentQuestion][9]});
+  this.setState({correctAnswerText: this.testQuestions[this.state.currentQuestion][parseInt(this.state.correctAnswer) + 4] });
+
+  document.getElementById("answer-options").style.display = 'block';
+
+  document.getElementById("answer-1-option").innerHTML = this.testQuestions[this.state.currentQuestion][5] + '<input id="answer-1-checkbox" type="checkbox" />';
+  document.getElementById("answer-2-option").innerHTML = this.testQuestions[this.state.currentQuestion][6] + '<input id="answer-2-checkbox" type="checkbox" />';
+  document.getElementById("answer-3-option").innerHTML = this.testQuestions[this.state.currentQuestion][7] + '<input id="answer-3-checkbox" type="checkbox" />';
+  document.getElementById("answer-4-option").innerHTML = this.testQuestions[this.state.currentQuestion][8] + '<input id="answer-4-checkbox" type="checkbox" />';
+
+  document.getElementById("answer-1-checkbox").onclick = () => {this.setState({answerSelected: 1}); this.selectAnswer()};
+  document.getElementById("answer-2-checkbox").onclick = () => {this.setState({answerSelected: 2}); this.selectAnswer()};
+  document.getElementById("answer-3-checkbox").onclick = () => {this.setState({answerSelected: 3}); this.selectAnswer()};
+  document.getElementById("answer-4-checkbox").onclick = () => {this.setState({answerSelected: 4}); this.selectAnswer()};
+
+  var submitAnswerButton = document.getElementById("submit-answer-button");
+  submitAnswerButton.style.display = 'block';
+  submitAnswerButton.hidden = false;
+  submitAnswerButton.onclick = () => {this.submitAnswer()};   
 }
 
 async selectAnswer() {
@@ -429,6 +423,15 @@ async getTestQuestions(id) {
 
       this.testQuestions = data;
       document.getElementById("start-test-button-container").style.display = 'block';
+
+      document.getElementById("test-question").innerHTML = '';
+      document.getElementById("test-container").style.display = 'block';
+      document.getElementById("end-of-course-message").innerHTML = '';
+      document.getElementById("submit-answer-button").style.display = 'none';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("matching-exercise-terms").innerHTML = '';
+      document.getElementById("editor").style.display='none';
+      document.getElementById("answer-options").style.display = 'none';
     });
 }
 
@@ -446,26 +449,9 @@ async displayTestQuestion() {
   question.innerHTML = '' + this.testQuestions[this.state.currentQuestion][4];
 
   if (this.testQuestions[this.state.currentQuestion][3] == 'Multiple Choice Exercise') {
-    this.setState({correctAnswer: this.testQuestions[this.state.currentQuestion][9]});
-    this.setState({correctAnswerText: this.testQuestions[this.state.currentQuestion][parseInt(this.state.correctAnswer) + 4] });
-
-    document.getElementById("answer-1-option").innerHTML = this.testQuestions[this.state.currentQuestion][5] + '<input id="answer-1-checkbox" type="checkbox" />';
-    document.getElementById("answer-2-option").innerHTML = this.testQuestions[this.state.currentQuestion][6] + '<input id="answer-2-checkbox" type="checkbox" />';
-    document.getElementById("answer-3-option").innerHTML = this.testQuestions[this.state.currentQuestion][7] + '<input id="answer-3-checkbox" type="checkbox" />';
-    document.getElementById("answer-4-option").innerHTML = this.testQuestions[this.state.currentQuestion][8] + '<input id="answer-4-checkbox" type="checkbox" />';
-
-    document.getElementById("answer-1-checkbox").onclick = () => {this.setState({answerSelected: 1}); this.selectAnswer()};
-    document.getElementById("answer-2-checkbox").onclick = () => {this.setState({answerSelected: 2}); this.selectAnswer()};
-    document.getElementById("answer-3-checkbox").onclick = () => {this.setState({answerSelected: 3}); this.selectAnswer()};
-    document.getElementById("answer-4-checkbox").onclick = () => {this.setState({answerSelected: 4}); this.selectAnswer()};
-
-    var submitAnswerButton = document.getElementById("submit-answer-button");
-    submitAnswerButton.style.display = 'block';
-    submitAnswerButton.hidden = false;
-    submitAnswerButton.onclick = () => {this.submitAnswer()};    
+    this.displayTestMultipleChoiceQuestion();
   }
 }
-
 
   displayPreviousTutorial = async e => {
     e.preventDefault();
@@ -509,17 +495,9 @@ async displayTestQuestion() {
 
       document.getElementById("tutorial-title").innerHTML = "";
       document.getElementById("tutorial-content").innerHTML = "";
+      document.getElementById("answer-options").style.display = 'none';
       document.getElementById("result-message").innerHTML = "";
       document.getElementById("submit-answer-button").style.display = 'none';
-      document.getElementById("answer-1-option").innerHTML = '';
-      document.getElementById("answer-2-option").innerHTML = '';
-      document.getElementById("answer-3-option").innerHTML = '';
-      document.getElementById("answer-4-option").innerHTML = '';
-      document.getElementById("answer-1-checkbox").innerHTML = '';
-      document.getElementById("answer-2-checkbox").innerHTML = '';
-      document.getElementById("answer-3-checkbox").innerHTML = '';
-      document.getElementById("answer-4-checkbox").innerHTML = '';
-
       document.getElementById("end-of-course-message").innerHTML = 'Course Complete!';
   }
 }
@@ -537,13 +515,19 @@ async displayTestQuestion() {
         
         <div id="tutorial-container">
           {/*<button id="back-to-my-courses-button">&#8249; {' Back to My Courses'}</button>*/}
-          <h5 id="course-title">{this.state.courseTitle}</h5>
-          <h1 id="tutorial-title"></h1>
+
+          <div id="course-title-container">
+            <h5 id="course-title">{this.state.courseTitle}</h5>
+          </div>
+         
+          <div id="tutorial-title-container">
+            <h1 id="tutorial-title"></h1>
+          </div>
+
 
           <div id="tutorial-content"></div>
 
           <div id="test-container">
-
           <div id="start-test-button-container">
             <button id="start-test-button">Start Test</button>
           </div>
@@ -566,9 +550,13 @@ async displayTestQuestion() {
             <AssignmentTextEditor />
           </div>
 
-          <button id="submit-answer-button" hidden>Submit Answer</button>
+          <div id="submit-answer-button-container">
+            <button id="submit-answer-button" hidden>Submit Answer</button>
+          </div>
 
-          <p id="result-message"></p>
+          <div id="result-message-container">
+            <p id="result-message"></p>
+          </div>
 
           <div id="end-of-course-container">
             <p id="end-of-course-message"></p>
