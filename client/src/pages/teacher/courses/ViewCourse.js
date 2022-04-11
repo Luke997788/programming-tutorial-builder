@@ -514,6 +514,8 @@ async getTestQuestions(id) {
 
       this.testQuestions = data;
       document.getElementById("start-test-button-container").style.display = 'block';
+      document.getElementById("score-text").innerHTML = '';
+
 
       document.getElementById("test-question").innerHTML = '';
       document.getElementById("test-container").style.display = 'block';
@@ -529,6 +531,7 @@ async getTestQuestions(id) {
 async startTest() {
   this.setState({currentQuestion: 0});
   this.setState({currentTestScore: 0});
+  document.getElementById("score-text").innerHTML = this.state.currentTestScore;
 
   document.getElementById("start-test-button-container").style.display = 'none';
 
@@ -652,16 +655,16 @@ displayNextTestQuestion = async e => {
         <div id="tutorial-content"></div>
 
           <div id="test-container">
-          <div id="start-test-button-container">
-            <button id="start-test-button">Start Test</button>
-          </div>
-
           <div id="score-text-container">
             <p id="score-text">{this.state.currentTestScore}</p>
           </div>
 
           <div id="test-question-container">
             <p id="test-question"></p>
+          </div>
+
+          <div id="start-test-button-container">
+            <button id="start-test-button">Start Test</button>
           </div>
         </div>
 
