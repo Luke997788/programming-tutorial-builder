@@ -119,3 +119,8 @@
     padding-top: 20px;
     padding-bottom: 20px;
 }
+
+#test-container {
+    margin-left: 50px;
+    margin-right: 50px;  
+}
