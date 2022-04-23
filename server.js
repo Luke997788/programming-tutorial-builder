@@ -1271,5 +1271,79 @@ app.post('/api/getcoursecontentinfo', (req, res) => {
   });
 });
 
+/*
+* Retrieves the four most reccently modified courses for a teacher
+*/
+app.post('/api/getrecentcourses', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send([['failed']]);
+      throw err;
+    }
+
+    console.log("Getting recent courses");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT course_id, course_title, last_modified FROM course_information WHERE course_creator = '" + req.body.creator + "' ORDER BY last_modified DESC LIMIT 4", function(err,result,fields) {
+      if (err) {
+        res.send([['failed']]);
+        throw err;
+      }
+
+      if (result.length != 0) {
+        var records = [[result[0].course_id, result[0].course_title, result[0].last_modified]];
+
+        for (let i=1; i < result.length; i++) {
+          var record = [result[i].course_id, result[i].course_title, result[i].last_modified];
+          records[i] = record;
+        }
+
+        res.send(records);
+      } else {
+          res.send([['failed']]);
+      }
+    });
+  });
+});
+
+/*
+* Retrieves the four most reccently modified pieces of tutorial content for a teacher
+*/
+app.post('/api/getrecenttutorials', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send([['failed']]);
+      throw err;
+    }
+
+    console.log("Getting recent tutorials");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT content_id, course_id, content_title, content_type, last_modified FROM tutorial_content WHERE course_creator = '" + req.body.creator + "' ORDER BY last_modified DESC LIMIT 4", function(err,result,fields) {
+      if (err) {
+        res.send([['failed']]);
+        throw err;
+      }
+
+      if (result.length != 0) {
+        var records = [[result[0].content_id, result[0].course_id, result[0].content_title, result[0].content_type, result[0].last_modified]];
+
+        for (let i=1; i < result.length; i++) {
+          var record = [result[i].content_id, result[i].course_id, result[i].content_title, result[i].content_type, result[i].last_modified];
+          records[i] = record;
+        }
+
+        res.send(records);
+      } else {
+          res.send([['failed']]);
+      }
+    });
+  });
+});
+
 // displays the port that the server is listening on
 app.listen(port, () => console.log(`Server is listening on port ${port}`));
