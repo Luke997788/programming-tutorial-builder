@@ -585,7 +585,7 @@ app.post('/api/uploadtestexercise', (req, res) => {
     console.log("Inserting test exercise information");
     console.log(req.body);
 
-    databaseConnection.query("INSERT INTO test_exercises (test_id, exercise_title, exercise_type, exercise_content, content_order_position) VALUES ('" + req.body.testId + "', '" + req.body.title + "', '" + req.body.type + "', '" + req.body.content + "', '" + req.body.orderPosition + "')", function(err,result,fields) {
+    databaseConnection.query("INSERT INTO test_exercises (test_id, exercise_title, exercise_type, exercise_content, content_order_position, correct_message, incorrect_message) VALUES ('" + req.body.testId + "', '" + req.body.title + "', '" + req.body.type + "', '" + req.body.content + "', '" + req.body.orderPosition + "', '" + req.body.correctMessage + "', '" + req.body.incorrectMessage + "')", function(err,result,fields) {
       if (err) {
         res.send('failed');
         throw err;
@@ -725,7 +725,7 @@ app.post('/api/updatetestexercise', (req, res) => {
     console.log("Updating test exercise");
     console.log(req.body);
 
-    databaseConnection.query("UPDATE test_exercises SET exercise_title = '" + req.body.title + "', exercise_content = '" + req.body.content + "' WHERE test_id = '" + req.body.testId + "' AND test_exercise_id = '" + req.body.exerciseId + "'", function(err,result,fields) {
+    databaseConnection.query("UPDATE test_exercises SET exercise_title = '" + req.body.title + "', exercise_content = '" + req.body.content + "', correct_message = '" + req.body.correctMessage + "', incorrect_message = '" + req.body.incorrectMessage + "' WHERE test_id = '" + req.body.testId + "' AND test_exercise_id = '" + req.body.exerciseId + "'", function(err,result,fields) {
       if (err) {
         res.send('failed');
         throw err;
@@ -1143,14 +1143,14 @@ app.post('/api/getspecifictestexercise', (req, res) => {
     console.log("Retrieving specific tutorial content");
     console.log(req.body);
 
-    databaseConnection.query("SELECT exercise_title, exercise_content FROM test_exercises WHERE test_id = '" + req.body.testId + "' AND test_exercise_id = '" + req.body.contentId + "'", function(err,result,fields) {
+    databaseConnection.query("SELECT exercise_title, exercise_content, correct_message, incorrect_message FROM test_exercises WHERE test_id = '" + req.body.testId + "' AND test_exercise_id = '" + req.body.contentId + "'", function(err,result,fields) {
       if (err) {
         res.send(['failed']);
         throw err;
       }
 
       if (result.length != 0) {    
-        var contentInformation = [result[0].exercise_title, result[0].exercise_content];
+        var contentInformation = [result[0].exercise_title, result[0].exercise_content, result[0].correct_message, result[0].incorrect_message];
         res.send(contentInformation);
       } else {
         res.send(['failed']);

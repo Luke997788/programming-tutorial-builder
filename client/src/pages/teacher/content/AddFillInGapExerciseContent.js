@@ -16,6 +16,8 @@ class AddFillInGapExerciseContent extends Component {
         task: ``,
         responseToPostRequest: '',
         orderPosition: '',
+        correctFeedbackMessage: '',
+        incorrectFeedbackMessage: '',
 	};
 
     taskContent = ``;
@@ -62,6 +64,24 @@ class AddFillInGapExerciseContent extends Component {
 		  }
 		  
 		  this.setState({title: data[0]});
+
+          if (!(!this.state.testId)) {
+            var correctMessageInputContainer = document.getElementById("correct-message-input-container");
+            var incorrectMessageInputContainer = document.getElementById("incorrect-message-input-container");
+
+            var correctMessageInput = document.createElement("input");
+            var incorrectMessageInput = document.createElement("input");
+
+            correctMessageInput.setAttribute("value", this.state.correctFeedbackMessage);
+            incorrectMessageInput.setAttribute("value", this.state.incorrectFeedbackMessage);
+
+            correctMessageInput.onchange = (e) => {this.setState({correctFeedbackMessage: e.target.value})};
+            incorrectMessageInput.onchange = (e) => {this.setState({incorrectFeedbackMessage: e.target.value})};
+
+            correctMessageInputContainer.appendChild(correctMessageInput);
+            incorrectMessageInputContainer.appendChild(incorrectMessageInput);
+
+          }
 		});
 	}
 
@@ -199,7 +219,7 @@ class AddFillInGapExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({testId: this.state.testId, title: this.state.contentTitle, type: this.state.contentType, content: this.taskContent, orderPosition: 0}),
+            body: JSON.stringify({testId: this.state.testId, title: this.state.contentTitle, type: this.state.contentType, content: this.taskContent, orderPosition: 0, correctMessage: this.state.correctFeedbackMessage, incorrectMessage: this.state.incorrectFeedbackMessage}),
         });
 
         await response.text().then(responseData => {
@@ -327,6 +347,14 @@ class AddFillInGapExerciseContent extends Component {
                             }}
                             onChange={this.handleEditorChange}
                         />
+
+                    <div id="correct-message-input-container">
+                        <p id="correct-message-input"></p>
+                    </div>
+
+                    <div id="incorrect-message-input-container">
+                        <p id="incorrect-message-input"></p>
+                    </div>
 
                     <div id="submit-button-container">
 				       <button onClick={this.handleSubmit}>Create Exercise</button>

@@ -20,6 +20,8 @@ class EditMultipleChoiceExerciseContent extends Component {
         answer4: '',
         correctAnswer: '',
         responseToPostRequest: '',
+        correctFeedbackMessage: '',
+        incorrectFeedbackMessage: '',
 	};
 
 	componentDidMount = () => {
@@ -113,6 +115,26 @@ class EditMultipleChoiceExerciseContent extends Component {
         
             this.setState({ contentTitle: data[0] });
             this.setState({ task: data[1] });
+            this.setState({correctFeedbackMessage: data[2]});
+            this.setState({incorrectFeedbackMessage: data[3]});
+
+            if (!(!this.state.testId)) {
+                var correctMessageInputContainer = document.getElementById("correct-message-input-container");
+                var incorrectMessageInputContainer = document.getElementById("incorrect-message-input-container");
+
+                var correctMessageInput = document.createElement("input");
+                var incorrectMessageInput = document.createElement("input");
+
+                correctMessageInput.setAttribute("value", this.state.correctFeedbackMessage);
+                incorrectMessageInput.setAttribute("value", this.state.incorrectFeedbackMessage);
+
+                correctMessageInput.onchange = (e) => {this.setState({correctFeedbackMessage: e.target.value})};
+                incorrectMessageInput.onchange = (e) => {this.setState({incorrectFeedbackMessage: e.target.value})};
+
+                correctMessageInputContainer.appendChild(correctMessageInput);
+                incorrectMessageInputContainer.appendChild(incorrectMessageInput);
+
+            }
         });
     }
 
@@ -130,10 +152,6 @@ class EditMultipleChoiceExerciseContent extends Component {
         await response.text().then(data => {
             this.setState({contentId: data});
         });
-
-        //const body = await response.text();
-        //this.setState({contentId: body});
-
 	};
 
     async retrieveExerciseAnswers() {
@@ -244,7 +262,7 @@ class EditMultipleChoiceExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({testId: this.state.testId, exerciseId: this.state.contentId, title: this.state.contentTitle, content: contentToSubmit}),
+            body: JSON.stringify({testId: this.state.testId, exerciseId: this.state.contentId, title: this.state.contentTitle, content: contentToSubmit, correctMessage: this.state.correctFeedbackMessage, incorrectMessage: this.state.incorrectFeedbackMessage}),
         });
 
         await response.text().then(data => {
@@ -391,14 +409,19 @@ class EditMultipleChoiceExerciseContent extends Component {
 				        </select>
                     </div>
 
+                    <div id="correct-message-input-container">
+                        <p id="correct-message-input"></p>
+                    </div>
+
+                    <div id="incorrect-message-input-container">
+                        <p id="incorrect-message-input"></p>
+                    </div>
+
                     <div id="submit-button-container">
 				       <button onClick={this.handleSubmit}>Save Exercise</button>
 				    </div>
 
 		  </div>
-          <p>{this.state.correctAnswer}</p>
-          <p>{this.state.contentId}</p>
-          <p>{this.state.responseToPostRequest}</p>
 		  </>
 		);
 	}

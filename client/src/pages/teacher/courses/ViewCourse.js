@@ -335,6 +335,7 @@ async displayTestMultipleChoiceQuestion() {
   this.setState({correctAnswerText: this.testQuestions[this.state.currentQuestion][parseInt(this.state.correctAnswer) + 4] });
 
   document.getElementById("tutorial-content").innerHTML = "";
+  document.getElementById("matching-exercise-terms").innerHTML = '';
   document.getElementById("answer-options").style.display = 'block';
 
   document.getElementById("answer-1-option").innerHTML = this.testQuestions[this.state.currentQuestion][5] + '<input id="answer-1-checkbox" type="checkbox" />';
