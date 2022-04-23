@@ -24,6 +24,7 @@ class StudentViewCourse extends Component {
 
   tutorialContent;
   testQuestions;
+  testFeedback = [];
   gapAnswers = [];
   gapInputValues = [];
   gapTask = ``;
@@ -504,8 +505,10 @@ async submitTestMultipleChoiceAnswer() {
   if (this.state.correctAnswer == this.state.answerSelected) {
     resultMessage.innerHTML = "Correct!";
     this.setState({currentTestScore : this.state.currentTestScore + 1});
+    this.testFeedback.push(this.testQuestions[this.state.currentQuestion][10]);
   } else {
     resultMessage.innerHTML = "Incorrect. The correct answer is " + this.state.correctAnswerText;
+    this.testFeedback.push(this.testQuestions[this.state.currentQuestion][11]);
   }
 }
 
@@ -527,8 +530,10 @@ async submitTestGapAnswer() {
   if (numberCorrect == this.gapAnswers.length) {
     resultMessage.innerHTML = "All answers correct";
     this.setState({currentTestScore : this.state.currentTestScore + 1});
+    this.testFeedback.push(this.testQuestions[this.state.currentQuestion][10]);
   } else {
     resultMessage.innerHTML = "Incorrect";
+    this.testFeedback.push(this.testQuestions[this.state.currentQuestion][11]);
   }
 }
 
@@ -545,8 +550,10 @@ async submitTestMatchingAnswer() {
   if (correctAnswers == this.matchingAnswers.length) {
     resultMessage.innerHTML = "Correct!";
     this.setState({currentTestScore: this.state.currentTestScore + 1});
+    this.testFeedback.push(this.testQuestions[this.state.currentQuestion][10]);
   } else {
     resultMessage.innerHTML = "Incorrect. You got " + correctAnswers + " answers correct";
+    this.testFeedback.push(this.testQuestions[this.state.currentQuestion][11]);
   }
 }
 
@@ -566,12 +573,13 @@ async getTestQuestions(id) {
       }
 
       this.testQuestions = data;
+      this.testFeedback = [];
       this.setState({numberOfTestQuestions: this.testQuestions.length - 1});
 
       document.getElementById("start-test-button-container").style.display = 'block';
       document.getElementById("score-text").innerHTML = '';
-
-
+      document.getElementById("test-feedback").innerHTML = '';
+      
       document.getElementById("test-question").innerHTML = '';
       document.getElementById("end-test-message").innerHTML = '';
       document.getElementById("test-container").style.display = 'block';
@@ -673,6 +681,7 @@ async displayNextTestQuestion() {
 
     document.getElementById("end-test-message").innerHTML = 'Test Complete!';
     document.getElementById("score-text").innerHTML = "You got " + this.state.currentTestScore + "/" + (this.state.numberOfTestQuestions + 1);
+    document.getElementById("test-feedback").innerHTML = '' + this.testFeedback.toString();
     document.getElementById("matching-exercise-terms").innerHTML = '';
     document.getElementById("tutorial-content").innerHTML = "";
     document.getElementById("answer-options").style.display = 'none';
@@ -721,6 +730,10 @@ async displayNextTestQuestion() {
 
             <div id="score-text-container">
               <p id="score-text"></p>
+            </div>
+
+            <div id="test-feedback-container">
+              <p id="test-feedback"></p>
             </div>
           </div>
         </div>
