@@ -65,23 +65,20 @@ class AddFillInGapExerciseContent extends Component {
 		  
 		  this.setState({title: data[0]});
 
-          if (!(!this.state.testId)) {
-            var correctMessageInputContainer = document.getElementById("correct-message-input-container");
-            var incorrectMessageInputContainer = document.getElementById("incorrect-message-input-container");
+          var correctMessageInputContainer = document.getElementById("correct-message-input-container");
+          var incorrectMessageInputContainer = document.getElementById("incorrect-message-input-container");
 
-            var correctMessageInput = document.createElement("input");
-            var incorrectMessageInput = document.createElement("input");
+          var correctMessageInput = document.createElement("input");
+          var incorrectMessageInput = document.createElement("input");
 
-            correctMessageInput.setAttribute("value", this.state.correctFeedbackMessage);
-            incorrectMessageInput.setAttribute("value", this.state.incorrectFeedbackMessage);
+          correctMessageInput.setAttribute("value", this.state.correctFeedbackMessage);
+          incorrectMessageInput.setAttribute("value", this.state.incorrectFeedbackMessage);
 
-            correctMessageInput.onchange = (e) => {this.setState({correctFeedbackMessage: e.target.value})};
-            incorrectMessageInput.onchange = (e) => {this.setState({incorrectFeedbackMessage: e.target.value})};
+          correctMessageInput.onchange = (e) => {this.setState({correctFeedbackMessage: e.target.value})};
+          incorrectMessageInput.onchange = (e) => {this.setState({incorrectFeedbackMessage: e.target.value})};
 
-            correctMessageInputContainer.appendChild(correctMessageInput);
-            incorrectMessageInputContainer.appendChild(incorrectMessageInput);
-
-          }
+          correctMessageInputContainer.appendChild(correctMessageInput);
+          incorrectMessageInputContainer.appendChild(incorrectMessageInput);
 		});
 	}
 
@@ -179,7 +176,7 @@ class AddFillInGapExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ contentId: this.state.contentId, courseId: this.state.courseId, creator: this.state.creator, type: this.state.contentType, task: this.taskContent, answer1: this.exerciseAnswers, correct: this.exerciseAnswers}),
+            body: JSON.stringify({ contentId: this.state.contentId, courseId: this.state.courseId, creator: this.state.creator, type: this.state.contentType, task: this.taskContent, answer1: this.exerciseAnswers, correct: this.exerciseAnswers, correctMessage: this.state.correctFeedbackMessage, incorrectMessage: this.state.incorrectFeedbackMessage}),
         });
 
         await response.text().then(responseData => {

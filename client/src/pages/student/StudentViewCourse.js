@@ -20,6 +20,8 @@ class StudentViewCourse extends Component {
     numberOfTestQuestions: 0,
     currentQuestion: 0,
     currentTestScore: 0,
+    exerciseCorrectMessage: '',
+    exerciseIncorrectMessage: '',
   };
 
   tutorialContent;
@@ -49,6 +51,7 @@ class StudentViewCourse extends Component {
 
       this.retrieveCourseDetails().then(data => {
         this.retrieveCourseTutorialContent().then(item => {
+          //this.updateRecentlyViewedCourses();
           this.displayTutorial(this.state.currentTutorial);
           this.displayNavigationMenu();
         })
@@ -115,10 +118,27 @@ class StudentViewCourse extends Component {
     })
   }
 
+  /*async updateRecentlyViewedCourses() {
+    // starts a request, passes URL and configuration object
+    const response = await fetch('/api/updaterecentlyviewedcourses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({studentId: sessionStorage.getItem("studentId") , courseId: this.state.courseId}),
+    });
+
+    await response.text().then(data => {
+
+    });
+  }*/
+
   async displayTutorial(tutorialToDisplay) {
     document.getElementById("tutorial-title").innerHTML = "" + this.tutorialContent[tutorialToDisplay][1];
     document.getElementById("tutorial-content").innerHTML = "" + this.tutorialContent[tutorialToDisplay][3];
     document.getElementById("result-message").innerHTML = "";
+    document.getElementById("feedback-message-title").innerHTML = "";
+    document.getElementById("feedback-message").innerHTML = "";
 
     if ((this.tutorialContent[tutorialToDisplay][2] == 'Text/Image') || (this.tutorialContent[tutorialToDisplay][2] == 'Video')) {
       this.displayTextImageContent();
@@ -184,6 +204,8 @@ class StudentViewCourse extends Component {
 
     await response.json().then(data => {
         this.setState({correctAnswer: data[4]});
+        this.setState({exerciseCorrectMessage: data[5]});
+        this.setState({exerciseIncorrectMessage: data[6]});
         this.setState({correctAnswerText: data[this.state.correctAnswer - 1]});
 
         document.getElementById("end-of-course-message").innerHTML = '';
@@ -222,9 +244,11 @@ async displayGapExercise(exerciseContentId) {
     body: JSON.stringify({ contentId: exerciseContentId }),
   });
 
-  await response.text().then(data => {
-      var answers = data.split(',');
+  await response.json().then(data => {
+    this.setState({exerciseCorrectMessage: data[1]});
+    this.setState({exerciseIncorrectMessage: data[2]});
 
+      var answers = data[0].split(',');
       this.gapAnswers = [];
       this.gapInputValues = [];
       document.getElementById("answer-options").style.display = 'none';
@@ -268,7 +292,10 @@ async displayMatchingExercise(exerciseContentId) {
     body: JSON.stringify({ contentId: exerciseContentId }),
   });
 
-  await response.text().then(data => {
+  await response.json().then(data => {
+    this.setState({exerciseCorrectMessage: data[1]});
+    this.setState({exerciseIncorrectMessage: data[2]});
+
     document.getElementById("answer-options").style.display = 'block';
     document.getElementById("end-of-course-message").innerHTML = '';
     document.getElementById("editor").style.display='none';
@@ -279,7 +306,7 @@ async displayMatchingExercise(exerciseContentId) {
       answer3.innerHTML = '';
       answer4.innerHTML = '';
 
-      var pairs = data.split(',');
+      var pairs = data[0].split(',');
       var leftTerms = [];
       var rightTerms = [];
 
@@ -456,15 +483,23 @@ async selectAnswer() {
 
 async submitAnswer() {
   var resultMessage = document.getElementById("result-message");
+  var teacherFeedback = document.getElementById("feedback-message");
+  document.getElementById("feedback-message-title").innerHTML = "Your teacher says...";
+
   if (this.state.correctAnswer == this.state.answerSelected) {
     resultMessage.innerHTML = "Correct!";
+    teacherFeedback.innerHTML = "" + this.state.exerciseCorrectMessage;
   } else {
     resultMessage.innerHTML = "Incorrect. The correct answer is " + this.state.correctAnswerText;
+    teacherFeedback.innerHTML = "" + this.state.exerciseIncorrectMessage;
   }
 }
 
 async submitGapAnswer() {
   var resultMessage = document.getElementById("result-message");
+  var teacherFeedback = document.getElementById("feedback-message");
+  document.getElementById("feedback-message-title").innerHTML = "Your teacher says...";
+
   var correctAnswers = [];
   var numberCorrect = 0;
 
@@ -480,13 +515,18 @@ async submitGapAnswer() {
 
   if (numberCorrect == this.gapAnswers.length) {
     resultMessage.innerHTML = "All answers correct";
+    teacherFeedback.innerHTML = "" + this.state.exerciseCorrectMessage;
   } else {
     resultMessage.innerHTML = "Incorrect";
+    teacherFeedback.innerHTML = "" + this.state.exerciseIncorrectMessage;
   }
 }
 
 async submitMatchingAnswer() {
   var resultMessage = document.getElementById("result-message");
+  var teacherFeedback = document.getElementById("feedback-message");
+  document.getElementById("feedback-message-title").innerHTML = "Your teacher says...";
+
   var correctAnswers = 0;
 
   for (let i=0; i < this.matchingAnswers.length; i++) {
@@ -497,8 +537,10 @@ async submitMatchingAnswer() {
 
   if (correctAnswers == this.matchingAnswers.length) {
     resultMessage.innerHTML = "Correct!";
+    teacherFeedback.innerHTML = "" + this.state.exerciseCorrectMessage;
   } else {
     resultMessage.innerHTML = "Incorrect. You got " + correctAnswers + " answers correct";
+    teacherFeedback.innerHTML = "" + this.state.exerciseIncorrectMessage;
   }
 }
 
@@ -761,6 +803,11 @@ async displayNextTestQuestion() {
 
           <div id="result-message-container">
             <p id="result-message"></p>
+          </div>
+
+          <div id="teacher-feedback-message-container">
+            <p id="feedback-message-title"></p>
+            <p id="feedback-message"></p>
           </div>
 
           <div id="test-navigation-buttons">

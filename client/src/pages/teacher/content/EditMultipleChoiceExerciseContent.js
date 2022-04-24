@@ -118,23 +118,20 @@ class EditMultipleChoiceExerciseContent extends Component {
             this.setState({correctFeedbackMessage: data[2]});
             this.setState({incorrectFeedbackMessage: data[3]});
 
-            if (!(!this.state.testId)) {
-                var correctMessageInputContainer = document.getElementById("correct-message-input-container");
-                var incorrectMessageInputContainer = document.getElementById("incorrect-message-input-container");
+            var correctMessageInputContainer = document.getElementById("correct-message-input-container");
+            var incorrectMessageInputContainer = document.getElementById("incorrect-message-input-container");
 
-                var correctMessageInput = document.createElement("input");
-                var incorrectMessageInput = document.createElement("input");
+            var correctMessageInput = document.createElement("input");
+            var incorrectMessageInput = document.createElement("input");
 
-                correctMessageInput.setAttribute("value", this.state.correctFeedbackMessage);
-                incorrectMessageInput.setAttribute("value", this.state.incorrectFeedbackMessage);
+            correctMessageInput.setAttribute("value", this.state.correctFeedbackMessage);
+            incorrectMessageInput.setAttribute("value", this.state.incorrectFeedbackMessage);
 
-                correctMessageInput.onchange = (e) => {this.setState({correctFeedbackMessage: e.target.value})};
-                incorrectMessageInput.onchange = (e) => {this.setState({incorrectFeedbackMessage: e.target.value})};
+            correctMessageInput.onchange = (e) => {this.setState({correctFeedbackMessage: e.target.value})};
+            incorrectMessageInput.onchange = (e) => {this.setState({incorrectFeedbackMessage: e.target.value})};
 
-                correctMessageInputContainer.appendChild(correctMessageInput);
-                incorrectMessageInputContainer.appendChild(incorrectMessageInput);
-
-            }
+            correctMessageInputContainer.appendChild(correctMessageInput);
+            incorrectMessageInputContainer.appendChild(incorrectMessageInput);
         });
     }
 
@@ -170,6 +167,23 @@ class EditMultipleChoiceExerciseContent extends Component {
             this.setState({answer3: data[2]});
             this.setState({answer4: data[3]});
             this.setState({correctAnswer: data[4]});
+            this.setState({correctFeedbackMessage: data[5]});
+            this.setState({incorrectFeedbackMessage: data[6]});
+
+            var correctMessageInputContainer = document.getElementById("correct-message-input-container");
+            var incorrectMessageInputContainer = document.getElementById("incorrect-message-input-container");
+
+            var correctMessageInput = document.createElement("input");
+            var incorrectMessageInput = document.createElement("input");
+
+            correctMessageInput.setAttribute("value", this.state.correctFeedbackMessage);
+            incorrectMessageInput.setAttribute("value", this.state.incorrectFeedbackMessage);
+
+            correctMessageInput.onchange = (e) => {this.setState({correctFeedbackMessage: e.target.value})};
+            incorrectMessageInput.onchange = (e) => {this.setState({incorrectFeedbackMessage: e.target.value})};
+
+            correctMessageInputContainer.appendChild(correctMessageInput);
+            incorrectMessageInputContainer.appendChild(incorrectMessageInput);
         });
     }
 
@@ -234,7 +248,7 @@ class EditMultipleChoiceExerciseContent extends Component {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ contentId: this.state.contentId, courseId: this.state.courseId, task: contentToSubmit, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correctAnswer: this.state.correctAnswer}),
+            body: JSON.stringify({ contentId: this.state.contentId, courseId: this.state.courseId, task: contentToSubmit, answer1: this.state.answer1, answer2: this.state.answer2, answer3: this.state.answer3, answer4: this.state.answer4, correctAnswer: this.state.correctAnswer, correctMessage: this.state.correctFeedbackMessage, incorrectMessage: this.state.incorrectFeedbackMessage}),
         });
 
         await response.text().then(data => {
