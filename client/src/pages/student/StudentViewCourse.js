@@ -51,7 +51,7 @@ class StudentViewCourse extends Component {
 
       this.retrieveCourseDetails().then(data => {
         this.retrieveCourseTutorialContent().then(item => {
-          //this.updateRecentlyViewedCourses();
+          this.updateRecentlyViewedCourses();
           this.displayTutorial(this.state.currentTutorial);
           this.displayNavigationMenu();
         })
@@ -113,12 +113,19 @@ class StudentViewCourse extends Component {
     });
 
     await response.json().then(data => {
-      this.tutorialContent = data;
-      this.state.numberOfTutorials = data.length - 1;
+      var noTutorialsMessage = document.getElementById("no-tutorials-message");
+      if (data[0][0] == 'failed') {
+        document.getElementById("course-container").style.display = 'none';
+        noTutorialsMessage.innerHTML = "There are currently no tutorials in this course. Check back again later.";
+      } else {
+        noTutorialsMessage.innerHTML = "";
+        this.tutorialContent = data;
+        this.state.numberOfTutorials = data.length - 1;
+      }
     })
   }
 
-  /*async updateRecentlyViewedCourses() {
+  async updateRecentlyViewedCourses() {
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/updaterecentlyviewedcourses', {
       method: 'POST',
@@ -131,7 +138,7 @@ class StudentViewCourse extends Component {
     await response.text().then(data => {
 
     });
-  }*/
+  }
 
   async displayTutorial(tutorialToDisplay) {
     document.getElementById("tutorial-title").innerHTML = "" + this.tutorialContent[tutorialToDisplay][1];
@@ -825,6 +832,10 @@ async displayNextTestQuestion() {
           </div>
 
         </div>
+      </div>
+
+      <div id="no-tutorials-message-container">
+        <p id="no-tutorials-message"></p>
       </div>
       </>
 

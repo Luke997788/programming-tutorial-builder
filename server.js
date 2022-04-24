@@ -1359,13 +1359,82 @@ app.post('/api/updaterecentlyviewedcourses', (req, res) => {
     console.log("Updating recently viewed courses");
     console.log(req.body);
 
-    databaseConnection.query("INSERT INTO student_recently_viewed (recent_course_1, recent_course_2, recent_course_3, recent_course_4) VALUES ('" + req.body.courseId + "', 'student_recently_viewed.recent_course_1', 'student_recently_viewed.recent_course_2', 'student_recently_viewed.recent_course_3')", function(err,result,fields) {
+    databaseConnection.query("INSERT INTO student_recently_viewed (student_id, recent_course_1) VALUES ('" + req.body.studentId + "', '" + req.body.courseId + "') ON DUPLICATE KEY UPDATE recent_course_4=recent_course_3, recent_course_3=recent_course_2, recent_course_2=recent_course_1, recent_course_1='" + req.body.courseId + "'", function(err,result,fields) {
       if (err) {
         res.send('failed');
         throw err;
       }
 
       res.send('successful update');
+    });
+  });
+});
+
+/*
+* Retrieves the ids of the four most recently viewed courses for a student
+*/
+app.post('/api/getrecentstudentcourseids', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send(['failed']);
+      throw err;
+    }
+
+    console.log("Getting recent course ids");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT recent_course_1, recent_course_2, recent_course_3, recent_course_4 FROM student_recently_viewed WHERE student_id = '" + req.body.studentId + "' LIMIT 4", function(err,result,fields) {
+      if (err) {
+        res.send(['failed']);
+        throw err;
+      }
+
+      if (result.length != 0) {
+        var records = [result[0].recent_course_1, result[0].recent_course_2, result[0].recent_course_3, result[0].recent_course_4];
+
+        res.send(records);
+      } else {
+          res.send(['failed']);
+      }
+    });
+  });
+});
+
+/*
+* Retrieves the four most recently viewed courses for a student
+*/
+app.post('/api/getrecentstudentcourses', (req, res) => {
+  var databaseConnection = createDatabaseConnection();
+
+  databaseConnection.connect(function(err) {
+    if (err) {
+      res.send([['failed']]);
+      throw err;
+    }
+
+    console.log("Getting recent courses");
+    console.log(req.body);
+
+    databaseConnection.query("SELECT course_id, course_title FROM course_information WHERE course_id = '" + req.body.recentIdOne + "' OR course_id = '" + req.body.recentIdTwo + "' OR course_id = '" + req.body.recentIdThree + "' OR course_id = '" + req.body.recentIdFour + "'", function(err,result,fields) {
+      if (err) {
+        res.send([['failed']]);
+        throw err;
+      }
+
+      if (result.length != 0) {
+        var records = [[result[0].course_id, result[0].course_title]];
+
+        for (let i=1; i < result.length; i++) {
+          var record = [result[i].course_id, result[i].course_title];
+          records[i] = record;
+        }
+
+        res.send(records);
+      } else {
+          res.send(['failed']);
+      }
     });
   });
 });
