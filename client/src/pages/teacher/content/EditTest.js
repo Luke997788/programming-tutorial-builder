@@ -74,7 +74,7 @@ class EditTest extends Component {
       document.getElementById("test-description").innerHTML = data[1];
 
       var editCourseDetailsButton = document.getElementById("edit-test-details");
-      editCourseDetailsButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittestdetails" + this.state.testId)};
+      editCourseDetailsButton.onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + this.state.testId + "/edittestdetails")};
     });
   }
 

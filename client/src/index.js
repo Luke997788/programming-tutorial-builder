@@ -30,6 +30,7 @@ import AddMatchingExercise from './pages/teacher/content/AddMatchingExercise';
 import EditMatchingExercise from './pages/teacher/content/EditMatchingExercise';
 import AddTest from './pages/teacher/content/AddTest';
 import EditTest from './pages/teacher/content/EditTest';
+import EditTestDetails from './pages/teacher/content/EditTestDetails';
 import AddAssignment from './pages/teacher/content/AddAssignment';
 import EditAssignment from './pages/teacher/content/EditAssignment';
 
@@ -82,6 +83,7 @@ function App() {
 
                     <Route path="/editcourse/:id/addtest" element={<AddTest />} />
                     <Route path="/editcourse/:id/edittest/:contentid" element={<EditTest />} />
+                    <Route path="/editcourse/:id/edittest/:contentid/edittestdetails" element={<EditTestDetails />} />
 
                     <Route path="/editcourse/:id/addassignment" element={<AddAssignment />} />
                     <Route path="/editcourse/:id/editassignment/:contentid" element={<EditAssignment />} />
