@@ -115,7 +115,7 @@ class CodeSampleEditor extends React.Component {
           ],
 
           toolbar: [
-            'undo redo | codesample | help'
+            'undo redo | codesample'
           ],
 
           codesample_global_prismjs: true,

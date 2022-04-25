@@ -12,20 +12,33 @@ class LoginForm extends Component {
 
   componentDidMount() {
     const status = sessionStorage.getItem('username');
+    const role = sessionStorage.getItem('role');
 
+    // if a user is already logged in send them to the correct home page
     if (status) {
-      this.props.navigate("/home");
+      if (role == "student") {
+        this.props.navigate("/studenthome");
+      } else if (role == "teacher") {
+        this.props.navigate("/home");
+      }
     }
   }
 
   componentDidUpdate() {
     const status = sessionStorage.getItem('username');
+    const role = sessionStorage.getItem('role');
 
+    // if a user is already logged in send them to the correct home page
     if (status) {
-      this.props.navigate("/home");
+      if (role == "student") {
+        this.props.navigate("/studenthome");
+      } else if (role == "teacher") {
+        this.props.navigate("/home");
+      }
     }
   }
   
+  // handles the submission of the login credentials
   handleSubmit = async e => {
     e.preventDefault();
   
@@ -38,20 +51,23 @@ class LoginForm extends Component {
     });
 
     await response.json().then(data => {
-      if (data[1] === 'teacher') {
+      let id = data[0];
+      let role = data[1];
+
+      if (role === 'teacher') {
         this.setState({responseToLoginRequest: "Login Success"});
         sessionStorage.setItem("loggedIn", true);
         sessionStorage.setItem("username", this.state.username);
         sessionStorage.setItem("role", "teacher");
-        sessionStorage.setItem("teacherId", data[0]);
+        sessionStorage.setItem("teacherId", id);
         this.props.navigate("/home");
   
-      } else if (data[1] === 'student') {
+      } else if (role === 'student') {
         this.setState({responseToLoginRequest: "Login Success"});
         sessionStorage.setItem("loggedIn", true);
         sessionStorage.setItem("username", this.state.username);
         sessionStorage.setItem("role", "student");
-        sessionStorage.setItem("studentId", data[0]);
+        sessionStorage.setItem("studentId", id);
         this.props.navigate("/studenthome");
       } else if(data[0] == 'failed') {
         this.setState({ responseToLoginRequest: 'Login failed. Please try again' });
@@ -60,6 +76,7 @@ class LoginForm extends Component {
   };
   
 render() {
+  // allows the navigation component to be used
     const {navigate} = this.props;
 
     return (
