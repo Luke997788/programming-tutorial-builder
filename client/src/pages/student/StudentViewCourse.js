@@ -52,6 +52,10 @@ class StudentViewCourse extends Component {
       this.retrieveCourseDetails().then(data => {
         this.retrieveCourseTutorialContent().then(item => {
           this.updateRecentlyViewedCourses();
+
+          if (localStorage.getItem("" + this.state.courseId) != null) {
+            this.setState({currentTutorial: localStorage.getItem("" + this.state.courseId)});
+          }
           this.displayTutorial(this.state.currentTutorial);
           this.displayNavigationMenu();
         })
@@ -141,6 +145,7 @@ class StudentViewCourse extends Component {
   }
 
   async displayTutorial(tutorialToDisplay) {
+    localStorage.setItem("" + this.state.courseId, tutorialToDisplay);
     document.getElementById("tutorial-title").innerHTML = "" + this.tutorialContent[tutorialToDisplay][1];
     document.getElementById("tutorial-content").innerHTML = "" + this.tutorialContent[tutorialToDisplay][3];
     document.getElementById("result-message").innerHTML = "";

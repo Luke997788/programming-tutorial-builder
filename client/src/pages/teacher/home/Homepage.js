@@ -43,6 +43,11 @@ class Homepage extends Component {
 		});
 
 		await response.json().then(data => {
+			if (data[0][0] == 'failed') {
+				document.getElementById("home-container").style.display = 'none';
+				document.getElementById("no-recent-information").innerHTML = "You have not edited any courses or tutorials recently.";
+			}
+
 			for (let i=0; i < data.length; i++) {
 				var container = document.getElementById("recent-course-container-" + (i+1));
 
@@ -159,6 +164,10 @@ class Homepage extends Component {
 				<p id="recent-tutorial-type-4"></p>
 			</div>
 		  </div>
+		</div>
+
+		<div id="no-recent-information-container">
+			<p id="no-recent-information"></p>
 		</div>
 		
       </>
