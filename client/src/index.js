@@ -22,6 +22,8 @@ import AddTextImageContent from './pages/teacher/content/AddTextImageContent';
 import EditTextImageContent from './pages/teacher/content/EditTextImageContent';
 import AddVideoContent from './pages/teacher/content/AddVideoContent';
 import EditVideoContent from './pages/teacher/content/EditVideoContent';
+import AddCodeSample from './pages/teacher/content/AddCodeSample';
+import EditCodeSample from './pages/teacher/content/EditCodeSample';
 import AddMultipleChoiceExerciseContent from './pages/teacher/content/AddMultipleChoiceExerciseContent';
 import EditMultipleChoiceExerciseContent from './pages/teacher/content/EditMultipleChoiceExerciseContent';
 import AddFillInGapExerciseContent from './pages/teacher/content/AddFillInGapExerciseContent';
@@ -65,6 +67,9 @@ function App() {
 
                     <Route path="/editcourse/:id/addvideo" element={<AddVideoContent />} />
                     <Route path="/editcourse/:id/editvideo/:contentid" element={<EditVideoContent />} />
+
+                    <Route path="/editcourse/:id/addcodesample" element={<AddCodeSample />} />
+                    <Route path="/editcourse/:id/editcodesample/:contentid" element={<EditCodeSample />} />
 
                     <Route path="/editcourse/:id/addchoiceexercise" element={<AddMultipleChoiceExerciseContent />} />
                     <Route path="/editcourse/:id/:testid/addchoiceexercise" element={<AddMultipleChoiceExerciseContent />} />

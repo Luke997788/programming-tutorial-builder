@@ -152,7 +152,7 @@ class StudentViewCourse extends Component {
     document.getElementById("feedback-message-title").innerHTML = "";
     document.getElementById("feedback-message").innerHTML = "";
 
-    if ((this.tutorialContent[tutorialToDisplay][2] == 'Text/Image') || (this.tutorialContent[tutorialToDisplay][2] == 'Video')) {
+    if ((this.tutorialContent[tutorialToDisplay][2] == 'Text/Image') || (this.tutorialContent[tutorialToDisplay][2] == 'Video') || (this.tutorialContent[tutorialToDisplay][2] == 'Code Sample')) {
       this.displayTextImageContent();
       
     } else if (this.tutorialContent[tutorialToDisplay][2] == 'Multiple Choice Exercise') {
