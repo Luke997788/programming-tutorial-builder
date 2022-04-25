@@ -447,8 +447,6 @@ class EditFillInTheGapExerciseContent extends Component {
 				    </div>
 
 		  </div>
-          <p>{this.state.correctAnswer}</p>
-          <p>{this.state.contentId}</p>
           <p>{this.state.responseToPostRequest}</p>
 		  </>
 		);

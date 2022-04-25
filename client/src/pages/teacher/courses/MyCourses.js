@@ -53,9 +53,10 @@ class MyCourses extends Component {
 
     await response.json().then(data => {      
       if (data[0][0] == 'failed') {
-        var table = document.getElementById("course-info-table").style.display = 'none';
-        var container = document.getElementById("course-info-container").innerHTML = 'You have not created any courses yet \n <button id="create-course-button">Create a Course</button>';
-        var createCourseButton = document.getElementById("create-course-button").onclick = () => {this.props.navigate('/createacourse')};
+        document.getElementById("course-info-table").innerHTML = '';
+        document.getElementByClassName("sort-dropdown").style.display = 'none';
+        document.getElementById("no-courses-container").innerHTML = 'You have not created any courses yet \n <button id="create-course-button">Create a Course</button>';
+        document.getElementById("create-course-button").onclick = () => {this.props.navigate('/createacourse')};
       } else {
         var table = document.getElementById("course-info-table");
         var rowCount = 1;
@@ -296,6 +297,8 @@ class MyCourses extends Component {
               <th></th>
             </tr>
           </table>
+
+          <div id="no-courses-container"></div>
 
           <p>{this.state.responseToDeletion}</p>
         </div>

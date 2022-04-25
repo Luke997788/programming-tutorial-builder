@@ -154,8 +154,6 @@ class EditingVideoContentEditor extends React.Component {
       />
         
         <button id="save-button" onClick={this.handleSubmit}>Save</button>
-        <p>course id is {this.state.courseId}</p>
-        <p>content id is {this.state.contentId}</p>
       </>
     );
   }

@@ -1,0 +1,9 @@
+#recent-courses-container {
+    float: left;
+    width: 40%;
+}
+
+#recent-tutorials-container {
+    float: right;
+    width: 40%;
+}

@@ -26,8 +26,6 @@ class EditCourse extends Component {
 			this.props.navigate("/studenthome");
 		}
 
-    document.getElementById("edit-content-order-button").onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editcontentorder")};
-
     this.retrieveCourseDetails().then(data => {
       this.retrieveCourseContentInformation();
     });
@@ -249,13 +247,6 @@ class EditCourse extends Component {
       <p>{this.state.description}</p>
 
       <button id="edit-course-details">Edit Course Details</button>
-
-      <div class="dropdown">
-        <button class="course-options">Options</button>
-        <div class="dropdown-content">
-          <button id="edit-content-order-button">Edit Content Order</button>
-        </div>
-      </div>
 
       <div class="dropdown">
         <button class="add-course-content-button">Add Content</button>

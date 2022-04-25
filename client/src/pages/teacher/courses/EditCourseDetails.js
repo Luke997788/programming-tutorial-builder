@@ -150,8 +150,6 @@ class EditCourseDetails extends Component {
 				</div>
 			  </form>
 
-			  <p>{this.state.hideCourse.toString()}</p>
-			  <p>{this.state.completeInOrder.toString()}</p>
 			  <p>{this.state.responseToSubmission}</p>
 		  </div>
 		);

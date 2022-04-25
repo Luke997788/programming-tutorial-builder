@@ -340,10 +340,12 @@ class AddMultipleChoiceExerciseContent extends Component {
                     </div>
 
                     <div id="correct-message-input-container">
+                        <p>Enter a message that will be displayed if a student gets the exercise correct:</p>
                         <p id="correct-message-input"></p>
                     </div>
 
                     <div id="incorrect-message-input-container">
+                    <p>Enter a message that will be displayed if a student gets the exercise incorrect:</p>
                         <p id="incorrect-message-input"></p>
                     </div>
 

@@ -25,8 +25,6 @@ class EditTest extends Component {
 			this.props.navigate("/studenthome");
 		}
 
-    document.getElementById("edit-content-order-button").onclick = () => {this.props.navigate("/editcourse/" + this.state.courseId + "/editcontentorder")};
-
     this.retrieveTestDetails().then(data => {
       this.retrieveTestExercises();
     });
@@ -98,7 +96,6 @@ class EditTest extends Component {
         var rowCount = 1;
 
         for(let i=0; i < data.length; i++) {
-          let order = data[i][0];
           let contentTitle = data[i][1];
           let contentType = data[i][2];
           let dateLastModified = data[i][3].replace("T", ' ').replace("Z", '');
@@ -112,10 +109,9 @@ class EditTest extends Component {
           var cell5 = row.insertCell(4);
           var cell6 = row.insertCell(5);
     
-          cell1.innerHTML = order;
-          cell2.innerHTML = contentTitle;
-          cell3.innerHTML = contentType;
-          cell4.innerHTML = dateLastModified;
+          cell1.innerHTML = contentTitle;
+          cell2.innerHTML = contentType;
+          cell3.innerHTML = dateLastModified;
     
           var editButton = document.createElement("button");
           editButton.setAttribute("class", "content-edit-button");
@@ -136,35 +132,14 @@ class EditTest extends Component {
             deleteButton.onclick = () => {this.deleteExercise(contentId)};
           } 
 
-          cell5.appendChild(editButton);
-          cell6.appendChild(deleteButton);
+          cell4.appendChild(editButton);
+          cell5.appendChild(deleteButton);
     
           rowCount += 1;
         }
       }
     });
   }
-
-  /*async updateContentOrder(order) {
-    var orderPosition = order;
-
-        // starts a request, passes URL and configuration object
-        const response = await fetch('/api/updatecoursecontentorder', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ courseId: this.state.courseId, position: orderPosition  }),
-        });
-    
-        await response.text().then(data => {
-          if (data == 'successful update') {
-            window.location.reload(true);
-          } else {
-            this.setState({ responseToDeletion: 'ERROR: Failed to update content order' });
-          }
-        });
-  }*/
 
   async deleteExercise(id) {
     // starts a request, passes URL and configuration object
@@ -197,13 +172,6 @@ class EditTest extends Component {
       <button id="edit-test-details">Edit Test Details</button>
 
       <div class="dropdown">
-        <button class="content-options">Options</button>
-        <div class="dropdown-content">
-          <button id="edit-content-order-button">Edit Content Order</button>
-        </div>
-      </div>
-
-      <div class="dropdown">
         <button class="add-course-content-button">Add Content</button>
         <div class="dropdown-content">
           <Link to={"/editcourse/" + this.state.courseId + "/" + this.state.testId + "/addchoiceexercise"}>Multiple Choice Exercise</Link>
@@ -217,7 +185,6 @@ class EditTest extends Component {
       <div id="test-content-table-container">
         <table id="test-content-table">
           <tr>
-            <th>Order</th>
             <th>Title</th>
             <th>Type</th>
             <th>Last Modified</th>

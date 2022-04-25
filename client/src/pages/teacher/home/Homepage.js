@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import './homepage.css';
 
 class Homepage extends Component {
 
@@ -44,7 +45,7 @@ class Homepage extends Component {
 
 		await response.json().then(data => {
 			if (data[0][0] == 'failed') {
-				document.getElementById("home-container").style.display = 'none';
+				document.getElementById("home-container").innerHTML = '';
 				document.getElementById("no-recent-information").innerHTML = "You have not edited any courses or tutorials recently.";
 			}
 
@@ -57,11 +58,13 @@ class Homepage extends Component {
 				document.getElementById("recent-course-" + (i+1)).innerHTML = courseTitle;
 
 				var viewButton = document.createElement("button");
+				viewButton.setAttribute("class", "recent-course-view-button");
 				viewButton.innerHTML = "View";
 				viewButton.onclick = () => {this.props.navigate("/viewcourse/" + courseId)};
 				container.appendChild(viewButton);
 
 				var editButton = document.createElement("button");
+				editButton.setAttribute("class", "recent-course-edit-button");
 				editButton.innerHTML = "Edit";
 				editButton.onclick = () => {this.props.navigate('/editcourse/' + courseId)};
 				container.appendChild(editButton);
@@ -80,6 +83,11 @@ class Homepage extends Component {
 		});
 
 		await response.json().then(data => {
+			if (data[0][0] == 'failed') {
+				document.getElementById("home-container").innerHTML = '';
+				document.getElementById("no-recent-information").innerHTML = "You have not edited any courses or tutorials recently.";
+			}
+
 			for (let i=0; i < data.length; i++) {
 				var container = document.getElementById("recent-tutorial-container-" + (i+1));
 
@@ -121,9 +129,8 @@ class Homepage extends Component {
     return (
       <>
       <div id="homepage-container">
-          <p>Homepage</p>
-
 		  <div id="recent-courses-container">
+			  <h2>Recently Viewed Courses</h2>
 			<div id="recent-course-container-1">
 				<p id="recent-course-1"></p>
 			</div>
@@ -144,6 +151,7 @@ class Homepage extends Component {
 			<br></br>
 
 		  <div id="recent-tutorials-container">
+		  <h2>Recently Viewed Tutorials</h2>
 			<div id="recent-tutorial-container-1">
 				<p id="recent-tutorial-1"></p>
 				<p id="recent-tutorial-type-1"></p>
