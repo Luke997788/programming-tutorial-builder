@@ -79,6 +79,11 @@ class StudentMyCourses extends Component {
             
         rowCount += 1;
       }
+
+      if (table.rows.length < 2) {
+        document.getElementById("student-course-info-container").innerHTML = '';
+        document.getElementById("no-courses-message").innerHTML = "You currently have no courses available."
+      }
     });
   }
 
@@ -97,6 +102,10 @@ class StudentMyCourses extends Component {
             <th></th>
           </tr>
         </table>
+      </div>
+
+      <div id="no-courses-message-container">
+        <p id="no-courses-message"></p>
       </div>
       </>
 
