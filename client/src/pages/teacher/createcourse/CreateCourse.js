@@ -77,18 +77,18 @@ class CreateCourse extends Component {
 			  <form id="create-course-form" onSubmit={this.handleSubmit}>
 				<div id="title-input-container">
 				  <label id="title-input-label" for="title">Course Title</label>
-				  <input type="text" id="title" value={this.state.title} onChange={e => this.setState({ title: e.target.value })}/>
+				  <input type="text" id="title" value={this.state.title} onChange={e => this.setState({ title: e.target.value })} required/>
 				</div>
 
 				<div id="description-input-container">
 				  <label id="description-input-label" for="description">Description</label>
-				  <input type="text" id="description" value={this.state.description} onChange={e => this.setState({ description: e.target.value })}/>
+				  <input type="text" id="description" value={this.state.description} onChange={e => this.setState({ description: e.target.value })} required/>
 				</div>
 
 
 				<div id="class-select-container">
 					<label id="class-select-label" for="class-select">Class</label>
-					<select id="class-select" value={this.state.targetClass} onChange={e => this.setState({ targetClass: e.target.value })}>
+					<select id="class-select" value={this.state.targetClass} onChange={e => this.setState({ targetClass: e.target.value })} required>
 						<option value="CS1001">CS1001</option>
 						<option value="CS1002">CS1002</option>
 						<option value="CS1003">CS1003</option>
