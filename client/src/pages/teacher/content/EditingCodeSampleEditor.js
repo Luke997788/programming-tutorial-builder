@@ -83,23 +83,27 @@ class EditingCodeSampleEditor extends React.Component {
       contentToSubmit = this.state.content;
     }
 
-		// starts a request, passes URL and configuration object
-		const response = await fetch('/api/updatetutorialcontent', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ courseId: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: contentToSubmit, contentId: this.state.contentId }),
-		});
+    if (this.state.contentTitle.length < 1) {
+      alert("Enter a title for the tutorial")
+    } else {
+      // starts a request, passes URL and configuration object
+      const response = await fetch('/api/updatetutorialcontent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ courseId: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: contentToSubmit, contentId: this.state.contentId }),
+      });
 
-		await response.text().then(data => {
-      if (data === 'successful update') {
-        this.setState({ responseToContentSubmission: 'Tutorial content successfully updated' });
-        this.props.navigate("/editcourse/" + this.state.courseId);
-      } else {
-        this.setState({ responseToContentSubmission: 'ERROR: failed to update tutorial content' });
-      }
-    });
+      await response.text().then(data => {
+        if (data === 'successful update') {
+          this.setState({ responseToContentSubmission: 'Tutorial content successfully updated' });
+          this.props.navigate("/editcourse/" + this.state.courseId);
+        } else {
+          this.setState({ responseToContentSubmission: 'ERROR: failed to update tutorial content' });
+        }
+      });
+    }
 	};
 
   render() {
@@ -154,8 +158,8 @@ class EditingCodeSampleEditor extends React.Component {
       />
         
         <button id="save-button" onClick={this.handleSubmit}>Save</button>
-        <p>course id is {this.state.courseId}</p>
-        <p>content id is {this.state.contentId}</p>
+
+        <p>{this.state.responseToContentSubmission}</p>
       </>
     );
   }

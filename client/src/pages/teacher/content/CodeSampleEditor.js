@@ -11,7 +11,7 @@ class CodeSampleEditor extends React.Component {
     contentType: 'Code Sample',
     contentTitle: '',
     textAreaContents: ``,
-    responseToPostRequest: '',
+    responseToSubmission: '',
     initialContents: '<p>Enter content here</p>',
     content: ``,
     contentId: '',
@@ -75,10 +75,10 @@ class CodeSampleEditor extends React.Component {
       const body = await response.text();
 
       if (body === 'successful insertion') {
-        this.setState({ responseToPostRequest: 'Tutorial content successfully created' });
+        this.setState({ responseToSubmission: 'Tutorial content successfully created' });
         this.props.navigate("/editcourse/" + this.state.courseId);
       } else {
-        this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+        this.setState({ responseToSubmission: 'ERROR: failed to create tutorial content' });
       }
     }
 	};
@@ -138,7 +138,7 @@ class CodeSampleEditor extends React.Component {
         
         <button id="save-button" onClick={this.handleSubmit}>Save</button>
 
-        <p>{this.state.contentId}</p>
+        <p>{this.state.responseToSubmission}</p>
       </>
     );
   }

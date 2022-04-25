@@ -104,24 +104,28 @@ async retrieveTutorialContent() {
         contentToSubmit = this.state.content;
     }
 
+    if (this.state.contentTitle == '') {
+      alert("Enter a title for the assignment");
+    } else {
     // starts a request, passes URL and configuration object
     const response = await fetch('/api/updatetutorialcontent', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ courseId: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: contentToSubmit, contentId: this.state.contentId }),
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ courseId: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: contentToSubmit, contentId: this.state.contentId }),
     });
 
-        await response.text().then(data => {
-          if (data === 'successful update') {
-            this.setState({ responseToContentSubmission: 'Tutorial content successfully updated' });
-            this.props.navigate("/editcourse/" + this.state.courseId);
+      await response.text().then(data => {
+        if (data === 'successful update') {
+          this.setState({ responseToContentSubmission: 'Assignment successfully updated' });
+          this.props.navigate("/editcourse/" + this.state.courseId);
         } else {
-            this.setState({ responseToContentSubmission: 'ERROR: failed to update tutorial content' });
+          this.setState({ responseToContentSubmission: 'ERROR: failed to assignment' });
         }
       });
-    };
+    }
+  };
 
   render() {
     return (
@@ -190,6 +194,8 @@ async retrieveTutorialContent() {
             />
                 
                 <button id="save-button" onClick={this.handleSubmit}>Save</button>
+
+                <p>{this.state.responseToContentSubmission}</p>
             </div>
       </>
     );

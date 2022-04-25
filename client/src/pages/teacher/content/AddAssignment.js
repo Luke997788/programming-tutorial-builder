@@ -12,7 +12,7 @@ class AddAssignment extends Component {
         contentTitle: '',
         contentType: 'Assignment',
         task: ``,
-        responseToPostRequest: '',
+        responseToSubmission: '',
         orderPosition: '',
 	};
 
@@ -82,23 +82,30 @@ class AddAssignment extends Component {
 	}
 
     async uploadAssignmentInformation() {
+
+      if (this.state.contentTitle == '') {
+        alert("Enter a title for the assignment");
+      } else if (this.state.task == '') {
+        alert("Enter a task for the assignment");
+      } else {
         // starts a request, passes URL and configuration object
         const response = await fetch('/api/uploadtutorialcontent', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task, orderPosition: this.state.orderPosition}),
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({id: this.state.courseId, creator: this.state.creator, title: this.state.contentTitle, type: this.state.contentType, content: this.state.task, orderPosition: this.state.orderPosition}),
         });
 
         await response.text().then(responseData => {
-            if (responseData == 'successful insertion') {
-                this.setState({ responseToPostRequest: 'Tutorial information added' });
-                this.props.navigate("/editcourse/" + this.state.courseId);
-            } else {
-                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
-            }
-        });       
+          if (responseData == 'successful insertion') {
+              this.setState({ responseToSubmission: 'Assignment successfully created!' });
+              this.props.navigate("/editcourse/" + this.state.courseId);
+          } else {
+              this.setState({ responseToSubmission: 'ERROR: failed to create assignment' });
+          }
+        });           
+      }   
     }
 
     handleEditorChange = (e) => {
@@ -126,7 +133,7 @@ class AddAssignment extends Component {
 
                 <div>
                     <label for="content-title">Enter a title for the assignment: </label>
-				    <input type="text" id="content-title" value={this.state.contentTitle} onChange={e => this.setState({ contentTitle: e.target.value })}/>
+				    <input type="text" id="content-title" value={this.state.contentTitle} onChange={e => this.setState({ contentTitle: e.target.value })} required/>
                 </div>
 
                 <div>
@@ -181,12 +188,12 @@ class AddAssignment extends Component {
                             onChange={this.handleEditorChange}
                         />
 
-                    <div id="submit-button-container">
-				       <button onClick={this.handleSubmit}>Create Exercise</button>
-				    </div>
+                  
+				              <button onClick={this.handleSubmit}>Create Exercise</button>
+				         
 
 		  </div>
-          <p>{this.state.responseToPostRequest}</p>
+          <p>{this.state.responseToSubmission}</p>
 		  </>
 		);
 	}
