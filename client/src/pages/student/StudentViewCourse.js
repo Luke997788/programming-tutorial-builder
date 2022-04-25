@@ -737,13 +737,24 @@ async displayNextTestQuestion() {
 
     document.getElementById("end-test-message").innerHTML = 'Test Complete!';
     document.getElementById("score-text").innerHTML = "You got " + this.state.currentTestScore + "/" + (this.state.numberOfTestQuestions + 1);
-    document.getElementById("test-feedback").innerHTML = '' + this.testFeedback.toString();
+    //document.getElementById("test-feedback").innerHTML = '' + this.testFeedback.toString();
     document.getElementById("matching-exercise-terms").innerHTML = '';
     document.getElementById("tutorial-content").innerHTML = "";
     document.getElementById("answer-options").style.display = 'none';
     document.getElementById("test-question").innerHTML = '';
     document.getElementById("result-message").innerHTML = "";
     document.getElementById("submit-answer-button").style.display = 'none';
+
+    this.displayFeedbackMessages();
+  }
+}
+
+async displayFeedbackMessages() {
+  var feedback = document.getElementById("test-feedback");
+
+  for(let i=0; i < this.testFeedback.length; i++) {
+    var message = "Question " + (i+1) + ": " + this.testFeedback[i];
+    feedback.innerHTML = feedback.innerHTML + " <br><br/> " + message;
   }
 }
 
