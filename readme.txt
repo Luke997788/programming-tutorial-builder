@@ -1,0 +1,1 @@
+The code should be executed using Visual Studio Code. The 'npm run dev' command will allow for a connection to the server to be established and the program will run. The details regarding the localhost may need to be changed. If there are any issues when attempting to run the code, please contact me.
