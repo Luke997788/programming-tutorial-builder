@@ -14,7 +14,7 @@ class AddFillInGapExerciseContent extends Component {
         contentTitle: '',
         contentType: 'Fill in the Gap Exercise',
         task: ``,
-        responseToPostRequest: '',
+        responseToSubmission: '',
         orderPosition: '',
         correctFeedbackMessage: '',
         incorrectFeedbackMessage: '',
@@ -145,9 +145,9 @@ class AddFillInGapExerciseContent extends Component {
 
         await response.text().then(responseData => {
             if (responseData == 'successful insertion') {
-                this.setState({ responseToPostRequest: 'Tutorial information added' });
+                this.setState({ responseToSubmission: 'Tutorial information added' });
             } else {
-                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+                this.setState({ responseToSubmission: 'ERROR: failed to create tutorial content' });
             }
         });
 	};
@@ -181,10 +181,10 @@ class AddFillInGapExerciseContent extends Component {
 
         await response.text().then(responseData => {
             if (responseData == 'successful insertion') {
-                this.setState({ responseToPostRequest: 'Tutorial information added' });
+                this.setState({ responseToSubmission: 'Tutorial information added' });
                 this.props.navigate("/editcourse/" + this.state.courseId);
             } else {
-                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+                this.setState({ responseToSubmission: 'ERROR: failed to create tutorial content' });
             }
         });
 	};
@@ -221,9 +221,9 @@ class AddFillInGapExerciseContent extends Component {
 
         await response.text().then(responseData => {
             if (responseData == 'successful insertion') {
-                this.setState({ responseToPostRequest: 'Tutorial information added' });
+                this.setState({ responseToSubmission: 'Tutorial information added' });
             } else {
-                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+                this.setState({ responseToSubmission: 'ERROR: failed to create tutorial content' });
             }
         });
 	};
@@ -257,10 +257,10 @@ class AddFillInGapExerciseContent extends Component {
 
         await response.text().then(responseData => {
             if (responseData == 'successful insertion') {
-                this.setState({ responseToPostRequest: 'Tutorial information added' });
+                this.setState({ responseToSubmission: 'Tutorial information added' });
                 this.props.navigate("/editcourse/" + this.state.courseId + "/edittest/" + this.state.testId);
             } else {
-                this.setState({ responseToPostRequest: 'ERROR: failed to create tutorial content' });
+                this.setState({ responseToSubmission: 'ERROR: failed to create tutorial content' });
             }
         });
 	};
@@ -358,7 +358,7 @@ class AddFillInGapExerciseContent extends Component {
 				    </div>
 
 		  </div>
-          <p>{this.state.responseToPostRequest}</p>
+          <p>{this.state.responseToSubmission}</p>
 		  </>
 		);
 	}
